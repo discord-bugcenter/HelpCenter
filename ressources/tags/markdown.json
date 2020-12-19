@@ -1,0 +1,22 @@
+{
+  "name": "markdown",
+  "description": "utiliser le markdown sur Discord.",
+  "response": {
+    "embed": {
+      "title": "Appréhendez le markdown !",
+      "description": [
+        "Le markdown est une syntax puissante pour formatter vos messages !",
+        "",
+        "Voici une liste non exhaustive de ce qu'il est possible de faire :",
+        " • *texte* -> \\*texte\\*",
+        " • **texte** -> \\*\\*texte\\*\\*",
+        " • __texte__ -> \\_\\_texte\\_\\_",
+        " • `texte` -> \\`texte\\`",
+        " • ||texte|| -> \\|\\|texte\\|\\|",
+        " • ~~texte~~ -> \\~\\~texte\\~\\~",
+        "",
+        "Regardez aussi `/tag code block`"
+      ]
+    }
+  }
+}
