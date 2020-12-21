@@ -8,7 +8,8 @@ from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext
 from schema import SchemaError
 
-from cogs.utils.misc import tag_shema
+from .utils.misc import tag_shema
+from .utils import checkers
 
 
 class Tag(commands.Cog):
@@ -36,6 +37,7 @@ class Tag(commands.Cog):
                 self.bot.logger.warning(f"The tag {path} cannot be loaded")
 
         @self.slash.slash(name="tag")
+        @checkers.authorized_channels
         async def _tag(ctx: SlashContext, query):
             if query == "list":
                 format_list = lambda tags_values: "\n".join([f"- `{tag.get('name')}` : {tag.get('description')}" for tag in tags_values])
