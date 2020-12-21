@@ -13,7 +13,7 @@ tag_shema = Schema({
             Optional('fields'): [
                 {
                     'name': str,
-                    'value': str,
+                    'value': Or(str, And(list, Use(lambda iterable: '\n'.join(iterable)))),
                     Optional('inline'): bool
                 }
             ]

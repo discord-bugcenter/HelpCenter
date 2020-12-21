@@ -7,12 +7,24 @@
       "description": [
         "Un block de code permet de mettre en couleur votre code !",
         "",
-        "C'est utile pour que les autres utilisent puissent comprendre plus facilement votre code !",
-        "",
-        "Voici comment faire :",
-        "\\`\\`\\`py",
-        "print('hello world')",
-        "\\`\\`\\`"
+        "C'est utile pour que les autres personnes puissent comprendre plus facilement votre code !"
+      ],
+      "fields": [
+        {"name": "Comment faire ?",
+         "value": [
+           "\\`\\`\\`{langage}",
+           "{code}",
+           "\\`\\`\\`"
+         ]},
+        {"name": "Exemple :",
+         "value": [
+           "\\`\\`\\`py",
+           "print('hello worlds')",
+           "\\`\\`\\`",
+           "```py",
+           "print('hello world')",
+           "```"
+         ]}
       ]
     }
   }
