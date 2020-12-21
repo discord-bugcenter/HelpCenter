@@ -1,5 +1,7 @@
 import os
 import json
+import asyncio
+from difflib import SequenceMatcher
 
 import discord
 from discord.ext import commands
@@ -35,20 +37,21 @@ class Tag(commands.Cog):
 
         @self.slash.slash(name="tag")
         async def _tag(ctx: SlashContext, query):
-            print(ctx.author)
             if query == "list":
                 format_list = lambda tags_values: "\n".join([f"- `{tag.get('name')}` : {tag.get('description')}" for tag in tags_values])
-                return await ctx.send(3, embeds=[
-                    discord.Embed(
-                        title="Vous pouvez utiliser ces tags :",
-                        description=format_list(self.tags.values()),
-                        color=discord.Color.from_rgb(54, 57, 63)
-                    )
-                ])
+                await ctx.send(5)
+                return await ctx.channel.send(embed=discord.Embed(title="Vous pouvez utiliser ces tags :",
+                                                                  description=format_list(self.tags.values()),
+                                                                  color=discord.Color.from_rgb(54, 57, 63))
+                                              )
             tag = self.tags.get(query)
 
             if tag is None:
-                return await ctx.send(content="Le tag n'a pas été trouvé, regardez `/tag list`")
+                similors = ((name, SequenceMatcher(None, name, query).ratio()) for name in self.tags.keys())
+                similors = sorted(similors, key=lambda couple: couple[1], reverse=True)
+
+                similar_text = f"voulez vous-vous dire `{similors[0][0]}` ? Sinon "
+                return await ctx.send(content=f"Le tag n'a pas été trouvé, {similar_text if similors[0][1] > 0.8 else ''}regardez `/tag list`", complete_hidden=True)
 
             response = tag.get('response')
 
@@ -56,8 +59,19 @@ class Tag(commands.Cog):
             embed.color = discord.Color.from_rgb(54, 57, 63)
             embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
-            await ctx.send(  # content=response.get("content", ""),
-                           embeds=[embed])
+            await ctx.send(5)
+            message = await ctx.channel.send(embed=embed)
+            await message.add_reaction("🗑️")
+
+            try:
+                await self.bot.wait_for("reaction_add", timeout=120,
+                                        check=lambda reaction, user: str(reaction.emoji) == "🗑️" and reaction.message.channel.id == ctx.channel.id and user.id == ctx.author.id)
+            except asyncio.TimeoutError:
+                try: await message.clear_reactions()
+                except: pass
+                return
+            else:
+                await message.delete()
 
         print("Extension [tag] chargée avec succès.")
 
