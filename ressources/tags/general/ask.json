@@ -1,0 +1,15 @@
+{
+  "name": "ask",
+  "description": "don't ask to ask, just ask.",
+  "response": {
+    "embed": {
+      "title": "Don't ask to ask, just ask.",
+      "description": [
+        "Si vous avez une question, posez là.",
+        "Si quelqu'un a la réponse, il se fera un plaisir de vous répondre, ne demandez donc pas si il y a quelqu'un pour vous aider, mais posez directement votre question.",
+        "",
+        "https://dontasktoask.com"
+      ]
+    }
+  }
+}
