@@ -20,6 +20,16 @@
             " • `MySQL` -> convient a un projet standard ayant besoin d'enregistrer un grand nombre de données",
             " • `PostgreSQL` -> souvent en concurrence avec MySQL, elle convient mieux a un projet nécessitant de très très grandes quantités de données, autrement elle sera très légèrement moins efficace que MySQL"
           ]
+        },
+        {
+          "name": "__NoSQL :__",
+          "value": [
+            "Les bases de données `NoSQL` sont désignées indifféremment comme « non relationnelles » ou « non SQL » pour souligner le fait qu'elles peuvent gérer d'importants volumes de données non structurées et évoluant rapidement, et de manière différente par rapport à une base de données relationnelle (SQL) avec lignes et tables.",
+            "",
+            "Il en existe plusieurs, mais voici les 2 principales :",
+            " • `MongoDB` -> sera utilisé pour stocker un grand nombre de données.",
+            " • `Redis` -> sera utilisé pour \"remplacer\" la mémoire cache."
+          ]
         }
       ]
     }
