@@ -65,13 +65,14 @@ class Tag(commands.Cog):
                 similar_text = f"voulez vous-vous dire `{similors[0][0]}` ? Sinon "
                 return await ctx.send(content=f"Le tag n'a pas été trouvé, {similar_text if similors[0][1] > 0.8 else ''}regardez `/tag list`", complete_hidden=True)
 
+            await ctx.send(5)
+
             message = None
             response = tag.get('response')
             choice = response.get('choice')
             if choice:
                 choice_keys = list(choice.keys())  # Un dict n'a pas d'ordre fixe, alors on se base sur 1 seule liste
                 reactions = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣']
-                await ctx.send(5)
                 message = await ctx.channel.send("__Choisissez la cible :__\n"+'\n'.join([f'{reactions[i]} - `{choice_name}`' for i, choice_name in enumerate(choice_keys)]))
                 self.bot.loop.create_task(misc.add_reactions(message, reactions[:len(choice_keys)]))
 
