@@ -1,0 +1,38 @@
+{
+  "name": "embed",
+  "description": "créer des embeds.",
+  "response": {
+    "embed": {
+      "title": "Créez des embeds !",
+      "description": [
+        "Les embeds sont des messages comme celui-ci.",
+        "C'est très utilisé, et cela permet de rendre les réponses des bots plus belles.",
+        "",
+        "Pour envoyer des embeds avec des webhooks, ou a partir d'un `objet` / `dictionnaire`, regardez :",
+        "https://leovoel.github.io/embed-visualizer/"
+      ],
+      "fields": [
+        {
+          "name": "__References :__",
+          "value": [
+            "[discord.py](https://discordpy.readthedocs.io/en/latest/api.html?highlight=embed#discord.Embed)",
+            "[discord.js](https://discord.js.org/#/docs/main/stable/class/MessageEmbed)"
+          ],
+          "inline": true
+        },
+        {
+          "name": "__Exemples :__",
+          "value": [
+            "[discord.py](https://mystb.in/CarmenPoemsFri.python)",
+            "[discord.js](https://mystb.in/WrappedRemediesGranny.javascript)",
+            "[Eris](https://mystb.in/ProteinsJobSubscriber.javascript)"
+          ],
+          "inline": true
+        }
+      ],
+      "image": {
+        "url": "https://cdn.discordapp.com/attachments/84319995256905728/252292324967710721/embed.png"
+      }
+    }
+  }
+}

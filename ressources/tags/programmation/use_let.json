@@ -1,0 +1,36 @@
+{
+  "name": "use_let",
+  "description": "pourquoi il faut utilise let et non var.",
+  "response": {
+    "embed": {
+      "title": "Pourquoi il faut utilise let et non var ?",
+      "description": [
+        "On voit encore beaucoup de cours ou de codes utilisant `var`. Et on voit aussi beaucoup de personne affirmant qu'il faut utiliser `let` !",
+        "Mais alors, qui a raison ?",
+        "",
+        "Initialement, `let` n'existait simplement pas.",
+        "On utilisait donc que `var`pour faire nos variables en Javascript, mais, `var` créer des variables **globales**",
+        "",
+        "__Petit exemple :__",
+        "```js",
+        "> for (var i = 0; i < 10; i++) {}",
+        "undefined",
+        "> console.log(i)",
+        "10",
+        "> const i;",
+        "Uncaught SyntaxError: Identifier 'i' has already been declared",
+        "```",
+        "alors que avec let :",
+        "```js",
+        "> for (let i = 0; i < 10; i++) {}",
+        "undefined",
+        "> console.log(i)",
+        "Uncaught ReferenceError: i is not defined",
+        "> const i;",
+        "undefined",
+        "```",
+        "Utiliser `let` vous évitera donc bon nombre de soucis !"
+      ]
+    }
+  }
+}
