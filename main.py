@@ -16,7 +16,7 @@ class HelpCenterBot(commands.Bot):
         intents = discord.Intents.all()
 
         super().__init__(
-            command_prefix="!",
+            command_prefix="/",
             case_insensitive=True,
             fetch_offline_members=True,
             allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=False),
@@ -25,11 +25,13 @@ class HelpCenterBot(commands.Bot):
         
         self.logger = logger
 
-        extensions = ['cogs.tag']
+        extensions = ['cogs.tag', 'cogs.help']
         for extension in extensions:
             self.load_extension(extension)
 
     async def on_ready(self):
+        activity = discord.Game("/tag <category> <tag>")
+        await self.change_presence(status=discord.Status.idle, activity=activity)
         print(f"Logged in as : {self.user.name}\nID : {self.user.id}")
 
     def run(self):
