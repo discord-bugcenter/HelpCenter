@@ -1,9 +1,8 @@
 import discord
-from discord.ext.commands import Context
-from discord_slash import SlashContext
+from discord.ext.commands import check
 
 
-def authorized_channels(func):
+def authorized_channels():
     authorized_channels_id = [
         692712497844584448,  # discussion-dev
         595981741542604810,  # aide-dev
@@ -17,20 +16,14 @@ def authorized_channels(func):
     formated_text = ("Vous ne pouvez pas executer cette commande ici. Essayez dans ces salons :\n"
                      f"<#{'>, <#'.join(str(chan_id) for chan_id in authorized_channels_id)}>")
 
-    async def wrapper(*args, **kwargs):
-        ctx = discord.utils.find(lambda arg: isinstance(arg, Context) or isinstance(arg, SlashContext), args)
+    async def predicate(ctx):
         if ctx.channel.id in authorized_channels_id:
-            return await func(*args, **kwargs)
+            return True
 
-        if isinstance(ctx, Context):
-            try: await ctx.send(formated_text, delete_after=10)
-            except: pass
-            finally: return func
+        try: await ctx.send(formated_text, delete_after=10)
+        except: pass
 
-        if isinstance(ctx, SlashContext):
-            try: await ctx.send(content=formated_text, complete_hidden=True)
-            except: pass
-            finally: return func
+        return False
 
-    return wrapper
+    return check(predicate)
 

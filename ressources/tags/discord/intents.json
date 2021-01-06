@@ -1,0 +1,29 @@
+{
+  "name": "intents",
+  "description": "qu'est-ce que c'est les intents ?",
+  "response": {
+    "embed": {
+      "title": "Quelques informations sur les intents.",
+      "description": [
+        "Lorsque vous allumez votre bot, celui-ci se connecte au [\"gateway\" de Discord](https://discord.com/developers/docs/topics/gateway), qui échangera des informations avec votre bot !",
+        "Par exemple, si quelqu'un envoie un message et que votre bot peut le voir, alors Discord va dire le dire à votre bot.",
+        "",
+        "Ainsi, il existe beaucoup d'évènements : envoie de message, suppression de messages, ajout de réaction etc...",
+        "Ces évènements sont divisé en plusieurs catégories appelés les [\"intents\"](https://discord.com/developers/docs/topics/gateway#gateway-intents) qu'il faut maintenant spécifier lorsque le bot se connecte à Discord.",
+        "",
+        "Pour faire simple, maintenant quand votre bot se connecte, il va dire à discord \"Je veux recevoir tel ou tel évènement\""
+      ],
+      "fields": [
+        {
+          "name": "Privileged Intents",
+          "value": [
+            "Certains évents sont considéré comme sensible, et demanderont donc certaines verifications pour y accéder.",
+            "C'est le cas des intents `GUILD_MEMBERS` et `GUILD_PRESENCES`. Vous pouvez voir à quels évènements ils correspondent [ici](https://discord.com/developers/docs/topics/gateway#list-of-intents).",
+            "",
+            "Si votre bot a moins de 100 serveurs, il vous suffira d'activer ces intents sur le [profil de votre bot](https://discord.com/developers/applications) pour y avoir accès, autrement il vous faudra faire une demande a Discord en remplissant un formulaire."
+          ]
+        }
+      ]
+    }
+  }
+}
