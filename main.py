@@ -25,7 +25,7 @@ class HelpCenterBot(commands.Bot):
         
         self.logger = logger
 
-        extensions = ['cogs.tag', 'cogs.tests']
+        extensions = ['cogs.tag']
         for extension in extensions:
             self.load_extension(extension)
 

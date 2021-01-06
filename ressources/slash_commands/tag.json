@@ -3,6 +3,26 @@
   "description": "Envoyez rapidement de l'aide.",
   "options": [
     {
+      "name": "category",
+      "description": "Le sujet du tag.",
+      "type": 3,
+      "choices": [
+        {
+          "name": "general",
+          "value": "general"
+        },
+        {
+          "name": "discord",
+          "value": "discord"
+        },
+        {
+          "name": "programmation",
+          "value": "programmation"
+        }
+      ],
+      "required": true
+    },
+    {
       "name": "query",
       "description": "La référence à l'aide que vous cherchez (\"list\" pour les afficher)",
       "type": 3,
