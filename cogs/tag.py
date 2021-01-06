@@ -6,7 +6,6 @@ from difflib import SequenceMatcher
 
 import discord
 from discord.ext import commands
-from discord_slash import SlashCommand, SlashContext, cog_ext
 from schema import SchemaError
 
 from .utils.misc import tag_shema
@@ -16,10 +15,6 @@ from .utils import checkers, misc
 class Tag(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
-        if not hasattr(bot, "slash"):
-            bot.slash = SlashCommand(bot, override_type=True)
-        self.bot.slash.get_cog_commands(self)
 
         tags_folder = {
             category: {
@@ -49,31 +44,52 @@ class Tag(commands.Cog):
 
         print("Extension [tag] chargée avec succès.")
 
-    def cog_unload(self):
-        self.bot.slash.remove_cog_commands(self)
-
-    @cog_ext.cog_slash(name="tag")
-    @checkers.authorized_channels
-    async def _tag(self, ctx: SlashContext, category, query):
+    @commands.command(
+        name="tag",
+        usage="/tag <category> (<tag_name>|'list')",
+        description="Obtenir de l'aide rapidement"
+    )
+    @checkers.authorized_channels()
+    async def _tag(self, ctx, category=None, *, query=None):
         category_tags = self.tags.get(category)
 
-        if query == "list":
+        if category_tags is None and category is not None:
+            similors = ((name, SequenceMatcher(None, name, category).ratio()) for name in self.tags.keys())
+            similors = sorted(similors, key=lambda couple: couple[1], reverse=True)
+
+            if similors[0][1] > 0.8:
+                category_tags = self.tags.get(similors[0][0])
+
+        if category_tags is None:
+            format_list = lambda keys: "\n".join([f"- `{key}`" for key in keys])
+            embed = discord.Embed(
+                title="Catégorie non trouvée. Essayez parmi :",
+                description=format_list(self.tags.keys()),
+                color=discord.Color.from_rgb(47, 49, 54)
+            )
+            embed.set_footer(text=ctx.command.usage)
+            message = await ctx.send(embed=embed, delete_after=10)
+            return await misc.delete_with_emote(ctx, message)
+
+        if query is None or query == "list":
             format_list = lambda tags_values: "\n".join([f"- `{tag.get('name')}` : {tag.get('description')}" for tag in tags_values])
-            await ctx.send(5)
-            return await ctx.channel.send(embed=discord.Embed(title=f"Voici les tags de la catégorie `{category}` :",
-                                                              description=format_list(category_tags.values()),
-                                                              color=discord.Color.from_rgb(47, 49, 54))
-                                          )
+            message = await ctx.channel.send(embed=discord.Embed(title=f"Voici les tags de la catégorie `{category}` :",
+                                                                 description=format_list(category_tags.values()),
+                                                                 color=discord.Color.from_rgb(47, 49, 54))
+                                             )
+            return await misc.delete_with_emote(ctx, message)
+
         tag = category_tags.get(query)
 
         if tag is None:
             similors = ((name, SequenceMatcher(None, name, query).ratio()) for name in category_tags.keys())
             similors = sorted(similors, key=lambda couple: couple[1], reverse=True)
 
-            similar_text = f"voulez vous-vous dire `{similors[0][0]}` ? Sinon "
-            return await ctx.send(content=f"Le tag n'a pas été trouvé, {similar_text if similors[0][1] > 0.8 else ''}regardez `/tag list`", complete_hidden=True)
-
-        await ctx.send(5)
+            if similors[0][1] > 0.8:
+                tag = category_tags.get(similors[0][0])
+            else:
+                similar_text = f"voulez vous-vous dire `{similors[0][0]}` ? Sinon "
+                return await ctx.send(f"Le tag n'a pas été trouvé, {similar_text if similors[0][1] > 0.5 else ''}regardez `/tag list`", delete_after=10)
 
         message = None
         response = tag.get('response')
@@ -81,7 +97,7 @@ class Tag(commands.Cog):
         if choice:
             choice_keys = list(choice.keys())  # Un dict n'a pas d'ordre fixe, alors on se base sur 1 seule liste
             reactions = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣']
-            message = await ctx.channel.send("__Choisissez la cible :__\n"+'\n'.join([f'{reactions[i]} - `{choice_name}`' for i, choice_name in enumerate(choice_keys)]))
+            message = await ctx.send("__Choisissez la cible :__\n"+'\n'.join([f'{reactions[i]} - `{choice_name}`' for i, choice_name in enumerate(choice_keys)]))
             self.bot.loop.create_task(misc.add_reactions(message, reactions[:len(choice_keys)]))
 
             try:
@@ -89,7 +105,8 @@ class Tag(commands.Cog):
             except TimeoutError:
                 return await message.delete()
 
-            await message.clear_reactions()
+            try: await message.clear_reactions()
+            except: pass
             response = choice.get(choice_keys[reactions.index(str(reaction.emoji))])
 
         embed = discord.Embed.from_dict(response.get("embed"))
@@ -99,17 +116,10 @@ class Tag(commands.Cog):
         if message: await message.edit(embed=embed, content="")
         else: message = await ctx.channel.send(embed=embed)
 
-        await message.add_reaction("🗑️")
+        await misc.delete_with_emote(ctx, message)
 
-        try:
-            await self.bot.wait_for("reaction_add", timeout=120,
-                                    check=lambda react, usr: str(react.emoji) == "🗑️" and react.message.channel.id == ctx.channel.id and usr.id == ctx.author.id)
-        except asyncio.TimeoutError:
-            try: await message.clear_reactions()
-            except: pass
-            return
-        else:
-            await message.delete()
+
+
 
 
 def setup(bot):
