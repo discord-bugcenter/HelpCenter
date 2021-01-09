@@ -1,12 +1,15 @@
 import discord
 from discord.ext import commands
 
+from .utils import checkers
+
 
 class HelpCommand(commands.HelpCommand):
     def __init__(self):
         super().__init__(command_attrs={
             'description': "Afficher les commandes du bot."
         })
+        self.add_check(checkers.authorized_channels_check)
 
     async def on_help_command_error(self, ctx, error):
         print(error)
