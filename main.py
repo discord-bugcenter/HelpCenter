@@ -13,14 +13,23 @@ logger = logging.getLogger(__name__)
 class HelpCenterBot(commands.Bot):
 
     def __init__(self):
-        intents = discord.Intents.all()
+        self.authorized_channels_id = [
+            692712497844584448,  # discussion-dev
+            595981741542604810,  # aide-dev
+            707555362458304663,  # aide-dev-2
+            779040873236136007,  # aide-dev-3
+            754322079418941441,  # aide-autres
+            780123502660681728,  # aide-autres-2
+            595224241742413844,  # tests-1
+            595224271132033024  # tests-2
+        ]
 
         super().__init__(
             command_prefix="/",
             case_insensitive=True,
             fetch_offline_members=True,
             allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=False),
-            intents=intents
+            intents=discord.Intents.all()
         )
         
         self.logger = logger
