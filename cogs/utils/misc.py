@@ -5,6 +5,7 @@ embed_shema = Schema({
     'embed': {
         'title': str,
         'description': Or(str, And(list, Use(lambda iterable: '\n'.join(iterable)))),
+        Optional('author'): int,
         Optional('image'): {
             'url': str
         },
@@ -44,5 +45,7 @@ async def delete_with_emote(ctx, bot_message):
         try: await bot_message.remove_reaction("🗑️", ctx.me)
         except: pass
     else:
-        await bot_message.delete()
-        await ctx.message.delete()
+        try:
+            await bot_message.delete()
+            await ctx.message.delete()
+        except: pass

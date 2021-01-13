@@ -51,14 +51,16 @@ class Tag(commands.Cog):
     )
     @checkers.authorized_channels()
     async def _tag(self, ctx, category=None, *, query=None):
-        category_tags = self.tags.get(category)
+        await ctx.message.delete()  # suppression de la commande
+        category_tags = self.tags.get(category)  # category_tags correspond a un dictionnaire avec plusieurs commandes
 
         if category_tags is None and category is not None:
             similors = ((name, SequenceMatcher(None, name, category).ratio()) for name in self.tags.keys())
             similors = sorted(similors, key=lambda couple: couple[1], reverse=True)
 
             if similors[0][1] > 0.8:
-                category_tags = self.tags.get(similors[0][0])
+                category = similors[0][0]  # nom de la catégorie
+                category_tags = self.tags.get(category)
 
         if category_tags is None:
             format_list = lambda keys: "\n".join([f"- `{key}`" for key in keys])
@@ -86,7 +88,8 @@ class Tag(commands.Cog):
             similors = sorted(similors, key=lambda couple: couple[1], reverse=True)
 
             if similors[0][1] > 0.8:
-                tag = category_tags.get(similors[0][0])
+                query = similors[0][0]  # nom du tag
+                tag = category_tags.get(query)
             else:
                 similar_text = f"voulez vous-vous dire `{similors[0][0]}` ? Sinon "
                 return await ctx.send(f"Le tag n'a pas été trouvé, {similar_text if similors[0][1] > 0.5 else ''}regardez `/tag list`", delete_after=10)
@@ -113,13 +116,21 @@ class Tag(commands.Cog):
         embed.color = discord.Color.from_rgb(47, 49, 54)
         embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
+        text = f'/tag {category} {query}'
+        url = discord.Embed.Empty
+        creator = await self.bot.fetch_user(response.get('author')) if response.get('author') else None
+        if creator:
+            text += f' * par {creator.name}#{creator.descriminator}',
+            url = creator.avatar_url
+        embed.set_footer(
+            text=text,
+            icon_url=url
+        )
+
         if message: await message.edit(embed=embed, content="")
         else: message = await ctx.channel.send(embed=embed)
 
         await misc.delete_with_emote(ctx, message)
-
-
-
 
 
 def setup(bot):
