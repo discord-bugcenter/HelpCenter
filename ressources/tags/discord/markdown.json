@@ -1,6 +1,7 @@
 {
   "name": "markdown",
   "description": "utiliser le markdown sur Discord.",
+  "author": 341550709193441280,
   "response": {
     "embed": {
       "title": "Appréhendez le markdown !",
