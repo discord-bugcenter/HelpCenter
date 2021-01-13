@@ -1,6 +1,6 @@
 from discord.ext.commands import check
 
-import custom_errors
+from ..utils import custom_errors
 
 
 def authorized_channels_check(ctx):

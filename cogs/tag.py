@@ -70,7 +70,7 @@ class Tag(commands.Cog):
                 color=discord.Color.from_rgb(47, 49, 54)
             )
             embed.set_footer(text=ctx.command.usage)
-            message = await ctx.send(embed=embed, delete_after=10)
+            message = await ctx.send(embed=embed)
             return await misc.delete_with_emote(ctx, message)
 
         if query is None or query == "list":
