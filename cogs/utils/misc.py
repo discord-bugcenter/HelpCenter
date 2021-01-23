@@ -1,11 +1,12 @@
 from schema import Schema, Or, And, Use, Optional
 import asyncio
+import aiohttp
+import json
 
 embed_shema = Schema({
     'embed': {
         'title': str,
         'description': Or(str, And(list, Use(lambda iterable: '\n'.join(iterable)))),
-        Optional('author'): int,
         Optional('image'): {
             'url': str
         },
@@ -22,6 +23,7 @@ embed_shema = Schema({
 tag_shema = Schema({
     'name': str,
     'description': str,
+    Optional('author'): int,
     'response': Or(embed_shema, {
         'choice': {
             str: embed_shema
@@ -49,3 +51,17 @@ async def delete_with_emote(ctx, bot_message):
             await bot_message.delete()
             await ctx.message.delete()
         except: pass
+
+
+async def create_new_gist(token, file_name, file_content):
+    url = 'https://api.github.com/gists'
+    header = {
+        'Authorization': f'token {token}'
+    }
+    payload = {
+        'files': {file_name: {'content': file_content}},
+        'public': True
+    }
+    async with aiohttp.ClientSession(headers=header) as session:
+        async with session.post(url=url, json=payload) as response:
+            return json.loads(await response.text())
