@@ -13,12 +13,11 @@ from discord.ext import commands
 import filetype
 
 from .utils.misc import create_new_gist, add_reactions
-from main import HelpCenterBot  # Just for type info
 
 
 class Miscellaneous(commands.Cog):
     def __init__(self, bot):
-        self.bot: HelpCenterBot = bot
+        self.bot = bot
         self.re_token = re.compile(r"[\w\-=]+\.[\w\-=]+\.[\w\-=]+", re.ASCII)
         print("Extension [miscellaneous] chargée avec succès.")
 
