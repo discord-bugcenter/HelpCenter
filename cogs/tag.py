@@ -1,7 +1,6 @@
 import os
 from os import path
 import json
-import asyncio
 from difflib import SequenceMatcher
 
 import discord
@@ -118,9 +117,10 @@ class Tag(commands.Cog):
 
         text = f'/tag {category} {query}'
         url = discord.Embed.Empty
-        creator = await self.bot.fetch_user(response.get('author')) if response.get('author') else None
+        creator = await self.bot.fetch_user(tag.get('author')) if tag.get('author') else None
+
         if creator:
-            text += f' * par {creator.name}#{creator.descriminator}',
+            text += f' • par {creator.name}#{creator.discriminator}'
             url = creator.avatar_url
         embed.set_footer(
             text=text,
