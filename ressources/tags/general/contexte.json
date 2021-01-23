@@ -1,0 +1,15 @@
+{
+  "name": "contexte",
+  "description": "ajoutez du contexte.",
+  "response": {
+    "embed": {
+      "title": "J'ai besoin d'aide, j'ai un problème",
+      "description": [
+        "Le genre typique de phrase que nous avons.",
+        "Il faut bien comprendre que sans contexte on ne peut pas vous aider !",
+        "Précisez votre problème, donnez votre erreur, montrez une partie du code, décrivez ce que vous utilisez (logiciel, langage, ordinateur, etc) !",
+        "Il est impossible d'aider une personne qui dit juste \"j'ai un problème, quelqu'un peut-il m'aider ?\""
+      ]
+    }
+  }
+}
