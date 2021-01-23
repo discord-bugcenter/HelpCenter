@@ -8,6 +8,7 @@ from .utils import custom_errors
 class CommandError(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        print("Extension [command_error] chargée avec succès.")
 
     @staticmethod
     async def send_error(ctx, error_message):
@@ -38,6 +39,9 @@ class CommandError(commands.Cog):
             formated_text = (f"Vous ne pouvez pas exécuter cette commande dans <#{error.channel.id}>. Essayez dans l'un de ces salons :\n\n"
                              f"<#{'>, <#'.join(str(chan_id) for chan_id in ctx.bot.authorized_channels_id)}>")
             return await self.send_error(ctx, formated_text)
+
+        else:
+            print(error)
 
 
 def setup(bot):
