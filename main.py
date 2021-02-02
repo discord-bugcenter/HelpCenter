@@ -34,9 +34,9 @@ class HelpCenterBot(commands.Bot):
         
         self.logger = logger
 
-        extensions = ['cogs.tag', 'cogs.help', 'cogs.command_error', 'cogs.miscellaneous']
+        extensions = ['tag', 'help', 'command_error', 'miscellaneous', 'lines']
         for extension in extensions:
-            self.load_extension(extension)
+            self.load_extension('cogs.'+extension)
 
     async def on_ready(self):
         activity = discord.Game("/tag <category> <tag>")

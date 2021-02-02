@@ -16,6 +16,9 @@
         " • ||texte|| -> \\|\\|texte\\|\\|",
         " • ~~texte~~ -> \\~\\~texte\\~\\~",
         "",
+        "**Bonus : dans un embed (description & fields.value) :**",
+        " • [lien hypertext](https://exemple.com/) -> \\[cliquez ici\\](https://exemple.com/)",
+        "",
         "Regardez aussi `/tag code block`"
       ]
     }
