@@ -14,6 +14,19 @@
       ],
       "fields": [
         {
+          "name": "__Restrictions :__",
+          "value": [
+            "Nombre maximum de caractères :",
+            " • `title` & `fields.name` & `author.name`: 256",
+            " • `description` & `footer.text`: 2048",
+            " • `fields.value`: 1024",
+            "Nombre maximum de `fields`: 25",
+            "",
+            "Voir les [sources](https://discord.com/developers/docs/resources/channel#embed-limits-limits)."
+          ],
+          "inline": false
+        },
+        {
           "name": "__References :__",
           "value": [
             "[discord.py](https://discordpy.readthedocs.io/en/latest/api.html?highlight=embed#discord.Embed)",

@@ -1,0 +1,25 @@
+{
+  "name": "rtd",
+  "aliases": ["rtfd", "readthedoc", "read"],
+  "description": "read the docs",
+  "author": 330289454436581387,
+  "response": {
+    "embed": {
+      "title": "Read the Docs",
+      "description": [
+        "Même un excellent développeur ne connait pas tout par coeur.",
+        "Lire les documentations et s'y référer est extrêmement important, pour savoir comment utiliser un module par vous-même !",
+        "",
+        "Vous aurez en plus un minimum d'autonomie, et vous ne poserez plus de questions au moindre doute ou à la moindre erreur !",
+        "Trouvez les références dans une documentation n'est pas bien compliqué, alors regardez-les avant de demander de l'aide, cela fera gagner du temps à tout le monde !"
+      ],
+      "fields": [{
+        "name": "Quelques documentations qui pourraient vous aider:",
+        "value": [
+          "Documentation de la librairie [discord.js](https://discord.js.org)",
+          "Documentation de la librairie [discord.py](https://discordpy.readthedocs.io/en/latest/index.html)"
+        ]
+      }]
+    }
+  }
+}
