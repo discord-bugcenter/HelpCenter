@@ -50,7 +50,6 @@ class Tag(commands.Cog):
     )
     @checkers.authorized_channels()
     async def _tag(self, ctx, category=None, *, query=None):
-        await ctx.message.delete()  # suppression de la commande
         category_tags = self.tags.get(category)  # category_tags correspond a un dictionnaire avec plusieurs commandes
 
         if category_tags is None and category is not None:
@@ -130,6 +129,7 @@ class Tag(commands.Cog):
         if message: await message.edit(embed=embed, content="")
         else: message = await ctx.channel.send(embed=embed)
 
+        await ctx.message.delete()  # suppression de la commande
         await misc.delete_with_emote(ctx, message)
 
 
