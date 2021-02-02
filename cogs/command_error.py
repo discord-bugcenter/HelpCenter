@@ -39,7 +39,8 @@ class CommandError(commands.Cog):
             formated_text = (f"Vous ne pouvez pas exécuter cette commande dans <#{error.channel.id}>. Essayez dans l'un de ces salons :\n\n"
                              f"<#{'>, <#'.join(str(chan_id) for chan_id in ctx.bot.authorized_channels_id)}>")
             return await self.send_error(ctx, formated_text)
-
+        elif isinstance(error, commands.CommandError):
+            return await self.send_error(ctx, str(error))
         else:
             print(error)
 
