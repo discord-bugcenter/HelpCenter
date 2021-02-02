@@ -18,7 +18,7 @@ class Lines(commands.Cog):
     )
     @checkers.authorized_channels()
     async def lines(self, ctx):
-        result = re.search(r'```(?:(\S*)\n)?(\s+\S[\S\s]*)```', ctx.message.content)
+        result = re.search(r'```(?:(\S*)\n)?(\s*\S[\S\s]*)```', ctx.message.content)
 
         if not result:
             raise commands.CommandError('Vous devez mettre un block de code dans votre message ! *Regardez `/tag discord code block`*')

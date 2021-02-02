@@ -21,6 +21,20 @@ class Tag(commands.Cog):
                 } for category in os.listdir('ressources/tags/') if os.path.isdir(os.path.join('ressources/tags/', category))
         }
 
+        def complete_values(obj, ref=None):
+            if isinstance(obj, dict):
+                for key, value in obj.items():
+                    if value == "*" and ref:
+                        obj[key] = ref[key]
+                    else:
+                        obj[key] = complete_values(value, ref=ref[key] if ref else ref)
+            elif isinstance(obj, list) and all(isinstance(sub_obj, dict) for sub_obj in obj):
+                for i, sub_obj in enumerate(obj):
+                    if i == 0 and not ref: continue
+                    obj[i] = complete_values(obj[i], ref=ref[i] if ref else obj[0])
+
+            return obj
+
         self.tags = {}
         for category_name, tags_infos in tags_folder.items():
             self.tags[category_name] = {}
@@ -35,7 +49,7 @@ class Tag(commands.Cog):
                             self.bot.logger.warning(f'The tag {tag_name} from category {category_name} is improper.\n{e}')
                             continue
 
-                        self.tags[category_name][loaded_tag["name"]] = loaded_tag
+                        self.tags[category_name][loaded_tag["name"]] = complete_values(loaded_tag)
 
                 except Exception as e:
                     print(e)
@@ -79,7 +93,7 @@ class Tag(commands.Cog):
                                              )
             return await misc.delete_with_emote(ctx, message)
 
-        tag = category_tags.get(query)
+        tag = category_tags.get(query) or discord.utils.find(lambda tag_: tag_.get('aliases') and query in tag_['aliases'], category_tags.values())
 
         if tag is None:
             similors = ((name, SequenceMatcher(None, name, query).ratio()) for name in category_tags.keys())
@@ -94,21 +108,20 @@ class Tag(commands.Cog):
 
         message = None
         response = tag.get('response')
-        choice = response.get('choice')
-        if choice:
-            choice_keys = list(choice.keys())  # Un dict n'a pas d'ordre fixe, alors on se base sur 1 seule liste
+        choices = response.get('choices')
+        if choices:
             reactions = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣']
-            message = await ctx.send("__Choisissez la cible :__\n"+'\n'.join([f'{reactions[i]} - `{choice_name}`' for i, choice_name in enumerate(choice_keys)]))
-            self.bot.loop.create_task(misc.add_reactions(message, reactions[:len(choice_keys)]))
+            message = await ctx.send("__Choisissez la cible :__\n"+'\n'.join([f"{reactions[i]} - `{choice['choice_name']}`" for i, choice in enumerate(choices)]))
+            self.bot.loop.create_task(misc.add_reactions(message, reactions[:len(choices)]))
 
             try:
-                reaction, _ = await self.bot.wait_for('reaction_add', timeout=120, check=lambda react, usr: str(react.emoji) in reactions[:len(choice_keys)] and usr.id == ctx.author.id and react.message.id == message.id)
+                reaction, _ = await self.bot.wait_for('reaction_add', timeout=120, check=lambda react, usr: str(react.emoji) in reactions[:len(choices)] and usr.id == ctx.author.id and react.message.id == message.id)
             except TimeoutError:
                 return await message.delete()
 
             try: await message.clear_reactions()
             except: pass
-            response = choice.get(choice_keys[reactions.index(str(reaction.emoji))])
+            response = choices[reactions.index(str(reaction.emoji))]
 
         embed = discord.Embed.from_dict(response.get("embed"))
         embed.color = discord.Color.from_rgb(47, 49, 54)
@@ -129,8 +142,10 @@ class Tag(commands.Cog):
         if message: await message.edit(embed=embed, content="")
         else: message = await ctx.channel.send(embed=embed)
 
-        await ctx.message.delete()  # suppression de la commande
-        await misc.delete_with_emote(ctx, message)
+        try: await ctx.message.delete()  # suppression de la commande
+        except: pass
+        try: await misc.delete_with_emote(ctx, message)
+        except: pass
 
 
 def setup(bot):
