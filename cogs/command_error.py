@@ -8,7 +8,6 @@ from .utils import custom_errors
 class CommandError(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        print("Extension [command_error] chargée avec succès.")
 
     @staticmethod
     async def send_error(ctx, error_message):
@@ -42,8 +41,10 @@ class CommandError(commands.Cog):
         elif isinstance(error, commands.CommandError):
             return await self.send_error(ctx, str(error))
         else:
-            print(error)
+            self.bot.logger.error(error)
 
 
 def setup(bot):
     bot.add_cog(CommandError(bot))
+    bot.logger.info("Extension [command_error] loaded successfully.")
+

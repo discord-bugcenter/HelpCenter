@@ -5,7 +5,7 @@ from discord.ext import commands
 from .utils import checkers
 
 
-class LetMe(commands.Cog):
+class GoogleIt(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -28,4 +28,5 @@ class LetMe(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(LetMe(bot))
+    bot.add_cog(GoogleIt(bot))
+    bot.logger.info("Extension [google_it] loaded successfully.")

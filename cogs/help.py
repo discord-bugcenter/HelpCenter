@@ -10,7 +10,6 @@ class HelpCommand(commands.HelpCommand):
             'description': "Afficher les commandes du bot."
         })
         self.add_check(checkers.authorized_channels_check)
-        print("Extension [help] chargée avec succès.")
 
     async def on_help_command_error(self, ctx, error):
         print(error)
@@ -46,3 +45,4 @@ class HelpCommand(commands.HelpCommand):
 
 def setup(bot):
     bot.help_command = HelpCommand()
+    bot.logger.info("Extension [help] loaded successfully.")

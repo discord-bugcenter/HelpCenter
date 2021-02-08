@@ -19,7 +19,6 @@ class Miscellaneous(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.re_token = re.compile(r"[\w\-=]+\.[\w\-=]+\.[\w\-=]+", re.ASCII)
-        print("Extension [miscellaneous] chargée avec succès.")
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -123,3 +122,5 @@ class Miscellaneous(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Miscellaneous(bot))
+    bot.logger.info("Extension [miscellaneous] loaded successfully.")
+
