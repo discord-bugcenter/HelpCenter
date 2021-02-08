@@ -55,8 +55,6 @@ class Tag(commands.Cog):
                     print(e)
                     self.bot.logger.warning(f"The tag {tag_path} cannot be loaded")
 
-        print("Extension [tag] chargée avec succès.")
-
     @commands.command(
         name="tag",
         usage="/tag <category> (<tag_name>|'list')",
@@ -150,3 +148,5 @@ class Tag(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Tag(bot))
+    bot.logger.info("Extension [tag] loaded successfully.")
+

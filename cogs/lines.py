@@ -37,3 +37,5 @@ class Lines(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Lines(bot))
+    bot.logger.info("Extension [lines] loaded successfully.")
+

@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
@@ -41,7 +42,8 @@ class HelpCenterBot(commands.Bot):
     async def on_ready(self):
         activity = discord.Game("/tag <category> <tag>")
         await self.change_presence(status=discord.Status.idle, activity=activity)
-        print(f"Logged in as : {self.user.name}\nID : {self.user.id}")
+        print(f"Logged in as : {self.user.name}")
+        print(f"ID : {self.user.id}")
 
     def run(self):
         super().run(os.getenv("BOT_TOKEN"), reconnect=True)
