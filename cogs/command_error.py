@@ -35,9 +35,13 @@ class CommandError(commands.Cog):
             pass
 
         elif isinstance(error, custom_errors.NotAuthorizedChannels):
-            formated_text = (f"Vous ne pouvez pas exécuter cette commande dans <#{error.channel.id}>. Essayez dans l'un de ces salons :\n\n"
-                             f"<#{'>, <#'.join(str(chan_id) for chan_id in ctx.bot.authorized_channels_id)}>")
-            return await self.send_error(ctx, formated_text)
+            formatted_text = (f"Vous ne pouvez pas exécuter cette commande dans <#{error.channel.id}>. Essayez dans l'un de ces salons :\n\n"
+                              f"<#{'>, <#'.join(str(chan_id) for chan_id in ctx.bot.authorized_channels_id)}>")
+            return await self.send_error(ctx, formatted_text)
+        elif isinstance(error, commands.MissingRequiredArgument):
+            formatted_text = (f"Il manque un argument obligatoire dans la commande !\n"
+                              f"`{ctx.command.usage}`")
+            return await self.send_error(ctx, formatted_text)
         elif isinstance(error, commands.CommandError):
             return await self.send_error(ctx, str(error))
         else:
