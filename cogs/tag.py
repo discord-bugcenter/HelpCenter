@@ -139,6 +139,13 @@ class Tag(commands.Cog):
             icon_url=url
         )
 
+        # ajout de l'image dans l'embed
+        if tag.get('image'):
+            url = tag.get('image')
+            embed.set_image(
+                url=url
+            )
+
         if message: await message.edit(embed=embed, content="")
         else: message = await ctx.channel.send(embed=embed)
 
