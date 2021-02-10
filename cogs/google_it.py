@@ -4,6 +4,7 @@ from discord.ext import commands
 
 from .utils import checkers
 from .utils.misc import delete_with_emote
+from .utils.i18n import use_current_gettext as _
 
 
 class GoogleIt(commands.Cog):
@@ -21,7 +22,7 @@ class GoogleIt(commands.Cog):
         stringed_array = " ".join(word[:50] for word in string.split(' ')[:32])  # Maximum of 32 words, and a word has 50 chars max.
         query = parse.quote_plus(stringed_array)
 
-        response = await ctx.send("L'outil google est fort puissant, regarde comment ça marche !\n"
+        response = await ctx.send(_("The google tool is very powerful, see how it works!\n") +
                                   f"<https://letmegooglethat.com/?q={query}>")
         await delete_with_emote(ctx, response)
 
