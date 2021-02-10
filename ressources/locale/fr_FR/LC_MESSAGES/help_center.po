@@ -1,0 +1,53 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2021-02-10 19:16+0100\n"
+"PO-Revision-Date: 2021-02-10 19:18+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.4.1\n"
+"X-Poedit-Basepath: ../../../..\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-SearchPath-0: cogs\n"
+"X-Poedit-SearchPath-1: main.py\n"
+
+#: cogs/google_it.py:25
+msgid "The google tool is very powerful, see how it works!\n"
+msgstr "L'outil google est très puissant, voici comment il fonctionne!\n"
+
+#: cogs/help.py:20
+msgid "An error occurred."
+msgstr "Une erreur est survenue."
+
+#: cogs/help.py:27
+msgid "Here are my commands:"
+msgstr "Voice mes commandes :"
+
+#: cogs/help.py:44
+#, python-brace-format
+msgid "The command {string} way not found."
+msgstr "La commande {string} n'a pas été trouvée."
+
+#: cogs/lines.py:25
+msgid "Your message must contains a block of code ! *look `/tag discord code block`*"
+msgstr "Votre message doit contenir un bloque de code ! *Regardez `/tag discord code block`*"
+
+#: cogs/lines.py:31
+#, python-brace-format
+msgid "Numbered code of {ctx.author} :\n"
+msgstr "Code numéroté de {ctx.author} : \n"
+
+#: cogs/test.py:15
+#, python-brace-format
+msgid "Hum, it looks like you're english {ctx.author}"
+msgstr "Hum, on dirait que tu es français {ctx.author}"
+
+#~ msgid "hello"
+#~ msgstr "bonjour"
+
+#~ msgid "bonjour"
+#~ msgstr "bonjour"
