@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 
 from .utils import checkers
+from .utils.i18n import use_current_gettext as _
 
 
 class HelpCommand(commands.HelpCommand):
@@ -10,21 +11,20 @@ class HelpCommand(commands.HelpCommand):
             'description': "Afficher les commandes du bot."
         })
         self.add_check(checkers.authorized_channels_check)
-        print("Extension [help] chargée avec succès.")
 
     async def on_help_command_error(self, ctx, error):
         print(error)
 
     async def send_error_message(self, error):
         embed = discord.Embed(
-            title="Une erreur est survenue.",
+            title=_("An error occurred."),
             description=error
         )
         await self.context.send(embed=embed)
 
     async def send_bot_help(self, mapping):
         embed = discord.Embed(
-            title="Voici mes commandes:",
+            title=_("Here are my commands:"),
             description="\n".join([f"`{self.context.prefix}{cmd.name}` : {cmd.description}" for cmd in self.context.bot.commands])
         )
         await self.context.send(embed=embed)
@@ -41,8 +41,9 @@ class HelpCommand(commands.HelpCommand):
         await self.context.send(embed=embed)
 
     async def command_not_found(self, string):
-        return f"La commande {string} n'a pas été trouvée."
+        return _("The command {string} way not found.").format(string)
 
 
 def setup(bot):
     bot.help_command = HelpCommand()
+    bot.logger.info("Extension [help] loaded successfully.")
