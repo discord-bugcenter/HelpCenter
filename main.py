@@ -1,12 +1,16 @@
 import logging
 import os
+from collections import OrderedDict
 
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
+from cogs.utils import i18n
+
 load_dotenv()
 
+logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
@@ -23,6 +27,10 @@ class HelpCenterBot(commands.Bot):
             595224241742413844,  # tests-1
             595224271132033024  # tests-2
         ]
+        self.language_roles = OrderedDict((
+            (797581355785125889, 'fr_FR'),
+            (797581356749946930, 'en_EN')
+        ))  # OrderedDict to make French in prior of English
 
         super().__init__(
             command_prefix="/",
@@ -38,13 +46,25 @@ class HelpCenterBot(commands.Bot):
         for extension in extensions:
             self.load_extension('cogs.'+extension)
 
+        self.before_invoke(self.set_actual_langage)
+
     async def on_ready(self):
         activity = discord.Game("/tag <category> <tag>")
         await self.change_presence(status=discord.Status.idle, activity=activity)
-        print(f"Logged in as : {self.user.name}\nID : {self.user.id}")
+        print(f"Logged in as : {self.user.name}")
+        print(f"ID : {self.user.id}")
 
     def run(self):
         super().run(os.getenv("BOT_TOKEN"), reconnect=True)
+
+    async def set_actual_langage(self, ctx):
+        i18n.current_locale.set(self.get_member_lang(ctx.author))
+
+    def get_member_lang(self, author: discord.Member):
+        for role_id, lang in self.language_roles.items():
+            if discord.utils.get(author.roles, id=role_id):
+                return lang
+        return 'fr_FR'
 
 
 help_center_bot = HelpCenterBot()
