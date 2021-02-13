@@ -1,18 +1,13 @@
-# HelpCenter
+# Help Center
 
-HelpCenter est un Bot Discord pour le serveur [BugCenter](https://discord.gg/tZceuTe).
+Help Center is a Discord Bot written for the [Bug Center](https://discord.gg/eNnK7J6MFz) Discord server.
+The main goal of this Bot is to give access to cool features when helping people in our programming support.
 
-Le robot permet d'obtenir des informations sur un sujet _("tags")_ via la commande slash `tags`.
+## License
 
-## Licence
+The repository is licensed under the [MIT License](https://opensource.org/licenses/MIT) which is an 
+OSI (Open Source Initiative)-approved license. You can find more information by reading the [LICENSE](LICENSE) file!
 
-Le projet est disponible au publique sous Licence Apache-2.0.
-Retrouvez plus d'informations dans le fichier [LICENSE](LICENSE).
+## Authors 
 
-Le copyright de cette licence est au nom des dénommés [auteurs](#auteurs).
-
-## Auteurs
-
-Le projet HelpCenter est distribué et maintenu par les personnes designées "auteurs".
-
-Voir le fichier [AUTHORS](AUTHORS) pour plus d'informations.
+The repository is owned by the "maintainers" listed in the [AUTHORS](AUTHORS) file.
