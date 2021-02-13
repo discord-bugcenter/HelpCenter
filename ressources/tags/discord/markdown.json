@@ -61,7 +61,7 @@
         }, {
           "name": "Spoilers",
           "value": [
-            "\\|\\| Spoil à cacher \\|\\| → \\|\\| Spoil à cacher \\|\\|."
+            "\\|\\| Spoil à cacher \\|\\| → || Spoil à cacher ||."
           ]
         }
       ]
