@@ -1,6 +1,6 @@
 {
-  "name": "bitflied",
-  "aliases": ["invalid_bitflied", "bitflied_invalid"],
+  "name": "bitfield",
+  "aliases": ["invalid_bitfield", "bitfield_invalid"],
   "description": "Invalid bitfield flag or number.",
   "author": 341550709193441280,
   "response": {
