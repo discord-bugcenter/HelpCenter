@@ -1,27 +1,30 @@
-from schema import Schema, Or, And, Use, Optional
+from schema import Schema, Or, And, Use, Optional, Regex
 import asyncio
 import aiohttp
 import json
 
+text_or_list = Schema(Or(str, And(list, Use(lambda iterable: '\n'.join(iterable)))))
+
 embed_shema = Schema({
     'title': str,
-    'description': Or(str, And(list, Use(lambda iterable: '\n'.join(iterable)))),
+    'description': text_or_list,
     Optional('image'): {
         'url': str
     },
     Optional('fields'): [
         {
             'name': str,
-            'value': Or(str, And(list, Use(lambda iterable: '\n'.join(iterable)))),
+            'value': text_or_list,
             Optional('inline'): bool
         }
     ]
 })
 
-tag_shema = Schema({
+inner_tag_shema = Schema({
+    Optional('lang'): Regex(r'[a-z]{2}_[A-Z]{2}'),
     'name': str,
     Optional('aliases'): list,
-    'description': str,
+    'description': Or({str: str}, str),
     Optional('author'): int,
     'response': Or({'embed': embed_shema}, {
         'choices': [
@@ -32,6 +35,8 @@ tag_shema = Schema({
         ]
     })
 })
+
+tag_shema = Schema(Or([inner_tag_shema], inner_tag_shema))
 
 
 async def add_reactions(message, reactions) -> None:
