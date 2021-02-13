@@ -1,32 +1,67 @@
-{
-  "name": "code block",
-  "description": "mettre son code en couleur.",
-  "author": 341550709193441280,
-  "response": {
-    "embed": {
-      "title": "Utilisez les blocks de codes !",
-      "description": [
-        "Un block de code permet de mettre en couleur votre code !",
-        "",
-        "C'est utile pour que les autres personnes puissent comprendre plus facilement votre code !"
-      ],
-      "fields": [
-        {"name": "Comment faire ?",
-         "value": [
-           "\\`\\`\\`{langage}",
-           "{code}",
-           "\\`\\`\\`"
-         ]},
-        {"name": "Exemple :",
-         "value": [
-           "\\`\\`\\`py",
-           "print('hello worlds')",
-           "\\`\\`\\`",
-           "```py",
-           "print('hello world')",
-           "```"
-         ]}
-      ]
+[
+  {
+    "lang": "fr_FR",
+    "name": "code block",
+    "description": "mettre son code en couleur.",
+    "response": {
+      "embed": {
+        "title": "Utilisez les blocks de codes !",
+        "description": [
+          "Un block de code permet de mettre en couleur votre code !",
+          "",
+          "C'est utile pour que les autres personnes puissent comprendre plus facilement votre code !"
+        ],
+        "fields": [
+          {
+            "name": "Comment faire ?",
+            "value": [
+              "\\`\\`\\`{langage}",
+              "{code}",
+              "\\`\\`\\`"
+            ]
+          },
+          {
+            "name": "Exemple :",
+            "value": [
+              "\\`\\`\\`py",
+              "print('hello worlds')",
+              "\\`\\`\\`",
+              "```py",
+              "print('hello world')",
+              "```"
+            ]
+          }
+        ],
+        "image": {
+          "url": "https://media.discordapp.net/attachments/584397334608084992/809914138187792394/ezgif.com-gif-maker_6.gif"
+        }
+      }
+    }
+  },
+  {
+    "lang": "en_EN",
+    "name": "*",
+    "description": "color his codes.",
+    "response": {
+      "embed": {
+        "title": "Use code blocks !",
+        "description": [
+          "A code block allows you to color your code!",
+          "",
+          "This is useful so that other people can more easily understand your code!"
+        ],
+        "fields": [
+          {
+            "name": "How to do ?",
+            "value": "*"
+          },
+          {
+            "name": "*",
+            "value": "*"
+          }
+        ],
+        "image": {"url": "*"}
+      }
     }
   }
-}
+]
