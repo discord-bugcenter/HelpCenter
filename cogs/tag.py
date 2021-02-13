@@ -136,7 +136,7 @@ class Tag(commands.Cog):
         embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
         text = f'/tag {category} {query}'
-        url = self.bot.avatar_url
+        url = self.bot.user.avatar_url
         embed.set_footer(
             text=text,
             icon_url=url
