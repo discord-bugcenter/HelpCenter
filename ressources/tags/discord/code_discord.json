@@ -1,0 +1,16 @@
+{
+  "name": "code_discord",
+  "description": "Comment utiliser les codes nitros ou les jeux de Discord ?",
+  "author": 423185768954069002,
+  "response": {
+    "embed": {
+      "title": "L'utilisation des codes Discord (nitros ou jeux).",
+      "description": [
+        "Vous avez mis la main sur un code fantaisiste ? Trouvez votre chemin jusqu'à la section `Utiliser des Codes` située dans `Bibliothèque` > `Inventaire des cadeaux` pour obtenir votre jeu via l’utilisation de code. C'est là que vous serez invité à entrer un code de **19 caractères**."
+      ],
+      "image": {
+          "url": "https://support.discord.com/hc/article_attachments/360054393351/1.jpg",
+      }
+    }
+  }
+}
