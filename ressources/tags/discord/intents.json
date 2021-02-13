@@ -1,27 +1,38 @@
 {
   "name": "intents",
-  "description": "qu'est-ce que c'est les intents ?",
+  "description": "explication de Gateway Intents.",
   "author": 341550709193441280,
   "response": {
     "embed": {
-      "title": "Quelques informations sur les intents.",
+      "title": "Les Gateway Intents",
       "description": [
-        "Lorsque vous allumez votre bot, celui-ci se connecte au [\"gateway\" de Discord](https://discord.com/developers/docs/topics/gateway), qui échangera des informations avec votre bot !",
-        "Par exemple, si quelqu'un envoie un message et que votre bot peut le voir, alors Discord va dire le dire à votre bot.",
-        "",
-        "Ainsi, il existe beaucoup d'évènements : envoie de message, suppression de messages, ajout de réaction etc...",
-        "Ces évènements sont divisé en plusieurs catégories appelés les [\"intents\"](https://discord.com/developers/docs/topics/gateway#gateway-intents) qu'il faut maintenant spécifier lorsque le bot se connecte à Discord.",
-        "",
-        "Pour faire simple, maintenant quand votre bot se connecte, il va dire à discord \"Je veux recevoir tel ou tel évènement\""
+        "Lors de la connexion au [Gateway de l'API Discord](https://discord.com/developers/docs/topics/gateway), vous devez fournir plusieurs informations qui vont vous permettre de vous identifier.",
+        "Parmis ces informations se trouvent les Gateway Intents, qui vous permettent de ne pas recevoir certains événements de l'API.",
+        "Voici la liste des différents Gateway Intents disponibles, avec les événements qu'il vous permettent de recevoir:",
+        "• `GUILDS` → Guild Create, Guild Update, Guild Delete, Guild Role Create, Guild Role Update, Guild Role Delete, Channel Create, Channel Update, Channel Delete, Channel Pins Update.",
+        "• `GUILD_MEMBERS` → Guild Member Add, Guild Member Update, Guild Member Remove.",
+        "• `GUILD_BANS` → Guild Ban Add, Guild Ban Remove.",
+        "• `GUILD_EMOJIS` → Guild Emojis Update.",
+        "• `GUILD_INTEGRATIONS` → Guild Integrations Update.",
+        "• `GUILD_WEBHOOKS` → Webhooks Update.",
+        "• `GUILD_INVITES` → Invite Create, Invite Delete.",
+        "• `GUILD_VOICE_STATES` → Voice State Update.",
+        "• `GUILD_PRESENCES` → Presence Update.",
+        "• `GUILD_MESSAGES` → Message Create, Message Update, Message Delete, Message Delete Bulk.",
+        "• `GUILD_MESSAGE_REACTIONS` → Message Reaction Add, Message Reaction Remove, Message Reaction Remove All, Message Reaction Remove Emoji.",
+        "• `GUILD_MESSAGE_TYPING` → Typing Start.",
+        "• `DIRECT_MESSAGES` → Message Create, Message Update, Message Delete, Channel Pins Update.",
+        "• `DIRECT_MESSAGE_REACTIONS` → Message Reaction Add, Message Reaction Remove, Message Reaction Remove All, Message Reaction Remove Emoji.",
+        "• `DIRECT_MESSAGE_TYPING` → Typing Start.",
+        "Plus d'informations sur [la documentation de Discord](https://discord.com/developers/docs/topics/gateway#gateway-intents) !"
       ],
       "fields": [
         {
-          "name": "Privileged Intents",
+          "name": "Intents privilégiés",
           "value": [
-            "Certains évents sont considéré comme sensible, et demanderont donc certaines verifications pour y accéder.",
-            "C'est le cas des intents `GUILD_MEMBERS` et `GUILD_PRESENCES`. Vous pouvez voir à quels évènements ils correspondent [ici](https://discord.com/developers/docs/topics/gateway#list-of-intents).",
-            "",
-            "Si votre bot a moins de 100 serveurs, il vous suffira d'activer ces intents sur le [profil de votre bot](https://discord.com/developers/applications) pour y avoir accès, autrement il vous faudra faire une demande a Discord en remplissant un formulaire."
+            "Par mesure de sécurité, certains Intents sont considérés comme \"privilégiés\". Pour y avoir accès, vous devez cocher les cases correspondantes sur la page de votre Application Discord *(si la case est grise il vous faut passer la [vérification](https://support.discord.com/hc/en-us/articles/360040720412-Bot-Verification-and-Data-Whitelisting) ou envoyer un mail au support de Discord)*.",
+            "Actuellement, ces Intents sont `GUILD_PRESENCES` et `GUILD_MEMBERS`.",
+            "Plus d'informations sur [la documentation de Discord](https://discord.com/developers/docs/topics/gateway#privileged-intents) !"
           ]
         }
       ]
