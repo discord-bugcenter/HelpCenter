@@ -16,6 +16,7 @@
         ":two: • Le jeu a été retiré de la boutique ou de la sélection de jeux offerts avec Nitro.",
         "Lorsque vous ne parvenez pas à lancer un jeu pour l'une de ces raisons, vous verrez ce message d'erreur"
       ],
+      "url": "https://support.discord.com/hc/fr/articles/360016422832-Droits-de-lancement-de-jeu-manquants",
       "image:" {
         "url": "https://cdn.discordapp.com/attachments/481170955301814272/496778379123752960/entitlementmodal.PNG"
       },
