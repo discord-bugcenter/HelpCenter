@@ -1,52 +1,99 @@
-{
-  "name": "embed",
-  "description": "créer des embeds.",
-  "author": 341550709193441280,
-  "response": {
-    "embed": {
-      "title": "Créez des embeds !",
-      "description": [
-        "Les embeds sont des messages comme celui-ci.",
-        "C'est très utilisé, et cela permet de rendre les réponses des bots plus belles.",
-        "",
-        "Pour envoyer des embeds avec des webhooks, ou a partir d'un `objet` / `dictionnaire`, regardez :",
-        "https://leovoel.github.io/embed-visualizer/"
-      ],
-      "fields": [
-        {
-          "name": "__Restrictions :__",
-          "value": [
-            "Nombre maximum de caractères :",
-            " • `title` & `fields.name` & `author.name`: 256",
-            " • `description` & `footer.text`: 2048",
-            " • `fields.value`: 1024",
-            "Nombre maximum de `fields`: 25",
-            "",
-            "Voir les [sources](https://discord.com/developers/docs/resources/channel#embed-limits-limits)."
-          ],
-          "inline": false
-        },
-        {
-          "name": "__References :__",
-          "value": [
-            "[discord.py](https://discordpy.readthedocs.io/en/latest/api.html?highlight=embed#discord.Embed)",
-            "[discord.js](https://discord.js.org/#/docs/main/stable/class/MessageEmbed)"
-          ],
-          "inline": true
-        },
-        {
-          "name": "__Exemples :__",
-          "value": [
-            "[discord.py](https://mystb.in/CarmenPoemsFri.python)",
-            "[discord.js](https://mystb.in/WrappedRemediesGranny.javascript)",
-            "[Eris](https://mystb.in/ProteinsJobSubscriber.javascript)"
-          ],
-          "inline": true
+[
+  {
+    "lang": "fr_FR",
+    "name": "embed",
+    "description": "créer des embeds.",
+    "response": {
+      "embed": {
+        "title": "Créez des embeds !",
+        "description": [
+          "Les embeds sont des messages comme celui-ci.",
+          "C'est très utilisé, et cela permet de rendre les réponses des bots plus belles.",
+          "",
+          "Pour envoyer des embeds avec des webhooks, ou a partir d'un `objet` / `dictionnaire`, regardez :",
+          "https://leovoel.github.io/embed-visualizer/"
+        ],
+        "fields": [
+          {
+            "name": "__Restrictions :__",
+            "value": [
+              "Nombre maximum de caractères :",
+              " • `title` & `fields.name` & `author.name`: 256",
+              " • `description` & `footer.text`: 2048",
+              " • `fields.value`: 1024",
+              "Nombre maximum de `fields`: 25",
+              "",
+              "Voir les [sources](https://discord.com/developers/docs/resources/channel#embed-limits-limits)."
+            ],
+            "inline": false
+          },
+          {
+            "name": "__References :__",
+            "value": [
+              "[discord.py](https://discordpy.readthedocs.io/en/latest/api.html?highlight=embed#discord.Embed)",
+              "[discord.js](https://discord.js.org/#/docs/main/stable/class/MessageEmbed)"
+            ],
+            "inline": true
+          },
+          {
+            "name": "__Exemples :__",
+            "value": [
+              "[discord.py](https://mystb.in/CarmenPoemsFri.python)",
+              "[discord.js](https://mystb.in/WrappedRemediesGranny.javascript)",
+              "[Eris](https://mystb.in/ProteinsJobSubscriber.javascript)"
+            ],
+            "inline": true
+          }
+        ],
+        "image": {
+          "url": "https://cdn.discordapp.com/attachments/84319995256905728/252292324967710721/embed.png"
         }
-      ],
-      "image": {
-        "url": "https://cdn.discordapp.com/attachments/84319995256905728/252292324967710721/embed.png"
+      }
+    }
+  },
+  {
+    "lang": "en_EN",
+    "name": "*",
+    "description": "create embeds.",
+    "response": {
+      "embed": {
+        "title": "Create embeds !",
+        "description": [
+          "Embeds are messages like this one.",
+          "It's used a lot, and it makes the bots answers more beautiful..",
+          "",
+          "To send embed with a webhooks, or from an `object` / `dictionary`, look :",
+          "https://leovoel.github.io/embed-visualizer/"
+        ],
+        "fields": [
+          {
+            "name": "__Restrictions :__",
+            "value": [
+              "Maximum number of characters :",
+              " • `title` & `fields.name` & `author.name`: 256",
+              " • `description` & `footer.text`: 2048",
+              " • `fields.value`: 1024",
+              "Maximum number of `fields`: 25",
+              "",
+              "Check the [sources](https://discord.com/developers/docs/resources/channel#embed-limits-limits)."
+            ],
+            "inline": false
+          },
+          {
+            "name": "__References :__",
+            "value": "*",
+            "inline": true
+          },
+          {
+            "name": "__Exemples :__",
+            "value": "*",
+            "inline": true
+          }
+        ],
+        "image": {
+          "url": "*"
+        }
       }
     }
   }
-}
+]
