@@ -1,25 +1,69 @@
 {
   "name": "markdown",
-  "description": "utiliser le markdown sur Discord.",
-  "author": 341550709193441280,
+  "description": "utiliser le Markdown sur Discord.",
+  "author": 263713074630885376,
   "response": {
     "embed": {
-      "title": "Appréhendez le markdown !",
+      "title": "La mise en forme de texte Markdown.",
       "description": [
-        "Le markdown est une syntax puissante pour formatter vos messages !",
-        "",
-        "Voici une liste non exhaustive de ce qu'il est possible de faire :",
-        " • *texte* -> \\*texte\\*",
-        " • **texte** -> \\*\\*texte\\*\\*",
-        " • __texte__ -> \\_\\_texte\\_\\_",
-        " • `texte` -> \\`texte\\`",
-        " • ||texte|| -> \\|\\|texte\\|\\|",
-        " • ~~texte~~ -> \\~\\~texte\\~\\~",
-        "",
-        "**Bonus : dans un embed (description & fields.value) :**",
-        " • [lien hypertext](https://exemple.com/) -> \\[cliquez ici\\](https://exemple.com/)",
-        "",
-        "Regardez aussi `/tag code block`"
+        "Markdown est un langage de balisage créé par John Gruber en 2004.",
+        "Discord permet d'utiliser du Markdown pour colorer vos message.",
+        "Vous pouvez mélanger les caractères de balisage Markdown pour avoir un texte __**en gras et souligné**__ !",
+        "Plus d'informations [ici](https://support.discord.com/hc/fr/articles/210298617-Bases-de-la-mise-en-forme-de-texte-Markdown-mise-en-forme-du-chat-gras-italique-soulign%C3%A9-)."
+      ],
+      "fields": [
+        {
+          "name": "Italique",
+          "value": [
+            "\\*Italique\\* ou \\_Italique\\_ → *Italique*."
+          ]
+        },
+        {
+          "name": "Gras",
+          "value": [
+            "\\*\\*Gras\\*\\* → **Gras**."
+          ]
+        },
+        {
+          "name": "Souligné",
+          "value": [
+            "\\_\\_Souligné\\_\\_ → __Souligné__."
+          ]
+        },
+        {
+          "name": "Barré",
+          "value": [
+            "\\~\\~Barré\\~\\~ → ~~Barré~~."
+          ]
+        },
+        {
+          "name": "Bloc de code",
+          "value": [
+            "\\`Bloc de code sur une ligne\\` → `Bloc de code sur une ligne`.",
+            "\\`\\`\\`\nun bloc de code\nsur plusieurs lignes!\n\\`\\`\\`\nva afficher\n```\nun bloc de code\nsur plusieurs lignes!\n```",
+            "Vous pouvez même ajouter de la couleur en ajoutant le nom d'un langage de programmation :",
+            "\\`\\`\\`py\nprint(\"Hello World\")\n\\`\\`\\`\n\n```py\nprint(\"Hello World\")\n```"
+          ]
+        },
+        {
+          "name": "Bloc de citation",
+          "value": [
+            "\\> Ma citation → > Ma citation.",
+            "‼️ Utiliser **>>>** en début d'un message transformera tout le texte en citation ! Cependant cela ne marche pas dans un Embed."
+          ]
+        },
+        {
+          "name": "Hypertexte",
+          "value": [
+            "\\[Hypertexte\\]\\(https://example.com\\) → [Hypertexte](https://example.com).",
+            "⚠️ Discord limite l'usage des hypertextes aux descriptions d'Embeds et aux valeurs de fields d'Embed."
+          ]
+        }, {
+          "name": "Spoilers",
+          "value": [
+            "\\|\\| Spoil à cacher \\|\\| → \\|\\| Spoil à cacher \\|\\|."
+          ]
+        }
       ]
     }
   }
