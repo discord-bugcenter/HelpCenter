@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-02-14 22:24+0100\n"
-"PO-Revision-Date: 2021-02-14 22:24+0100\n"
+"POT-Creation-Date: 2021-02-15 00:36+0100\n"
+"PO-Revision-Date: 2021-02-15 00:36+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -47,7 +47,11 @@ msgstr "Participer ou obtenir des informations sur un évènement."
 msgid "Use of /event"
 msgstr "Utilisation de /event"
 
-#: cogs/event.py:45
+#: cogs/event.py:37
+msgid "Participate to the contest !"
+msgstr "Participez au concours !"
+
+#: cogs/event.py:46
 msgid ""
 "Your message must contains a block of code (with code language) ! *look `/"
 "tag discord markdown`*"
@@ -55,7 +59,7 @@ msgstr ""
 "Votre message doit contenir un bloque de code (avec le code du langage) ! "
 "*Regardez `/tag discord code block`*"
 
-#: cogs/event.py:55
+#: cogs/event.py:56
 msgid ""
 "**This is your participation :**\n"
 "\n"
@@ -63,31 +67,63 @@ msgstr ""
 "**Voici votre participation :**\n"
 "\n"
 
-#: cogs/event.py:56
+#: cogs/event.py:57
 #, python-brace-format
 msgid "`Language` -> `{0}`\n"
 msgstr "`Langage` -> `{0}`\n"
 
-#: cogs/event.py:57
+#: cogs/event.py:58
 #, python-brace-format
 msgid "`Length` -> `{0}`\n"
 msgstr "`Longueur` -> `{0}`\n"
 
-#: cogs/event.py:59
+#: cogs/event.py:60
 msgid "Do you want ot post it ? ✅ ❌"
 msgstr "Voulez-vous l'envoyer ? ✅ ❌"
 
-#: cogs/event.py:77
+#: cogs/event.py:78
 msgid "Your entry has been successfully modified !"
 msgstr "Votre participation a été modifiée avec succès !"
 
-#: cogs/event.py:80
+#: cogs/event.py:81
 msgid "Your entry has been successfully sent !"
 msgstr "Votre participation a été envoyée avec succès !"
 
-#: cogs/event.py:85
+#: cogs/event.py:86
 msgid "Cancelled"
 msgstr "Annulé"
+
+#: cogs/event.py:91
+msgid "Remove your participation from the contest"
+msgstr "Retirer votre participation du concours"
+
+#: cogs/event.py:109
+msgid "Your participation has been successfully deleted"
+msgstr "Votre participation a été supprimée avec succès !"
+
+#: cogs/event.py:111
+msgid "You didn't participate !"
+msgstr "Vous n'avez pas participé !"
+
+#: cogs/event.py:117
+msgid "Get some stats about the current contest"
+msgstr "Obtenir quelques statistiques a propos du concours actuel"
+
+#: cogs/event.py:137
+msgid "Some informations..."
+msgstr "Quelques informations..."
+
+#: cogs/event.py:139
+msgid "Number of participations :"
+msgstr "Nombre de participations :"
+
+#: cogs/event.py:140
+msgid "Shortest participation (not tested) :"
+msgstr "La participation la plus courte (non testée) :"
+
+#: cogs/event.py:142
+msgid "Your position :"
+msgstr "Votre position :"
 
 #: cogs/google_it.py:18
 msgid "Show how to do a google search :D"
