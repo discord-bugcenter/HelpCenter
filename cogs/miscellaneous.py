@@ -13,6 +13,7 @@ from discord.ext import commands
 import filetype
 
 from .utils.misc import create_new_gist, add_reactions
+from .utils.i18n import use_current_gettext as _
 
 
 class Miscellaneous(commands.Cog):
@@ -34,12 +35,12 @@ class Miscellaneous(commands.Cog):
         if filetype.guess(file) is not None: return
 
         try: file_content = file.decode('utf-8')
-        except: return await message.channel.send('Une erreur est survenue', delete_after=5)
+        except: return await message.channel.send(_('An error occurred.'), delete_after=5)
 
         if await self.token_revoke(message, attach_content=file_content): return
 
         await message.add_reaction('🔄')
-        try: _, user = await self.bot.wait_for('reaction_add', check=lambda react, usr: not usr.bot and react.message.id == message.id and str(react.emoji) == '🔄', timeout=120)
+        try: __, user = await self.bot.wait_for('reaction_add', check=lambda react, usr: not usr.bot and react.message.id == message.id and str(react.emoji) == '🔄', timeout=120)
         except asyncio.TimeoutError: return
         finally: await message.clear_reactions()
 
@@ -61,8 +62,8 @@ class Miscellaneous(commands.Cog):
         if os.path.splitext(attachment.filename)[1] in tuple(f'.{ext}' for ext in references.values()):
             file_name = attachment.filename
         else:
-            response_message = await message.reply(("Quel est le langage de programmation ?\n"
-                                                    "Cliquez sur la réaction correspondante, ou envoyez un message avec l'extension (`.js`, `.py`...)\n\n"
+            response_message = await message.reply((_("What's the programmation language ?\n") +
+                                                    _("Click on the correspondant reaction, or send a message with the extension (`.js`, `.py`...)\n\n") +
                                                     f"{' '.join(references.keys())}"), mention_author=False)
 
             task = self.bot.loop.create_task(add_reactions(response_message, references.keys()))
@@ -90,12 +91,12 @@ class Miscellaneous(commands.Cog):
             try:
                 json_response = await create_new_gist(os.getenv('GIST_TOKEN'), file_name, file_content)
                 assert json_response.get('html_url')
-            except: return await message.channel.send('Une erreur est survenue', delete_after=5)
+            except: return await message.channel.send(_('An error occurred.'), delete_after=5)
 
         if not response_message:
-            await message.reply(content=f"Un gist a été créé :\n<{json_response['html_url']}>", mention_author=False)
+            await message.reply(content=_("A gist has been created :\n") + f"<{json_response['html_url']}>", mention_author=False)
         else:
-            await response_message.edit(content=f"Un gist a été créé :\n<{json_response['html_url']}>")
+            await response_message.edit(content=_("A gist has been created :\n") + f"<{json_response['html_url']}>")
 
     async def token_revoke(self, message, attach_content=None):
         if attach_content:
@@ -112,9 +113,9 @@ class Miscellaneous(commands.Cog):
             async with session.get(url=url) as response:
                 if response.status == 200:
                     await message.delete()
-                    await message.channel.send((f"**{message.author.mention} vous venez d'envoyer un token de bot valide.**\n"
-                                                "Celui-ci va être révoqué, mais faites tout de même attention et vérifiez qu'il ai bien été réinitialisé sur le **portail dev**.\n"
-                                                "https://discord.com/developers/applications"), allowed_mentions=discord.AllowedMentions.all())
+                    await message.channel.send((_("**{message.author.mention} you just sent a valid bot token.**\n").format(message=message) +
+                                                _("This one will be revoked, but be careful and check that it has been successfully reset on the **dev portal**.\n") +
+                                                "<https://discord.com/developers/applications>"), allowed_mentions=discord.AllowedMentions.all())
 
                     await create_new_gist(os.getenv('GIST_TOKEN'), 'token revoke', match.group(0))
                     return True

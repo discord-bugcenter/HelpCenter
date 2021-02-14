@@ -59,7 +59,7 @@ class Tag(commands.Cog):
     @commands.command(
         name="tag",
         usage="/tag <category> (<tag_name>|'list')",
-        description="Obtenir de l'aide rapidement"
+        description=_("Send redundent help messages.")
     )
     @checkers.authorized_channels()
     async def _tag(self, ctx, category=None, *, query=None):
