@@ -15,7 +15,7 @@ class GoogleIt(commands.Cog):
         name='googleit',
         usage='/googleit {query}',
         aliases=['lmgt', 'letme'],
-        description='Montrer comment faire une recherche google :D'
+        description=_('Show how to do a google search :D')
     )
     @checkers.authorized_channels()
     async def google_it(self, ctx, *, string):  # Using string (with *, arg) instead of array (*arg) to prevent argument missing.

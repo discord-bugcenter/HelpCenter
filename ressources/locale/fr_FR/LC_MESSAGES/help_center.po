@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-02-14 21:39+0100\n"
-"PO-Revision-Date: 2021-02-14 21:40+0100\n"
+"POT-Creation-Date: 2021-02-14 22:24+0100\n"
+"PO-Revision-Date: 2021-02-14 22:24+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -14,6 +14,30 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Poedit-SearchPath-0: cogs\n"
 "X-Poedit-SearchPath-1: main.py\n"
+
+#: cogs/command_error.py:27
+#, python-brace-format
+msgid "{ctx.bot.user.name}#{ctx.bot.user.discriminator} open-source project"
+msgstr "{ctx.bot.user.name}#{ctx.bot.user.discriminator} projet open-source"
+
+#: cogs/command_error.py:39
+#, python-brace-format
+msgid ""
+"You can't execute this command in <#{error.channel.id}>. Try in one of these "
+"channels :\n"
+"\n"
+msgstr ""
+"Vous ne pouvez pas exécuter cette commande dans <#{error.channel.id}>. "
+"Essayez dans l'un de ces salons :\n"
+"\n"
+
+#: cogs/command_error.py:43
+msgid "A required argument is missing in the command !\n"
+msgstr "Il manque un argument obligatoire dans la commande !\n"
+
+#: cogs/command_error.py:47
+msgid "This command must be executed in Private Messages"
+msgstr "Cette commande doit être exécutée en messages privés"
 
 #: cogs/event.py:19
 msgid "Participate or get informations about an event."
@@ -65,11 +89,19 @@ msgstr "Votre participation a été envoyée avec succès !"
 msgid "Cancelled"
 msgstr "Annulé"
 
+#: cogs/google_it.py:18
+msgid "Show how to do a google search :D"
+msgstr "Montrer comment faire une recherche google ! :D"
+
 #: cogs/google_it.py:25
 msgid "The google tool is very powerful, see how it works!\n"
 msgstr "L'outil google est très puissant, voici comment il fonctionne!\n"
 
-#: cogs/help.py:20
+#: cogs/help.py:11
+msgid "Show bot commands."
+msgstr "Afficher les commandes du bot."
+
+#: cogs/help.py:20 cogs/miscellaneous.py:38 cogs/miscellaneous.py:94
 msgid "An error occurred."
 msgstr "Une erreur est survenue."
 
@@ -82,6 +114,10 @@ msgstr "Voice mes commandes :"
 msgid "The command {string} way not found."
 msgstr "La commande {string} n'a pas été trouvée."
 
+#: cogs/lines.py:18
+msgid "Add the lines number to your code."
+msgstr "Ajoute le numéro des lignes au code."
+
 #: cogs/lines.py:25
 msgid ""
 "Your message must contains a block of code ! *look `/tag discord code block`*"
@@ -93,6 +129,42 @@ msgstr ""
 #, python-brace-format
 msgid "Numbered code of {ctx.author} :\n"
 msgstr "Code numéroté de {ctx.author} : \n"
+
+#: cogs/miscellaneous.py:65
+msgid "What's the programmation language ?\n"
+msgstr "Quel est le langage de programmation ?\n"
+
+#: cogs/miscellaneous.py:66
+msgid ""
+"Click on the correspondant reaction, or send a message with the extension (`."
+"js`, `.py`...)\n"
+"\n"
+msgstr ""
+"Cliquez sur la réaction correspondante, ou envoyez un message avec "
+"l'extension (`.js`, `.py`...)\n"
+"\n"
+
+#: cogs/miscellaneous.py:97 cogs/miscellaneous.py:99
+msgid "A gist has been created :\n"
+msgstr "Un gist a été créé :\n"
+
+#: cogs/miscellaneous.py:116
+#, python-brace-format
+msgid "**{message.author.mention} you just sent a valid bot token.**\n"
+msgstr ""
+"**{message.author.mention} vous venez d'envoyer un token de bot valide.**\n"
+
+#: cogs/miscellaneous.py:117
+msgid ""
+"This one will be revoked, but be careful and check that it has been "
+"successfully reset on the **dev portal**.\n"
+msgstr ""
+"Celui-ci va être révoqué, mais faites tout de même attention et vérifiez "
+"qu'il ai bien été réinitialisé sur le **portail dev**.\n"
+
+#: cogs/tag.py:62
+msgid "Send redundent help messages."
+msgstr "Envoyer les messages d'aides répétitifs."
 
 #: cogs/tag.py:79
 msgid "Category not found. Try among :"
@@ -116,6 +188,9 @@ msgstr "Le tag n'a pas été trouvé, {0}look `/tag list`"
 #: cogs/tag.py:121
 msgid "__Choose the target :__\n"
 msgstr "__Choisissez la cible :__\n"
+
+#~ msgid "An error occurred"
+#~ msgstr "Une erreur est survenue."
 
 #, python-brace-format
 #~ msgid "Hum, it looks like you're english {ctx.author}"

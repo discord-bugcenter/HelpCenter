@@ -8,7 +8,7 @@ from .utils.i18n import use_current_gettext as _
 class HelpCommand(commands.HelpCommand):
     def __init__(self):
         super().__init__(command_attrs={
-            'description': "Afficher les commandes du bot."
+            'description': _("Show bot commands.")
         })
         self.add_check(checkers.authorized_channels_check)
 
@@ -25,7 +25,7 @@ class HelpCommand(commands.HelpCommand):
     async def send_bot_help(self, mapping):
         embed = discord.Embed(
             title=_("Here are my commands:"),
-            description="\n".join([f"`{self.context.prefix}{cmd.name}` : {cmd.description}" for cmd in self.context.bot.commands])
+            description="\n".join([f"`{self.context.prefix}{cmd.name}` : {_(cmd.description)}" for cmd in self.context.bot.commands])
         )
         await self.context.send(embed=embed)
 

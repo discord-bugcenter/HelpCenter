@@ -15,7 +15,7 @@ class Lines(commands.Cog):
     @commands.command(
         name='lines',
         usage='/lines \\`\\`\\`{code}\\`\\`\\`',
-        description='Ajoute le numéro des lignes au code'
+        description=_('Add the lines number to your code.')
     )
     @checkers.authorized_channels()
     async def lines(self, ctx):
