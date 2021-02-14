@@ -28,12 +28,13 @@ class Event(commands.Cog):
         )
 
         for command in ctx.command.commands:
-            embed.add_field(name=f"** • {command.name}**", value=f"`{command.usage}`", inline=False)
+            embed.add_field(name=f"** • {command.name} : {_(command.description)}**", value=f"`{command.usage}`", inline=False)
 
         await ctx.send(embed=embed)
 
     @event.command(
         name="participate",
+        description=_("Participate to the contest !"),
         usage="/event participate {code}"
     )
     @commands.dm_only()
@@ -84,6 +85,63 @@ class Event(commands.Cog):
         else:
             try: await ctx.send(_('Cancelled'))
             except: pass  # prevent error if the user close his MP
+
+    @event.command(
+        name='cancel',
+        description=_('Remove your participation from the contest'),
+        usage="/event cancel"
+    )
+    async def cancel(self, ctx):
+        if ctx.guild and ctx.channel.id not in self.bot.test_channels_id:  # Not in dm or in tests channels
+            raise custom_errors.NotAuthorizedChannels(ctx.channel, self.bot.test_channels_id)
+
+        code_channel = self.bot.get_channel(self.code_channel_id)
+
+        old_participation = None
+        async for message in code_channel.history(limit=None):
+            if message.author.id != self.bot.user.id: continue
+            if str(ctx.author.id) == message.embeds[0].fields[0].value.split('|')[0]:
+                old_participation = message
+                break
+
+        if old_participation:
+            await ctx.delete(old_participation)
+            response = _('Your participation has been successfully deleted')
+        else:
+            response = _("You didn't participate !")
+
+        await ctx.send(response)
+
+    @event.command(
+        name="stats",
+        description=_("Get some stats about the current contest"),
+        usage="/event stats"
+    )
+    async def stats(self, ctx):
+        if ctx.guild and ctx.channel.id not in self.bot.test_channels_id:  # Not in dm or in tests channels
+            raise custom_errors.NotAuthorizedChannels(ctx.channel, self.bot.test_channels_id)
+
+        code_channel = self.bot.get_channel(self.code_channel_id)
+
+        user_length = None
+        list_of_length = []
+        async with ctx.channel.typing():
+            async for message in code_channel.history(limit=None):
+                if message.author.id != self.bot.user.id: continue
+                if str(ctx.author.id) == message.embeds[0].fields[0].value.split('|')[0]:
+                    user_length = int(message.embeds[0].fields[2].value)
+                list_of_length.append(int(message.embeds[0].fields[2].value))
+        list_of_length.sort()
+
+        embed = discord.Embed(
+            title=_('Some informations...')
+        )
+        embed.add_field(name=_("Number of participations :"), value=str(len(list_of_length)), inline=False)
+        embed.add_field(name=_("Shortest participation (not tested) :"), value=str(min(list_of_length)), inline=False)
+        if user_length:
+            embed.add_field(name=_('Your position :'), value=str(list_of_length.index(user_length)+1))
+
+        await ctx.channel.send(embed=embed)
 
 
 def setup(bot):
