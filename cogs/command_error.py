@@ -42,6 +42,8 @@ class CommandError(commands.Cog):
             formatted_text = (f"Il manque un argument obligatoire dans la commande !\n"
                               f"`{ctx.command.usage}`")
             return await self.send_error(ctx, formatted_text)
+        elif isinstance(error, errors.PrivateMessageOnly):
+            return await self.send_error(ctx, 'This command must be executed in Private Messages')
         elif isinstance(error, commands.CommandError):
             return await self.send_error(ctx, str(error))
         else:
