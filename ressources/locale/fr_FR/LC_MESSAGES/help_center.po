@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-02-14 18:04+0100\n"
-"PO-Revision-Date: 2021-02-14 18:06+0100\n"
+"POT-Creation-Date: 2021-02-14 21:39+0100\n"
+"PO-Revision-Date: 2021-02-14 21:40+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -15,11 +15,15 @@ msgstr ""
 "X-Poedit-SearchPath-0: cogs\n"
 "X-Poedit-SearchPath-1: main.py\n"
 
-#: cogs/event.py:26
-msgid "Utilisation de /event"
-msgstr ""
+#: cogs/event.py:19
+msgid "Participate or get informations about an event."
+msgstr "Participer ou obtenir des informations sur un évènement."
 
-#: cogs/event.py:44
+#: cogs/event.py:27
+msgid "Use of /event"
+msgstr "Utilisation de /event"
+
+#: cogs/event.py:45
 msgid ""
 "Your message must contains a block of code (with code language) ! *look `/"
 "tag discord markdown`*"
@@ -27,7 +31,7 @@ msgstr ""
 "Votre message doit contenir un bloque de code (avec le code du langage) ! "
 "*Regardez `/tag discord code block`*"
 
-#: cogs/event.py:54
+#: cogs/event.py:55
 msgid ""
 "**This is your participation :**\n"
 "\n"
@@ -35,19 +39,31 @@ msgstr ""
 "**Voici votre participation :**\n"
 "\n"
 
-#: cogs/event.py:55
+#: cogs/event.py:56
 #, python-brace-format
 msgid "`Language` -> `{0}`\n"
 msgstr "`Langage` -> `{0}`\n"
 
-#: cogs/event.py:56
+#: cogs/event.py:57
 #, python-brace-format
 msgid "`Length` -> `{0}`\n"
 msgstr "`Longueur` -> `{0}`\n"
 
-#: cogs/event.py:58
+#: cogs/event.py:59
 msgid "Do you want ot post it ? ✅ ❌"
 msgstr "Voulez-vous l'envoyer ? ✅ ❌"
+
+#: cogs/event.py:77
+msgid "Your entry has been successfully modified !"
+msgstr "Votre participation a été modifiée avec succès !"
+
+#: cogs/event.py:80
+msgid "Your entry has been successfully sent !"
+msgstr "Votre participation a été envoyée avec succès !"
+
+#: cogs/event.py:85
+msgid "Cancelled"
+msgstr "Annulé"
 
 #: cogs/google_it.py:25
 msgid "The google tool is very powerful, see how it works!\n"
@@ -83,8 +99,7 @@ msgid "Category not found. Try among :"
 msgstr "Catégorie non trouvée. Essayez parmi :"
 
 #: cogs/tag.py:95
-#, fuzzy, python-brace-format
-#| msgid "Here are tge tags from the `{0}` category :"
+#, python-brace-format
 msgid "Here are the tags from the `{0}` category :"
 msgstr "Voice les tags de la catégorie `{0}` :"
 
