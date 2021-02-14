@@ -16,6 +16,7 @@ class Event(commands.Cog):
 
     @commands.group(
         name='event',
+        description=_('Participate or get informations about an event.'),
         invoke_without_command=True
     )
     async def event(self, ctx):
@@ -23,7 +24,7 @@ class Event(commands.Cog):
             raise custom_errors.NotAuthorizedChannels(ctx.channel, self.bot.test_channels_id)
 
         embed = discord.Embed(
-            title=_("Utilisation de /event")
+            title=_("Use of /event")
         )
 
         for command in ctx.command.commands:
@@ -67,19 +68,22 @@ class Event(commands.Cog):
                 title="Participation :",
             )
             embed.add_field(name='User', value=f'{ctx.author.id}|{ctx.author.mention}', inline=False)
-            embed.add_field(name='Language', value=language, inline=False)
-            embed.add_field(name='Length', value=str(len(code)), inline=False)
+            embed.add_field(name='Language', value=language, inline=True)
+            embed.add_field(name='Length', value=str(len(code)), inline=True)
             embed.add_field(name='Code', value=f"```{language}\n{code}\n```", inline=False)
 
             if old_participation:
                 await old_participation.edit(embed=embed)
+                response = _("Your entry has been successfully modified !")
             else:
                 await code_channel.send(embed=embed)
+                response = _("Your entry has been successfully sent !")
 
-
-
-
-
+            try: await ctx.send(response)
+            except: pass
+        else:
+            try: await ctx.send(_('Cancelled'))
+            except: pass  # prevent error if the user close his MP
 
 
 def setup(bot):
