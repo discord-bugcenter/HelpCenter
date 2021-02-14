@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-02-13 00:13+0100\n"
-"PO-Revision-Date: 2021-02-13 00:13+0100\n"
+"POT-Creation-Date: 2021-02-14 18:04+0100\n"
+"PO-Revision-Date: 2021-02-14 18:06+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -14,6 +14,40 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Poedit-SearchPath-0: cogs\n"
 "X-Poedit-SearchPath-1: main.py\n"
+
+#: cogs/event.py:26
+msgid "Utilisation de /event"
+msgstr ""
+
+#: cogs/event.py:44
+msgid ""
+"Your message must contains a block of code (with code language) ! *look `/"
+"tag discord markdown`*"
+msgstr ""
+"Votre message doit contenir un bloque de code (avec le code du langage) ! "
+"*Regardez `/tag discord code block`*"
+
+#: cogs/event.py:54
+msgid ""
+"**This is your participation :**\n"
+"\n"
+msgstr ""
+"**Voici votre participation :**\n"
+"\n"
+
+#: cogs/event.py:55
+#, python-brace-format
+msgid "`Language` -> `{0}`\n"
+msgstr "`Langage` -> `{0}`\n"
+
+#: cogs/event.py:56
+#, python-brace-format
+msgid "`Length` -> `{0}`\n"
+msgstr "`Longueur` -> `{0}`\n"
+
+#: cogs/event.py:58
+msgid "Do you want ot post it ? ✅ ❌"
+msgstr "Voulez-vous l'envoyer ? ✅ ❌"
 
 #: cogs/google_it.py:25
 msgid "The google tool is very powerful, see how it works!\n"
@@ -48,23 +82,23 @@ msgstr "Code numéroté de {ctx.author} : \n"
 msgid "Category not found. Try among :"
 msgstr "Catégorie non trouvée. Essayez parmi :"
 
-#: cogs/tag.py:94
+#: cogs/tag.py:95
 #, fuzzy, python-brace-format
 #| msgid "Here are tge tags from the `{0}` category :"
 msgid "Here are the tags from the `{0}` category :"
 msgstr "Voice les tags de la catégorie `{0}` :"
 
-#: cogs/tag.py:110
+#: cogs/tag.py:111
 #, python-brace-format
 msgid "do you mean `{0}` ? Otherwise "
 msgstr "voulez-vous dire `{0}` ? Sinon "
 
-#: cogs/tag.py:111
+#: cogs/tag.py:112
 #, python-brace-format
 msgid "Tag not found, {0}look `/tag list`"
 msgstr "Le tag n'a pas été trouvé, {0}look `/tag list`"
 
-#: cogs/tag.py:120
+#: cogs/tag.py:121
 msgid "__Choose the target :__\n"
 msgstr "__Choisissez la cible :__\n"
 
