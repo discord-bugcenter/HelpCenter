@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord.ext.commands import errors
 
 from .utils import custom_errors
+from .utils.i18n import use_current_gettext as _
 
 
 class CommandError(commands.Cog):
@@ -23,7 +24,7 @@ class CommandError(commands.Cog):
             icon_url=ctx.author.avatar_url
         )
         embed.set_footer(
-            text=f"{ctx.bot.user.name}#{ctx.bot.user.discriminator} projet open-source",
+            text=_("{ctx.bot.user.name}#{ctx.bot.user.discriminator} open-source project").format(**locals()),
             icon_url=ctx.bot.user.avatar_url
         )
 
@@ -35,15 +36,15 @@ class CommandError(commands.Cog):
             pass
 
         elif isinstance(error, custom_errors.NotAuthorizedChannels):
-            formatted_text = (f"Vous ne pouvez pas exécuter cette commande dans <#{error.channel.id}>. Essayez dans l'un de ces salons :\n\n"
+            formatted_text = (_("You can't execute this command in <#{error.channel.id}>. Try in one of these channels :\n\n").format(**locals()) +
                               f"<#{'>, <#'.join(str(chan_id) for chan_id in ctx.bot.authorized_channels_id)}>")
             return await self.send_error(ctx, formatted_text)
         elif isinstance(error, commands.MissingRequiredArgument):
-            formatted_text = (f"Il manque un argument obligatoire dans la commande !\n"
+            formatted_text = (_("A required argument is missing in the command !\n") +
                               f"`{ctx.command.usage}`")
             return await self.send_error(ctx, formatted_text)
         elif isinstance(error, errors.PrivateMessageOnly):
-            return await self.send_error(ctx, 'This command must be executed in Private Messages')
+            return await self.send_error(ctx, _('This command must be executed in Private Messages'))
         elif isinstance(error, commands.CommandError):
             return await self.send_error(ctx, str(error))
         else:
