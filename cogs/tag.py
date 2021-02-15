@@ -78,7 +78,7 @@ class Tag(commands.Cog):
             embed = discord.Embed(
                 title=_("Category not found. Try among :"),
                 description=format_list(self.tags.keys()),
-                color=discord.Color.from_rgb(47, 49, 54)
+                color=misc.Color.grey_embed().discord
             )
             embed.set_footer(text=ctx.command.usage)
             message = await ctx.send(embed=embed)
@@ -94,7 +94,7 @@ class Tag(commands.Cog):
             format_list = lambda tags_values: "\n".join([f"- `{get_tag_lang(tag).get('name')}` : {get_tag_lang(tag).get('description')}" for tag in tags_values])
             message = await ctx.channel.send(embed=discord.Embed(title=_("Here are the tags from the `{0}` category :").format(category),
                                                                  description=format_list(category_tags.values()),
-                                                                 color=discord.Color.from_rgb(47, 49, 54))
+                                                                 color=misc.Color.grey_embed().discord)
                                              )
             return await misc.delete_with_emote(ctx, message)
 
@@ -132,7 +132,7 @@ class Tag(commands.Cog):
             response = choices[reactions.index(str(reaction.emoji))]
 
         embed = discord.Embed.from_dict(response.get("embed"))
-        embed.color = discord.Color.from_rgb(47, 49, 54)
+        embed.color = misc.Color.grey_embed().discord
         embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
         text = f'/tag {category} {query}'
