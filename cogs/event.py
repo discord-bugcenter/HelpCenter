@@ -155,7 +155,7 @@ class Event(commands.Cog):
             embed.add_field(name=_('Your position :'), value=str(list_of_length.index(user_length)+1))
         embed.set_image(url="attachment://graph.png")
 
-        fn = partial(self.create_graph_bars, datas)
+        fn = partial(self.create_graph_bars, datas, _("Breakdown by languages used."))
         final_buffer = await self.bot.loop.run_in_executor(None, fn)
 
         file = discord.File(filename="graph.png", fp=final_buffer)
@@ -163,7 +163,7 @@ class Event(commands.Cog):
         await ctx.channel.send(embed=embed, file=file)
 
     @staticmethod
-    def create_graph_bars(datas):
+    def create_graph_bars(datas, title):  # title in arguments because translations doesn't work in a separated thread
         fig, ax = plt.subplots()
         langs = datas.keys()
         values = datas.values()
@@ -174,7 +174,7 @@ class Event(commands.Cog):
 
         ax.yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))  # No decimal places
         ax.set_yticks(range(1, max(values) + 1))
-        ax.set_title(_("Breakdown by languages used."))
+        ax.set_title(title)
         buff = io.BytesIO()
         fig.savefig(buff)
         buff.seek(0)
