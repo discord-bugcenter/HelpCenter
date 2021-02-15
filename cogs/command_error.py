@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord.ext.commands import errors
 
 from .utils import custom_errors
+from.utils.misc import Color
 from .utils.i18n import use_current_gettext as _
 
 
@@ -17,7 +18,7 @@ class CommandError(commands.Cog):
             url="https://discord.gg/Drbgufc",
             description=error_message,
             timestamp=ctx.message.created_at,
-            color=discord.Color.from_rgb(0, 0, 0)
+            color=Color.black().discord
         )
         embed.set_author(
             name=f'{ctx.author.name}#{ctx.author.discriminator}',

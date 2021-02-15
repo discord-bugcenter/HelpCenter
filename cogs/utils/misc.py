@@ -1,7 +1,9 @@
-from schema import Schema, Or, And, Use, Optional, Regex
 import asyncio
 import aiohttp
 import json
+
+from schema import Schema, Or, And, Use, Optional, Regex
+import discord
 
 text_or_list = Schema(Or(str, And(list, Use(lambda iterable: '\n'.join(iterable)))))
 
@@ -72,3 +74,31 @@ async def create_new_gist(token, file_name, file_content):
     async with aiohttp.ClientSession(headers=header) as session:
         async with session.post(url=url, json=payload) as response:
             return json.loads(await response.text())
+
+
+class Color:
+    @classmethod
+    def black(cls):
+        return cls(0, 0, 0)
+
+    @classmethod
+    def grey_embed(cls):
+        return cls(47, 49, 54)
+
+    def __init__(self, r, g, b, a=1.0):
+        self.r = r
+        self.g = g
+        self.b = b
+        self.a = a
+
+    @property
+    def mpl(self):  # matplotlib
+        return self.r / 255, self.g / 255, self.b / 255, self.a
+
+    @property
+    def discord(self):
+        return discord.Color.from_rgb(self.r, self.g, self.b)
+
+    @property
+    def rgb(self):
+        return self.r, self.g, self.b
