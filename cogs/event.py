@@ -24,7 +24,8 @@ class Event(commands.Cog):
             raise custom_errors.NotAuthorizedChannels(ctx.channel, self.bot.test_channels_id)
 
         embed = discord.Embed(
-            title=_("Use of /event")
+            title=_("Use of /event"),
+            color=misc.Color.grey_embed().discord
         )
 
         for command in ctx.command.commands:
@@ -67,6 +68,7 @@ class Event(commands.Cog):
         if str(reaction.emoji) == '✅':
             embed = discord.Embed(
                 title="Participation :",
+                color=misc.Color.grey_embed().discord
             )
             embed.add_field(name='User', value=f'{ctx.author.id}|{ctx.author.mention}', inline=False)
             embed.add_field(name='Language', value=language, inline=True)
@@ -134,7 +136,8 @@ class Event(commands.Cog):
         list_of_length.sort()
 
         embed = discord.Embed(
-            title=_('Some informations...')
+            title=_('Some informations...'),
+            color=misc.Color.grey_embed().discord
         )
         embed.add_field(name=_("Number of participations :"), value=str(len(list_of_length)), inline=False)
         embed.add_field(name=_("Shortest participation (not tested) :"), value=str(min(list_of_length)), inline=False)

@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from .utils import checkers
+from .utils import checkers, misc
 from .utils.i18n import use_current_gettext as _
 
 
@@ -18,21 +18,24 @@ class HelpCommand(commands.HelpCommand):
     async def send_error_message(self, error):
         embed = discord.Embed(
             title=_("An error occurred."),
-            description=error
+            description=error,
+            color=misc.Color.black().discord
         )
         await self.context.send(embed=embed)
 
     async def send_bot_help(self, mapping):
         embed = discord.Embed(
             title=_("Here are my commands:"),
-            description="\n".join([f"`{self.context.prefix}{cmd.name}` : {_(cmd.description)}" for cmd in self.context.bot.commands])
+            description="\n".join([f"`{self.context.prefix}{cmd.name}` : {_(cmd.description)}" for cmd in self.context.bot.commands]),
+            color=misc.Color.grey_embed().discord
         )
         await self.context.send(embed=embed)
 
     async def send_command_help(self, command):
         embed = discord.Embed(
             title=f"{command.name}",
-            description=command.description
+            description=command.description,
+            color=misc.Color.grey_embed().discord
         )
         embed.add_field(
             name="Usage:",
