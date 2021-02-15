@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-02-15 00:36+0100\n"
-"PO-Revision-Date: 2021-02-15 00:36+0100\n"
+"POT-Creation-Date: 2021-02-15 16:07+0100\n"
+"PO-Revision-Date: 2021-02-15 16:08+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -59,7 +59,15 @@ msgstr ""
 "Votre message doit contenir un bloque de code (avec le code du langage) ! "
 "*Regardez `/tag discord code block`*"
 
-#: cogs/event.py:56
+#: cogs/event.py:49
+msgid ""
+"Looks like your code is too long! Try to remove the useless parts, the goal "
+"is to have a short and optimized code!"
+msgstr ""
+"On dirait que votre code est trop long ! Essayez de supprimer les parties "
+"inutiles, le but est d'avoir un code court et optimisé !"
+
+#: cogs/event.py:58
 msgid ""
 "**This is your participation :**\n"
 "\n"
@@ -67,61 +75,61 @@ msgstr ""
 "**Voici votre participation :**\n"
 "\n"
 
-#: cogs/event.py:57
+#: cogs/event.py:59
 #, python-brace-format
 msgid "`Language` -> `{0}`\n"
 msgstr "`Langage` -> `{0}`\n"
 
-#: cogs/event.py:58
+#: cogs/event.py:60
 #, python-brace-format
 msgid "`Length` -> `{0}`\n"
 msgstr "`Longueur` -> `{0}`\n"
 
-#: cogs/event.py:60
+#: cogs/event.py:62
 msgid "Do you want ot post it ? ✅ ❌"
 msgstr "Voulez-vous l'envoyer ? ✅ ❌"
 
-#: cogs/event.py:78
+#: cogs/event.py:80
 msgid "Your entry has been successfully modified !"
 msgstr "Votre participation a été modifiée avec succès !"
 
-#: cogs/event.py:81
+#: cogs/event.py:83
 msgid "Your entry has been successfully sent !"
 msgstr "Votre participation a été envoyée avec succès !"
 
-#: cogs/event.py:86
+#: cogs/event.py:88
 msgid "Cancelled"
 msgstr "Annulé"
 
-#: cogs/event.py:91
+#: cogs/event.py:93
 msgid "Remove your participation from the contest"
 msgstr "Retirer votre participation du concours"
 
-#: cogs/event.py:109
-msgid "Your participation has been successfully deleted"
-msgstr "Votre participation a été supprimée avec succès !"
-
 #: cogs/event.py:111
+msgid "Your participation has been successfully deleted"
+msgstr "Votre participation a été supprimée avec succès"
+
+#: cogs/event.py:113
 msgid "You didn't participate !"
 msgstr "Vous n'avez pas participé !"
 
-#: cogs/event.py:117
+#: cogs/event.py:119
 msgid "Get some stats about the current contest"
 msgstr "Obtenir quelques statistiques a propos du concours actuel"
 
-#: cogs/event.py:137
+#: cogs/event.py:139
 msgid "Some informations..."
 msgstr "Quelques informations..."
 
-#: cogs/event.py:139
+#: cogs/event.py:141
 msgid "Number of participations :"
 msgstr "Nombre de participations :"
 
-#: cogs/event.py:140
+#: cogs/event.py:142
 msgid "Shortest participation (not tested) :"
 msgstr "La participation la plus courte (non testée) :"
 
-#: cogs/event.py:142
+#: cogs/event.py:144
 msgid "Your position :"
 msgstr "Votre position :"
 
