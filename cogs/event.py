@@ -45,6 +45,8 @@ class Event(commands.Cog):
         if not regex:
             raise commands.CommandError(_('Your message must contains a block of code (with code language) ! *look `/tag discord markdown`*'))
         language, code = regex.groups()[1:]
+        if len(code) > 1000:
+            return await ctx.send(_("Looks like your code is too long! Try to remove the useless parts, the goal is to have a short and optimized code!"))
 
         old_participation = None
         async for message in code_channel.history(limit=None):
@@ -105,7 +107,7 @@ class Event(commands.Cog):
                 break
 
         if old_participation:
-            await ctx.delete(old_participation)
+            await old_participation.delete()
             response = _('Your participation has been successfully deleted')
         else:
             response = _("You didn't participate !")
