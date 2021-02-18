@@ -24,12 +24,15 @@ class HelpCenterBot(commands.Bot):
             595981741542604810,  # aide-dev
             707555362458304663,  # aide-dev-2
             779040873236136007,  # aide-dev-3
+            810970318641954856,  # aide-dev-4
             754322079418941441,  # aide-autres
             780123502660681728,  # aide-autres-2
         ]
         self.test_channels_id = [
             595224241742413844,  # tests-1
-            595224271132033024  # tests-2
+            595224271132033024,  # tests-2
+            595232117806333965,  # cmds-staff
+            711599221220048989  # cmds-admin
         ]
         self.authorized_channels_id = self.test_channels_id + self.help_channels_id
 
