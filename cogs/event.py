@@ -178,6 +178,7 @@ class Event(commands.Cog):
         buff = io.BytesIO()
         fig.savefig(buff)
         buff.seek(0)
+        del fig
 
         return buff
 
