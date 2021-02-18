@@ -35,8 +35,8 @@ class Miscellaneous(commands.Cog):
         file = await message.attachments[0].read()
         if filetype.guess(file) is not None: return
 
-        try: file_content = file.decode('utf-8')
-        except: return await message.channel.send(_('An error occurred.'), delete_after=5)
+        try: file_content = file.decode('utf-16')
+        except: return
 
         if await self.token_revoke(message, attach_content=file_content): return
 
@@ -46,7 +46,7 @@ class Miscellaneous(commands.Cog):
         finally: await message.clear_reactions()
 
         await self.bot.set_actual_language(message.author)
-        
+
         references = {
             '<:javascript:664540815086845952>': 'js',
             '<:python:664539154838978600>': 'py',
