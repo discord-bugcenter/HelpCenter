@@ -23,6 +23,7 @@ class Miscellaneous(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
+        await self.bot.set_actual_language(message.author)
         if await self.token_revoke(message): return
         if message.channel.id not in self.bot.authorized_channels_id: return
         await self.attachement_to_gist(message)
@@ -44,6 +45,8 @@ class Miscellaneous(commands.Cog):
         except asyncio.TimeoutError: return
         finally: await message.clear_reactions()
 
+        await self.bot.set_actual_language(message.author)
+        
         references = {
             '<:javascript:664540815086845952>': 'js',
             '<:python:664539154838978600>': 'py',
