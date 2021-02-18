@@ -33,6 +33,7 @@ class CommandError(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
+        await self.bot.set_actual_language(ctx.author)
         if isinstance(error, errors.CommandNotFound):
             pass
 

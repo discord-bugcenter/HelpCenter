@@ -1,6 +1,7 @@
 import logging
 import os
 from collections import OrderedDict
+from typing import Union
 
 import discord
 from discord.ext import commands
@@ -17,6 +18,7 @@ logger = logging.getLogger(__name__)
 class HelpCenterBot(commands.Bot):
 
     def __init__(self):
+        self.bug_center_id = 595218682670481418
         self.help_channels_id = [
             692712497844584448,  # discussion-dev
             595981741542604810,  # aide-dev
@@ -50,7 +52,7 @@ class HelpCenterBot(commands.Bot):
         for extension in extensions:
             self.load_extension('cogs.'+extension)
 
-        self.before_invoke(self.set_actual_langage)
+        self.before_invoke(self.set_command_language)
 
     async def on_ready(self):
         activity = discord.Game("/tag <category> <tag>")
@@ -61,15 +63,22 @@ class HelpCenterBot(commands.Bot):
     def run(self):
         super().run(os.getenv("BOT_TOKEN"), reconnect=True)
 
-    async def set_actual_langage(self, ctx):
-        i18n.current_locale.set(self.get_member_lang(ctx.author))
+    async def set_command_language(self, ctx: commands.Context) -> None:  # function called when a command is executed
+        await self.set_actual_language(ctx.author)
 
-    def get_member_lang(self, author: discord.Member):
-        if isinstance(author, discord.Member):
+    async def set_actual_language(self, user: Union[discord.Member, discord.User]) -> None:
+        i18n.current_locale.set(self.get_user_language(user))
+
+    def get_user_language(self, user: Union[discord.Member, discord.User]) -> str:
+        if not hasattr(user, 'guild') or user.guild.id != self.bug_center_id:  # if the function was executed in DM
+            user = self.get_guild(self.bug_center_id).get_member(user.id)
+
+        if user:
             for role_id, lang in self.language_roles.items():
-                if discord.utils.get(author.roles, id=role_id):
+                if discord.utils.get(user.roles, id=role_id):
                     return lang
-        return 'fr_FR'
+
+        return 'en_EN'
 
 
 help_center_bot = HelpCenterBot()
