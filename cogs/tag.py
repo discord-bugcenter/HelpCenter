@@ -87,7 +87,7 @@ class Tag(commands.Cog):
         def get_tag_lang(tag):
             if isinstance(tag, dict):  # there is just one lang
                 return tag
-            found_tag = discord.utils.find(lambda in_tag: in_tag.get('lang') == self.bot.get_member_lang(ctx.author), tag)
+            found_tag = discord.utils.find(lambda in_tag: in_tag.get('lang') == self.bot.get_user_language(ctx.author), tag)
             return found_tag or tag[0]
 
         if query is None or query == "list":  # if no tag name was given, or the tag name is "list"
