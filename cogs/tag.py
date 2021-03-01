@@ -59,7 +59,7 @@ class Tag(commands.Cog):
     @commands.command(
         name="tag",
         usage="/tag <category> (<tag_name>|'list')",
-        description="Obtenir de l'aide rapidement"
+        description=_("Send redundent help messages.")
     )
     @checkers.authorized_channels()
     async def _tag(self, ctx, category=None, *, query=None):
@@ -78,7 +78,7 @@ class Tag(commands.Cog):
             embed = discord.Embed(
                 title=_("Category not found. Try among :"),
                 description=format_list(self.tags.keys()),
-                color=discord.Color.from_rgb(47, 49, 54)
+                color=misc.Color.grey_embed().discord
             )
             embed.set_footer(text=ctx.command.usage)
             message = await ctx.send(embed=embed)
@@ -87,14 +87,14 @@ class Tag(commands.Cog):
         def get_tag_lang(tag):
             if isinstance(tag, dict):  # there is just one lang
                 return tag
-            found_tag = discord.utils.find(lambda in_tag: in_tag.get('lang') == self.bot.get_member_lang(ctx.author), tag)
+            found_tag = discord.utils.find(lambda in_tag: in_tag.get('lang') == self.bot.get_user_language(ctx.author), tag)
             return found_tag or tag[0]
 
         if query is None or query == "list":  # if no tag name was given, or the tag name is "list"
             format_list = lambda tags_values: "\n".join([f"- `{get_tag_lang(tag).get('name')}` : {get_tag_lang(tag).get('description')}" for tag in tags_values])
             message = await ctx.channel.send(embed=discord.Embed(title=_("Here are the tags from the `{0}` category :").format(category),
                                                                  description=format_list(category_tags.values()),
-                                                                 color=discord.Color.from_rgb(47, 49, 54))
+                                                                 color=misc.Color.grey_embed().discord)
                                              )
             return await misc.delete_with_emote(ctx, message)
 
@@ -132,11 +132,11 @@ class Tag(commands.Cog):
             response = choices[reactions.index(str(reaction.emoji))]
 
         embed = discord.Embed.from_dict(response.get("embed"))
-        embed.color = discord.Color.from_rgb(47, 49, 54)
+        embed.color = misc.Color.grey_embed().discord
         embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
         text = f'/tag {category} {query}'
-        url = self.bot.avatar_url
+        url = self.bot.user.avatar_url
         embed.set_footer(
             text=text,
             icon_url=url

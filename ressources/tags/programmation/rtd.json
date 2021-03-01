@@ -15,9 +15,7 @@
       ],
       "fields": [{
         "name": "Quelques documentations qui pourraient vous aider:",
-        "value": [
-          "• [discord.js](https://discord.js.org) - [discord.py](https://discordpy.readthedocs.io/en/latest/index.html) - [discord.io](https://izy521.gitbooks.io/discord-io/content/) - [Eris](https://abal.moe/Eris/docs) - [RestCord](https://www.restcord.com/) - [Discordia](https://github.com/SinisterRectus/Discordia/wiki) - [serenity](https://docs.rs/) - [Discordie](http://qeled.github.io/discordie/#/docs/Discordie?_k=y0nsqt) - [DiscordPHP](http://discord-php.github.io/DiscordPHP/) - [Sword](https://azoy.github.io/Sword/) - [DiscordGo](https://gowalker.org/github.com/bwmarrin/discordgo) - [nyx](https://dart.dev/guides) - [DiscordUnity](https://docs.readthedocs.io/en/stable/intro/getting-started-with-sphinx.html) - [litcord](https://github.com/satom99/litcord/wiki) - [disocrd-hs](https://docs.haskellstack.org/en/stable/README/) - [discordrb](https://www.rubydoc.info/gems/discordrb) - [Discord4J](https://docs.discord4j.com/) - [JDA](https://github.com/DV8FromTheWorld/JDA#documentation) - [Javacord](https://javacord.org/wiki/#structure-of-the-wiki) - [discord-rs](https://wombat.platymuus.com/rustdoc/discord_master/) - [DDSharpPlus](https://dsharpplus.github.io/api/index.html)",
-        ]
+        "value": "[discord.js](https://lc.cx/discordjs) - [discord.py](https://lc.cx/discordpy) - [discord.io](https://lc.cx/discordio) - [Eris](https://lc.cx/eris) - [RestCord](https://lc.cx/restcord) - [Discordia](https://lc.cx/discordia) - [serenity](https://lc.cx/serenity) - [Discordie](https://lc.cx/discordie) - [DiscordPHP](https://lc.cx/discordphp) - [Sword](https://lc.cx/sword) - [DiscordGo](https://lc.cx/discordgo) - [litcord](https://lc.cx/litcord) - [discordrb](https://lc.cx/discordrb) - [Discord4J](https://lc.cx/discordj4j) - [JDA](https://lc.cx/discordJDA) - [Javacord](https://lc.cx/javacord) - [discord-rs](https://lc.cx/discordrs) - [DDSharpPlus](https://lc.cx/DDSharpPlus)"
       }]
     }
   }
