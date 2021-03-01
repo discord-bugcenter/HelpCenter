@@ -3,6 +3,8 @@ from discord.ext import commands
 from discord.ext.commands import errors
 
 from .utils import custom_errors
+from.utils.misc import Color
+from .utils.i18n import use_current_gettext as _
 
 
 class CommandError(commands.Cog):
@@ -16,14 +18,14 @@ class CommandError(commands.Cog):
             url="https://discord.gg/Drbgufc",
             description=error_message,
             timestamp=ctx.message.created_at,
-            color=discord.Color.from_rgb(0, 0, 0)
+            color=Color.black().discord
         )
         embed.set_author(
             name=f'{ctx.author.name}#{ctx.author.discriminator}',
             icon_url=ctx.author.avatar_url
         )
         embed.set_footer(
-            text=f"{ctx.bot.user.name}#{ctx.bot.user.discriminator} projet open-source",
+            text=_("{ctx.bot.user.name}#{ctx.bot.user.discriminator} open-source project").format(**locals()),
             icon_url=ctx.bot.user.avatar_url
         )
 
@@ -31,17 +33,20 @@ class CommandError(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
+        await self.bot.set_actual_language(ctx.author)
         if isinstance(error, errors.CommandNotFound):
             pass
 
         elif isinstance(error, custom_errors.NotAuthorizedChannels):
-            formatted_text = (f"Vous ne pouvez pas exécuter cette commande dans <#{error.channel.id}>. Essayez dans l'un de ces salons :\n\n"
+            formatted_text = (_("You can't execute this command in <#{error.channel.id}>. Try in one of these channels :\n\n").format(**locals()) +
                               f"<#{'>, <#'.join(str(chan_id) for chan_id in ctx.bot.authorized_channels_id)}>")
             return await self.send_error(ctx, formatted_text)
         elif isinstance(error, commands.MissingRequiredArgument):
-            formatted_text = (f"Il manque un argument obligatoire dans la commande !\n"
+            formatted_text = (_("A required argument is missing in the command !\n") +
                               f"`{ctx.command.usage}`")
             return await self.send_error(ctx, formatted_text)
+        elif isinstance(error, errors.PrivateMessageOnly):
+            return await self.send_error(ctx, _('This command must be executed in Private Messages'))
         elif isinstance(error, commands.CommandError):
             return await self.send_error(ctx, str(error))
         else:
