@@ -36,6 +36,8 @@ class CommandError(commands.Cog):
         await self.bot.set_actual_language(ctx.author)
         if isinstance(error, errors.CommandNotFound):
             pass
+        if isinstance(error, errors.CheckFailure):
+            pass
 
         elif isinstance(error, custom_errors.NotAuthorizedChannels):
             formatted_text = (_("You can't execute this command in <#{error.channel.id}>. Try in one of these channels :\n\n").format(**locals()) +
