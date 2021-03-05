@@ -48,6 +48,7 @@ def event_not_closed():
         state = RE_DESC_EVENT_STATE.search(code_channel.topic).group(1)
 
         if state == 'closed':
+            await ctx.bot.set_actual_language(ctx.author)
             await ctx.send(_('There is no event right now, sorry !'), delete_after=5)
             return False
 
@@ -62,6 +63,7 @@ def event_not_ended():
         state = RE_DESC_EVENT_STATE.search(code_channel.topic).group(1)
 
         if state == 'ended':
+            await ctx.bot.set_actual_language(ctx.author)
             await ctx.send(_('The event is ended, sorry !'), delete_after=5)
             return False
 
