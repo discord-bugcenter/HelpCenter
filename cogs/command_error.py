@@ -36,8 +36,6 @@ class CommandError(commands.Cog):
         await self.bot.set_actual_language(ctx.author)
         if isinstance(error, errors.CommandNotFound):
             pass
-        if isinstance(error, errors.CheckFailure):
-            pass
 
         elif isinstance(error, custom_errors.NotAuthorizedChannels):
             formatted_text = (_("You can't execute this command in <#{error.channel.id}>. Try in one of these channels :\n\n").format(**locals()) +
@@ -51,6 +49,8 @@ class CommandError(commands.Cog):
             return await self.send_error(ctx, _('This command must be executed in Private Messages'))
         elif isinstance(error, commands.CommandError):
             return await self.send_error(ctx, str(error))
+        if isinstance(error, errors.CheckFailure):
+            pass
         else:
             self.bot.logger.error(error)
 
