@@ -35,24 +35,24 @@ class CommandError(commands.Cog):
     async def on_command_error(self, ctx, error):
         await self.bot.set_actual_language(ctx.author)
         if isinstance(error, errors.CommandNotFound):
-            pass
+            return
 
-        elif isinstance(error, custom_errors.NotAuthorizedChannels):
+        if isinstance(error, custom_errors.NotAuthorizedChannels):
             formatted_text = (_("You can't execute this command in <#{error.channel.id}>. Try in one of these channels :\n\n").format(**locals()) +
                               f"<#{'>, <#'.join(str(chan_id) for chan_id in ctx.bot.authorized_channels_id)}>")
             return await self.send_error(ctx, formatted_text)
-        elif isinstance(error, commands.MissingRequiredArgument):
+        if isinstance(error, commands.MissingRequiredArgument):
             formatted_text = (_("A required argument is missing in the command !\n") +
                               f"`{ctx.command.usage}`")
             return await self.send_error(ctx, formatted_text)
-        elif isinstance(error, errors.PrivateMessageOnly):
+        if isinstance(error, errors.PrivateMessageOnly):
             return await self.send_error(ctx, _('This command must be executed in Private Messages'))
-        elif isinstance(error, commands.CommandError):
+        if isinstance(error, commands.CommandError):
             return await self.send_error(ctx, str(error))
         if isinstance(error, errors.CheckFailure):
-            pass
-        else:
-            self.bot.logger.error(error)
+            return
+
+        self.bot.logger.error(error)
 
 
 def setup(bot):
