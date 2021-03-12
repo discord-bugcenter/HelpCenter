@@ -7,7 +7,7 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-from cogs.utils import i18n
+from cogs.utils import i18n, custom_errors
 
 load_dotenv()
 
@@ -19,6 +19,15 @@ class HelpCenterBot(commands.Bot):
 
     def __init__(self):
         self.bug_center_id = 595218682670481418
+
+        self.staff_roles = {
+            'administrator': 713434163587579986,
+            'assistant': 627445515159732224,
+            'depister': 713452724603191367,
+            'brillant': 713452621196820510,
+            'normal': 627836152350769163
+        }
+
         self.help_channels_id = [
             692712497844584448,  # discussion-dev
             595981741542604810,  # aide-dev
@@ -44,8 +53,9 @@ class HelpCenterBot(commands.Bot):
         super().__init__(
             command_prefix="/",
             case_insensitive=True,
-            fetch_offline_members=True,
-            allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=False),
+            member_cache_flags=discord.MemberCacheFlags.all(),
+            chunk_guilds_at_startup=True,
+            allowed_mentions=discord.AllowedMentions.none(),
             intents=discord.Intents.all()
         )
         
@@ -56,6 +66,7 @@ class HelpCenterBot(commands.Bot):
             self.load_extension('cogs.'+extension)
 
         self.before_invoke(self.set_command_language)
+        self.add_check(self.is_on_bug_center)
 
     async def on_ready(self):
         activity = discord.Game("/tag <category> <tag>")
@@ -63,8 +74,10 @@ class HelpCenterBot(commands.Bot):
         print(f"Logged in as : {self.user.name}")
         print(f"ID : {self.user.id}")
 
-    def run(self):
-        super().run(os.getenv("BOT_TOKEN"), reconnect=True)
+    def is_on_bug_center(self, ctx):
+        if ctx.guild and ctx.guild.id != self.bug_center_id:
+            raise custom_errors.NotInBugCenter()
+        return True
 
     async def set_command_language(self, ctx: commands.Context) -> None:  # function called when a command is executed
         await self.set_actual_language(ctx.author)
@@ -83,6 +96,8 @@ class HelpCenterBot(commands.Bot):
 
         return 'en_EN'
 
+    def run(self):
+        super().run(os.getenv("BOT_TOKEN"), reconnect=True)
 
 help_center_bot = HelpCenterBot()
 help_center_bot.run()

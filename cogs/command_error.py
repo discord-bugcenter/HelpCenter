@@ -38,8 +38,12 @@ class CommandError(commands.Cog):
             return
 
         if isinstance(error, custom_errors.NotAuthorizedChannels):
-            formatted_text = (_("You can't execute this command in <#{error.channel.id}>. Try in one of these channels :\n\n").format(**locals()) +
-                              f"<#{'>, <#'.join(str(chan_id) for chan_id in ctx.bot.authorized_channels_id)}>")
+            formatted_text = (_("You can't execute this command in <#{ctx.channel.id}>. Try in one of these channels :\n\n").format(**locals()) +
+                              f"<#{'>, <#'.join(str(chan_id) for chan_id in error.list_channels_id)}>")
+            return await self.send_error(ctx, formatted_text)
+        if isinstance(error, custom_errors.NotAuthorizedRoles):
+            formatted_text = (_("You can't execute this command, you need one of these roles :\n\n").format(**locals()) +
+                              f"<@&{'>, <@&'.join(str(role_id) for role_id in error.list_roles_id)}>")
             return await self.send_error(ctx, formatted_text)
         if isinstance(error, commands.MissingRequiredArgument):
             formatted_text = (_("A required argument is missing in the command !\n") +
@@ -47,10 +51,10 @@ class CommandError(commands.Cog):
             return await self.send_error(ctx, formatted_text)
         if isinstance(error, errors.PrivateMessageOnly):
             return await self.send_error(ctx, _('This command must be executed in Private Messages'))
-        if isinstance(error, commands.CommandError):
-            return await self.send_error(ctx, str(error))
         if isinstance(error, errors.CheckFailure):
             return
+        if isinstance(error, commands.CommandError):
+            return await self.send_error(ctx, str(error))
 
         self.bot.logger.error(error)
 
@@ -58,4 +62,3 @@ class CommandError(commands.Cog):
 def setup(bot):
     bot.add_cog(CommandError(bot))
     bot.logger.info("Extension [command_error] loaded successfully.")
-
