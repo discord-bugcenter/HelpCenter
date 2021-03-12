@@ -28,6 +28,7 @@
             "inline": false
           },
           {
+            "name": "__References :__",
             "value": [
               "[Discord API](https://discord.com/developers/docs/resources/channel#embed-object-embed-structure)",
               "[discord.py](https://discordpy.readthedocs.io/en/latest/api.html?highlight=embed#discord.Embed)",
@@ -85,15 +86,7 @@
           },
           {
             "name": "__References :__",
-            "value": [
-              "[Discord API](https://discord.com/developers/docs/resources/channel#embed-object-embed-structure)",
-              "[discord.py](https://discordpy.readthedocs.io/en/latest/api.html?highlight=embed#discord.Embed)",
-              "[discord.js](https://discord.js.org/#/docs/main/stable/class/MessageEmbed)",
-              "[discordgo](https://pkg.go.dev/github.com/bwmarrin/discordgo#MessageEmbed)",
-              "[serenity](https://docs.rs/serenity/0.10.2/serenity/model/channel/struct.Embed.html)",
-              "[discordeno](https://doc.deno.land/https/deno.land/x/discordeno/mod.ts#DiscordEmbed)",
-              "[JDA](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/entities/MessageEmbed.html)"
-            ],
+            "value": "*",
             "inline": true
           },
           {
