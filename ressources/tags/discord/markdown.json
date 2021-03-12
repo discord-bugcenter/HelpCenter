@@ -1,7 +1,6 @@
 {
   "name": "markdown",
   "description": "utiliser le Markdown sur Discord.",
-  "author": 263713074630885376,
   "response": {
     "embed": {
       "title": "La mise en forme de texte Markdown.",
