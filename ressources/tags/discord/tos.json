@@ -1,7 +1,6 @@
 {
     "name": "tos",
     "description": "affiche les règles de Discord",
-    "author": 268105720497569802,
     "response": {
         "embed": {
             "title": "Le saviez-vous ? Les règles existent !",

@@ -1,7 +1,6 @@
 {
   "name": "google",
   "description": "recherchez par vous-même.",
-  "author": 341550709193441280,
   "response": {
     "embed": {
       "title": "Soyez autonome dans vos recherches !",
