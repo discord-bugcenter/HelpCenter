@@ -26,8 +26,7 @@ inner_tag_shema = Schema({
     Optional('lang'): Regex(r'[a-z]{2}_[A-Z]{2}'),
     'name': str,
     Optional('aliases'): list,
-    'description': Or({str: str}, str),
-    Optional('author'): int,
+    'description': str,
     'response': Or({'embed': embed_shema}, {
         'choices': [
             {
