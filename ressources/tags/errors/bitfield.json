@@ -2,7 +2,6 @@
   "name": "bitfield",
   "aliases": ["invalid_bitfield", "bitfield_invalid"],
   "description": "Invalid bitfield flag or number.",
-  "author": 341550709193441280,
   "response": {
     "embed": {
       "title": "Que faire avec cette erreur ?",
