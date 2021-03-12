@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-03-06 00:23+0100\n"
-"PO-Revision-Date: 2021-03-06 00:24+0100\n"
+"POT-Creation-Date: 2021-03-12 23:56+0100\n"
+"PO-Revision-Date: 2021-03-12 23:59+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -23,43 +23,52 @@ msgstr "{ctx.bot.user.name}#{ctx.bot.user.discriminator} projet open-source"
 #: cogs/command_error.py:41
 #, python-brace-format
 msgid ""
-"You can't execute this command in <#{error.channel.id}>. Try in one of these "
+"You can't execute this command in <#{ctx.channel.id}>. Try in one of these "
 "channels :\n"
 "\n"
 msgstr ""
-"Vous ne pouvez pas exécuter cette commande dans <#{error.channel.id}>. "
-"Essayez dans l'un de ces salons :\n"
+"Vous ne pouvez pas exécuter cette commande dans <#{ctx.channel.id}>. Essayez "
+"dans l'un de ces salons :\n"
 "\n"
 
 #: cogs/command_error.py:45
+msgid ""
+"You can't execute this command, you need one of these roles :\n"
+"\n"
+msgstr ""
+"Vous ne pouvez pas exécuter cette commande, vous devez avoir l'un de ces "
+"rôles  :\n"
+"\n"
+
+#: cogs/command_error.py:49
 msgid "A required argument is missing in the command !\n"
 msgstr "Il manque un argument obligatoire dans la commande !\n"
 
-#: cogs/command_error.py:49
+#: cogs/command_error.py:53
 msgid "This command must be executed in Private Messages"
 msgstr "Cette commande doit être exécutée en messages privés"
 
-#: cogs/event.py:51
+#: cogs/event.py:53
 msgid "There is no event right now, sorry !"
 msgstr "Il n'y a pas d'évènement actuellement, désolé !"
 
-#: cogs/event.py:65
+#: cogs/event.py:68
 msgid "The event is ended, sorry !"
 msgstr "L'évènement est terminé, désolé !"
 
-#: cogs/event.py:80
+#: cogs/event.py:83
 msgid "Participate or get informations about an event."
 msgstr "Participer ou obtenir des informations sur un évènement."
 
-#: cogs/event.py:88
+#: cogs/event.py:91
 msgid "Use of /event"
 msgstr "Utilisation de /event"
 
-#: cogs/event.py:99
+#: cogs/event.py:139
 msgid "Participate to the contest !"
 msgstr "Participez au concours !"
 
-#: cogs/event.py:111
+#: cogs/event.py:150
 msgid ""
 "Your message must contains a block of code (with code language) ! *look `/"
 "tag discord markdown`*"
@@ -67,7 +76,7 @@ msgstr ""
 "Votre message doit contenir un bloque de code (avec le code du langage) ! "
 "*Regardez `/tag discord code block`*"
 
-#: cogs/event.py:114
+#: cogs/event.py:153
 msgid ""
 "Looks like your code is too long! Try to remove the useless parts, the goal "
 "is to have a short and optimized code!"
@@ -75,11 +84,11 @@ msgstr ""
 "On dirait que votre code est trop long ! Essayez de supprimer les parties "
 "inutiles, le but est d'avoir un code court et optimisé !"
 
-#: cogs/event.py:116
+#: cogs/event.py:155
 msgid "Your language seems not be valid for the event."
 msgstr "Votre langage ne pas être valide pour l'évènement."
 
-#: cogs/event.py:125
+#: cogs/event.py:160
 msgid ""
 "**This is your participation :**\n"
 "\n"
@@ -87,65 +96,81 @@ msgstr ""
 "**Voici votre participation :**\n"
 "\n"
 
-#: cogs/event.py:126
+#: cogs/event.py:161
 #, python-brace-format
 msgid "`Language` -> `{0}`\n"
 msgstr "`Langage` -> `{0}`\n"
 
-#: cogs/event.py:127
+#: cogs/event.py:162
 #, python-brace-format
 msgid "`Length` -> `{0}`\n"
 msgstr "`Longueur` -> `{0}`\n"
 
-#: cogs/event.py:129
+#: cogs/event.py:164
 msgid "Do you want ot post it ? ✅ ❌"
 msgstr "Voulez-vous l'envoyer ? ✅ ❌"
 
-#: cogs/event.py:149
+#: cogs/event.py:184
 msgid "Your entry has been successfully modified !"
 msgstr "Votre participation a été modifiée avec succès !"
 
-#: cogs/event.py:152
+#: cogs/event.py:187
 msgid "Your entry has been successfully sent !"
 msgstr "Votre participation a été envoyée avec succès !"
 
-#: cogs/event.py:157
+#: cogs/event.py:192
 msgid "Cancelled"
 msgstr "Annulé"
 
-#: cogs/event.py:162
+#: cogs/event.py:197
 msgid "Remove your participation from the contest"
 msgstr "Retirer votre participation du concours"
 
-#: cogs/event.py:183
-msgid "Your participation has been successfully deleted"
-msgstr "Votre participation a été supprimée avec succès"
-
-#: cogs/event.py:185
+#: cogs/event.py:208
 msgid "You didn't participate !"
 msgstr "Vous n'avez pas participé !"
 
-#: cogs/event.py:191
+#: cogs/event.py:217
+msgid "__Choose which participation you want to cancel :__\n"
+msgstr "__Choisissez quel participation vous souhaitez annuler :__\n"
+
+#: cogs/event.py:234
+msgid "Your participation has been successfully deleted"
+msgstr "Votre participation a été supprimée avec succès"
+
+#: cogs/event.py:238
 msgid "Get some stats about the current contest"
 msgstr "Obtenir quelques statistiques a propos du concours actuel"
 
-#: cogs/event.py:223
+#: cogs/event.py:249
 msgid "Some informations..."
 msgstr "Quelques informations..."
 
-#: cogs/event.py:226
-msgid "Number of participations :"
-msgstr "Nombre de participations :"
+#: cogs/event.py:251
+msgid ""
+"**Number of participations :** {}\n"
+"\\u200b"
+msgstr ""
+"**Nombre de participations :**{}\n"
+"\\u200b"
 
-#: cogs/event.py:228
-msgid "Your global position :"
-msgstr "Votre position globale :"
+#: cogs/event.py:258
+msgid "• Global ranking : **{}** *({} > you > {})*\n"
+msgstr "• Classement global : **{}** *({} > vous  > {})*\n"
 
-#: cogs/event.py:229
-msgid "Your position by language :"
-msgstr "Votre position par langage :"
+#: cogs/event.py:260 cogs/event.py:261 cogs/event.py:266 cogs/event.py:267
+msgid "nobody"
+msgstr "personne"
 
-#: cogs/event.py:232
+#: cogs/event.py:264
+msgid "• By language ranking : **{}** *({} > you > {})*"
+msgstr "• Classement par langage : **{}** *({} > vous  > {})*"
+
+#: cogs/event.py:270
+msgid "Your participation with {}"
+msgstr "Votre participation avec {}"
+
+#: cogs/event.py:276
 msgid "Breakdown by languages used."
 msgstr "Répartition par langages utilisés."
 
@@ -248,6 +273,9 @@ msgstr "Le tag n'a pas été trouvé, {0}look `/tag list`"
 #: cogs/tag.py:121
 msgid "__Choose the target :__\n"
 msgstr "__Choisissez la cible :__\n"
+
+#~ msgid "Your global position :"
+#~ msgstr "Votre position globale :"
 
 #~ msgid "Shortest participation (not tested) :"
 #~ msgstr "La participation la plus courte (non testée) :"

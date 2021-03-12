@@ -157,7 +157,7 @@ class Event(commands.Cog):
         __, __, user_infos = await self.get_participations(user=ctx.author)
         old_participation: discord.Message = obj[0] if (obj := user_infos.get(LANGAGE_COMPREHENSION[language])) else None
 
-        valid_message = await ctx.send(_('**This is yourr participation :**\n\n') +
+        valid_message = await ctx.send(_('**This is your participation :**\n\n') +
                                        _('`Language` -> `{0}`\n').format(LANGAGE_COMPREHENSION[language.lower()]) +
                                        _('`Length` -> `{0}`\n').format(len(code)) +
                                        f'```{language}\n{code}```\n' +
@@ -255,19 +255,17 @@ class Event(commands.Cog):
             global_ranking = datas_global.index(data) + 1
             language_ranking = datas[language].index(data) + 1
 
-            formatted_informations = _("• Global ranking : **{}**").format(global_ranking)
-            if global_ranking != 1:
-                formatted_informations += _(" *({} > you > {})*").format(
-                    datas_global[global_ranking][2] if len(datas_global) > global_ranking else _('nobody'),
-                    datas_global[global_ranking - 2][2] if global_ranking - 1 else _('nobody')
-                )
-            formatted_informations += '\n'
+            formatted_informations = _("• Global ranking : **{}** *({} > you > {})*\n").format(
+                global_ranking,
+                datas_global[global_ranking][2] if len(datas_global) > global_ranking else _('nobody'),
+                datas_global[global_ranking - 2][2] if global_ranking - 1 else _('nobody')  # if rang index isn't 0
+            )
 
-            formatted_informations += _("• By language ranking : **{}**").format(language_ranking)
-            if language_ranking != 1:
-                formatted_informations += _(" *({} > you > {})*").format(
-                    datas[language][language_ranking][2] if len(datas[language]) > language_ranking else _('nobody'),
-                    datas[language][language_ranking - 2][2] if language_ranking - 1 else _('nobody'))  # si rang_index n'est pas 0
+            formatted_informations += _("• By language ranking : **{}** *({} > you > {})*").format(
+                language_ranking,
+                datas[language][language_ranking][2] if len(datas[language]) > language_ranking else _('nobody'),
+                datas[language][language_ranking - 2][2] if language_ranking - 1 else _('nobody')  # if rang index isn't 0
+            )
 
             embed.add_field(name=_('Your participation with {}').format(language),
                             value=formatted_informations,
