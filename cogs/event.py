@@ -181,6 +181,7 @@ class Event(commands.Cog):
 
             if old_participation:
                 await old_participation.edit(embed=embed)
+                await old_participation.clear_reactions()
                 response = _("Your entry has been successfully modified !")
             else:
                 await code_channel.send(embed=embed)
