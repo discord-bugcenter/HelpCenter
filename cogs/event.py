@@ -184,8 +184,7 @@ class Event(commands.Cog):
                 await old_participation.clear_reactions()
                 response = _("Your entry has been successfully modified !")
             else:
-                participation: discord.Message = await code_channel.send(embed=embed)
-                await participation.clear_reactions()
+                await code_channel.send(embed=embed)
                 response = _("Your entry has been successfully sent !")
 
             try: await ctx.send(response)
