@@ -41,7 +41,7 @@ class Miscellaneous(commands.Cog):
         if await self.token_revoke(message, attach_content=file_content): return
 
         await message.add_reaction('🔄')
-        try: __, user = await self.bot.wait_for('reaction_add', check=lambda react, usr: not usr.bot and react.message.id == message.id and str(react.emoji) == '🔄', timeout=120)
+        try: __, user = await self.bot.wait_for('reaction_add', check=lambda react, usr: not usr.bot and react.message.id == message.id and str(react.emoji) == '🔄', timeout=600)
         except asyncio.TimeoutError: return
         finally: await message.clear_reactions()
 
