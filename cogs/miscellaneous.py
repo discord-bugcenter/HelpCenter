@@ -35,7 +35,7 @@ class Miscellaneous(commands.Cog):
         file = await message.attachments[0].read()
         if filetype.guess(file) is not None: return
 
-        try: file_content = file.decode('utf-16')
+        try: file_content = file.decode('utf-8')
         except: return
 
         if await self.token_revoke(message, attach_content=file_content): return
