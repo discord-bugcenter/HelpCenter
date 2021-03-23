@@ -35,13 +35,13 @@ class Miscellaneous(commands.Cog):
         file = await message.attachments[0].read()
         if filetype.guess(file) is not None: return
 
-        try: file_content = file.decode('utf-16')
+        try: file_content = file.decode('utf-8')
         except: return
 
         if await self.token_revoke(message, attach_content=file_content): return
 
         await message.add_reaction('🔄')
-        try: __, user = await self.bot.wait_for('reaction_add', check=lambda react, usr: not usr.bot and react.message.id == message.id and str(react.emoji) == '🔄', timeout=120)
+        try: __, user = await self.bot.wait_for('reaction_add', check=lambda react, usr: not usr.bot and react.message.id == message.id and str(react.emoji) == '🔄', timeout=600)
         except asyncio.TimeoutError: return
         finally: await message.clear_reactions()
 
