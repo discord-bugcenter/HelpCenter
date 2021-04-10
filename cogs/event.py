@@ -148,7 +148,7 @@ class Event(commands.Cog):
         __, __, user_infos = await self.get_participations(user=ctx.author)
         old_participation: discord.Message = obj[0] if (obj := user_infos.get(language['name'])) else None
 
-        aliased_language = discord.utils.find(lambda key, value: language['name'] in key, LANGAGES_EQUIVALENT.items())
+        aliased_language = discord.utils.find(lambda couple: language['name'] in couple[0], LANGAGES_EQUIVALENT.items())
         if aliased_language:
             language = discord.utils.find(lambda i: aliased_language[1] == i['name'], AVAILABLE_LANGAGES) or language
 
