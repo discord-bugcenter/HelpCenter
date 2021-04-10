@@ -21,13 +21,13 @@ RE_DESC_EVENT_NAME = re.compile(r'(?<=event-name : )(\S+)')
 CODE_CHANNEL_ID = 810511403202248754
 
 with request.urlopen('https://emkc.org/api/v1/piston/versions') as r:
-    AVAILABLE_LANGAGES = json.loads(r.read().decode('utf-8'))
+    AVAILABLE_LANGAGES: list = json.loads(r.read().decode('utf-8'))
 
 LANGAGES_EQUIVALENT = {
-    ['node', 'typescript', 'deno']: 'javascript',
-    ['cpp', 'c']: 'c++',
-    ['nasm', 'nasm64']: 'nasm',
-    ['python2', 'python3']: 'python'
+    ('node', 'typescript', 'deno'): 'javascript',
+    ('cpp', 'c'): 'c++',
+    ('nasm', 'nasm64'): 'nasm',
+    ('python2', 'python3'): 'python'
 }
 
 
@@ -148,10 +148,14 @@ class Event(commands.Cog):
         __, __, user_infos = await self.get_participations(user=ctx.author)
         old_participation: discord.Message = obj[0] if (obj := user_infos.get(language['name'])) else None
 
+        aliased_language = discord.utils.find(lambda key, value: language['name'] in key, LANGAGES_EQUIVALENT.items())
+        if aliased_language:
+            language = discord.utils.find(lambda i: aliased_language[1] == i['name'], AVAILABLE_LANGAGES) or language
+
         valid_message = await ctx.send(_('**This is your participation :**\n\n') +
                                        _('`Language` -> `{0}`\n').format(language['name']) +
                                        _('`Length` -> `{0}`\n').format(len(code)) +
-                                       f'```{language}\n{code}```\n' +
+                                       f'```{language["name"]}\n{code}```\n' +
                                        _('Do you want ot post it ? ✅ ❌'))
 
         self.bot.loop.create_task(misc.add_reactions(valid_message, ['✅', '❌']))
@@ -168,7 +172,7 @@ class Event(commands.Cog):
             embed.add_field(name='Language', value=language['name'], inline=True)
             embed.add_field(name='Length', value=str(len(code)), inline=True)
             embed.add_field(name='Date', value=str(datetime.now().isoformat()), inline=False)
-            embed.add_field(name='Code', value=f"```{language}\n{code}\n```", inline=False)
+            embed.add_field(name='Code', value=f"```{language['name']}\n{code}\n```", inline=False)
 
             if old_participation:
                 await old_participation.edit(embed=embed)
