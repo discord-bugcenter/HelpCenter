@@ -1,6 +1,8 @@
 import re
 import io
+import json
 import asyncio
+from urllib import request
 from functools import partial
 from datetime import datetime
 from collections import OrderedDict
@@ -18,28 +20,14 @@ RE_DESC_EVENT_STATE = re.compile(r'(?<=event-state : )(\S+)')
 RE_DESC_EVENT_NAME = re.compile(r'(?<=event-name : )(\S+)')
 CODE_CHANNEL_ID = 810511403202248754
 
-LANGAGE_COMPREHENSION = {
-    'py': 'python3',
-    'python': 'python3',
-    'python3': 'python3',
-    'js': 'javascript',
-    'javascript': 'javascript',
-    'cpp': 'cpp',
-    'c++': 'cpp',
-    'bash': 'bash',
-    'c': 'c',
-    'csharp': 'csharp',
-    'go': 'go',
-    'haskell': 'haskell',
-    'java': 'java',
-    'kotlin': 'kotlin',
-    'node': 'javascript',
-    'perl': 'perl',
-    'php': 'php',
-    'ruby': 'ruby',
-    'rust': 'rust',
-    'swift': 'swift',
-    'typescript': 'javascript'
+with request.urlopen('https://emkc.org/api/v1/piston/versions') as r:
+    AVAILABLE_LANGAGES = json.loads(r.read().decode('utf-8'))
+
+LANGAGES_EQUIVALENT = {
+    ['node', 'typescript', 'deno']: 'javascript',
+    ['cpp', 'c']: 'c++',
+    ['nasm', 'nasm64']: 'nasm',
+    ['python2', 'python3']: 'python'
 }
 
 
@@ -149,16 +137,19 @@ class Event(commands.Cog):
         if not regex:
             raise commands.CommandError(_('Your message must contains a block of code (with code language) ! *look `/tag discord markdown`*'))
         language, code = regex.groups()[1:]
+        code = code.strip()
         if len(code) > 1000:
             return await ctx.send(_("Looks like your code is too long! Try to remove the useless parts, the goal is to have a short and optimized code!"))
-        if language.lower() not in LANGAGE_COMPREHENSION.keys():
+
+        language = discord.utils.find(lambda i: language.lower() in i['aliases'], AVAILABLE_LANGAGES)
+        if not language:
             return await ctx.send(_('Your language seems not be valid for the event.'))
 
         __, __, user_infos = await self.get_participations(user=ctx.author)
-        old_participation: discord.Message = obj[0] if (obj := user_infos.get(LANGAGE_COMPREHENSION[language])) else None
+        old_participation: discord.Message = obj[0] if (obj := user_infos.get(language['name'])) else None
 
         valid_message = await ctx.send(_('**This is your participation :**\n\n') +
-                                       _('`Language` -> `{0}`\n').format(LANGAGE_COMPREHENSION[language.lower()]) +
+                                       _('`Language` -> `{0}`\n').format(language['name']) +
                                        _('`Length` -> `{0}`\n').format(len(code)) +
                                        f'```{language}\n{code}```\n' +
                                        _('Do you want ot post it ? ✅ ❌'))
@@ -174,7 +165,7 @@ class Event(commands.Cog):
                 color=misc.Color.grey_embed().discord
             )
             embed.add_field(name='User', value=f'{ctx.author.id}|{ctx.author.mention}', inline=False)
-            embed.add_field(name='Language', value=LANGAGE_COMPREHENSION[language.lower()], inline=True)
+            embed.add_field(name='Language', value=language['name'], inline=True)
             embed.add_field(name='Length', value=str(len(code)), inline=True)
             embed.add_field(name='Date', value=str(datetime.now().isoformat()), inline=False)
             embed.add_field(name='Code', value=f"```{language}\n{code}\n```", inline=False)
@@ -245,6 +236,9 @@ class Event(commands.Cog):
             raise custom_errors.NotAuthorizedChannels(self.bot.test_channels_id)
 
         datas, datas_global, user_infos = await self.get_participations(ctx.author)
+
+        if not datas:
+            return await ctx.send(_("There is not participations at the moment."))
 
         embed = discord.Embed(
             title=_('Some informations...'),
