@@ -200,22 +200,48 @@ class Event(commands.Cog):
 
         if str(reaction.emoji) == '✅':
             event_informations = self.get_informations()
-            testing_message: discord.Message = await ctx.send(_('<a:typing:832608019920977921> Your code is passing some tests...'))
-            for args, result in event_informations['autotests']:
-                try: execution_result = await misc.execute_piston_code(language['name'], code, args=args.split('|'))
-                except Exception: return await testing_message.edit(content=_('An error occurred.'))
 
-                if error_message := execution_result.get('stderr'):
-                    return await testing_message.edit(content=_('❌ Your code excited with an error.\n```\n{0}\n```').format(error_message[:1800]))
+            if autotests := event_informations['autotests']:
+                embed = discord.Embed(title=_('<a:typing:832608019920977921> Your code is passing some tests...'),
+                                      description='\n'.join(f'➖ Test {i+1}/{len(autotests)}' for i in range(len(autotests))),
+                                      color=misc.Color.grey_embed().discord)
 
-                stdout = execution_result['stdout'].strip()
-                stdout = RE_ENDLINE_SPACES.sub('\n', stdout)
-                if stdout != result:
-                    return await testing_message.edit(content=_("❌ Your code didn't pass all the tests. If you think it's an error, please contact a staff."))
+                testing_message: discord.Message = await ctx.send(embed=embed)
 
-                await asyncio.sleep(1)
+                for i, (args, result) in enumerate(autotests):
+                    try: execution_result = await misc.execute_piston_code(language['name'], code, args=args.split('|'))
+                    except Exception: return await testing_message.edit(content=_('An error occurred.'))
 
-            await testing_message.edit(content=_('✅ All tests passed successfully.'))
+                    if error_message := execution_result.get('stderr'):
+                        embed.title = _('Your code excited with an error.')
+                        embed.description = f'```\n{error_message[:2000]}\n```'
+                        embed.colour = misc.Color(255, 100, 100).discord
+
+                        return await testing_message.edit(embed=embed)
+
+                    stdout = execution_result['stdout'].strip()
+                    stdout = RE_ENDLINE_SPACES.sub('\n', stdout)
+                    if stdout != result:
+                        embed.title = _("Your code didn't pass all the tests. If you think it's an error, please contact a staff.")
+                        embed.colour = misc.Color(255, 100, 100).discord
+
+                        description_lines = embed.description.split('\n')
+                        description_lines[i] = f'❌ Test {i+1}/{len(autotests)}'
+                        embed.description = '\n'.join(description_lines)
+
+                        return await testing_message.edit(embed=embed)
+
+                    description_lines = embed.description.split('\n')
+                    description_lines[i] = f'✅ Test {i + 1}/{len(autotests)}'
+                    embed.description = '\n'.join(description_lines)
+                    await testing_message.edit(embed=embed)
+
+                    await asyncio.sleep(1)
+
+                embed.title = _('All tests passed successfully.')
+                embed.colour = misc.Color(100, 255, 100).discord
+
+                await testing_message.edit(embed=embed)
 
             embed = discord.Embed(
                 title="Participation :",
