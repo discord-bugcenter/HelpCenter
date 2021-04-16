@@ -75,6 +75,25 @@ async def create_new_gist(token, file_name, file_content):
             return json.loads(await response.text())
 
 
+async def execute_piston_code(language, source_code, *, stdin: list=None, args: list=None):
+    url = "https://emkc.org/api/v1/piston/execute"
+    payload = {
+        'language': language,
+        'source': source_code
+    }
+    if stdin:
+        payload['stdin'] = stdin
+    if args:
+        payload['args'] = args
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url=url, json=payload) as response:
+            json_response: dict = await response.json()
+            if response.status == 200:
+                return json_response
+            raise Exception(json_response.get('message', 'unknown error'))
+
+
 class Color:
     @classmethod
     def black(cls):

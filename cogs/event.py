@@ -15,9 +15,16 @@ from matplotlib.ticker import StrMethodFormatter
 from .utils import custom_errors, checkers, misc
 from .utils.i18n import use_current_gettext as _
 
-RE_DESC_EVENT_DATE = re.compile(r'(?<=event-date : )(\d{,2})/(\d{,2})/(\d{4})')
-RE_DESC_EVENT_STATE = re.compile(r'(?<=event-state : )(\S+)')
-RE_DESC_EVENT_NAME = re.compile(r'(?<=event-name : )(\S+)')
+RE_EVENT_DATE = re.compile(r'(?<=event-date : )(\d{,2})/(\d{,2})/(\d{4})')
+RE_EVENT_STATE = re.compile(r'(?<=event-state : )(\S+)')
+RE_EVENT_NAME = re.compile(r'(?<=event-name : )(.+)')
+RE_EVENT_AUTOTESTS_GROUP = re.compile(r'event-autotests : \[\[\n(.*)\n]]', re.MULTILINE | re.DOTALL)
+RE_EVENT_AUTOTEST = re.compile(r'{(.*?)} : \[\s*(.*?)\s*]', re.MULTILINE | re.DOTALL)
+
+RE_GET_CODE_PARTICIPATION = re.compile(r'(```)?(?:(\S*)\s)(\s*\S[\S\s]*)(?(1)```|)')
+RE_ENDLINE_SPACES = re.compile(r' *\n')
+
+
 CODE_CHANNEL_ID = 810511403202248754
 
 with request.urlopen('https://emkc.org/api/v1/piston/versions') as r:
@@ -34,7 +41,7 @@ LANGAGES_EQUIVALENT = {
 def event_not_closed():
     async def inner(ctx):
         code_channel = ctx.bot.get_channel(CODE_CHANNEL_ID)
-        state = RE_DESC_EVENT_STATE.search(code_channel.topic).group()
+        state = RE_EVENT_STATE.search(code_channel.topic).group()
 
         if state == 'closed':
             await ctx.bot.set_actual_language(ctx.author)
@@ -49,7 +56,7 @@ def event_not_closed():
 def event_not_ended():
     async def inner(ctx):
         code_channel = ctx.bot.get_channel(CODE_CHANNEL_ID)
-        state = RE_DESC_EVENT_STATE.search(code_channel.topic).group()
+        state = RE_EVENT_STATE.search(code_channel.topic).group()
 
         if state == 'ended':
             await ctx.bot.set_actual_language(ctx.author)
@@ -88,13 +95,13 @@ class Event(commands.Cog):
 
     async def get_participations(self, user=None) -> (dict, list, dict):
         code_channel = self.bot.get_channel(self.code_channel_id)
-        day, month, year = RE_DESC_EVENT_DATE.search(code_channel.topic).groups()
+        event_informations = self.get_informations()
 
         datas = dict()
         datas_global = []
         user_infos = dict()
 
-        async for message in code_channel.history(limit=None, after=datetime(int(year), int(month), int(day) - 1)):
+        async for message in code_channel.history(limit=None, after=event_informations['date']):
             if message.author.id != self.bot.user.id or not message.embeds: continue
 
             fields = message.embeds[0].fields
@@ -122,6 +129,34 @@ class Event(commands.Cog):
 
         return datas, datas_global, user_infos
 
+    def get_informations(self):
+        channel = self.bot.get_channel(CODE_CHANNEL_ID)
+
+        state = RE_EVENT_STATE.search(channel.topic).group()
+
+        day, month, year = RE_EVENT_DATE.search(channel.topic).groups()
+        date = datetime(int(year), int(month), int(day) - 1)  # remove one date to use properly the after param
+
+        name = RE_EVENT_NAME.search(channel.topic).group()
+
+        autotests_group = RE_EVENT_AUTOTESTS_GROUP.search(channel.topic).group()
+        autotests = RE_EVENT_AUTOTEST.findall(autotests_group)
+
+        return {'state': state, 'date': date, 'name': name, 'autotests': autotests}
+
+    async def edit_informations(self, state=None, date=None, name=None):
+        channel: discord.TextChannel = self.bot.get_channel(CODE_CHANNEL_ID)
+        new_topic = channel.topic
+
+        if state:
+            new_topic = RE_EVENT_STATE.sub(state, new_topic)
+        if date:
+            new_topic = RE_EVENT_DATE.sub(date.strftime("%d/%m/%Y"), new_topic)
+        if name:
+            new_topic = RE_EVENT_NAME.sub(name, new_topic)
+
+        await channel.edit(topic=new_topic)
+
     @event.command(
         name="participate",
         description=_("Participate to the contest !"),
@@ -133,10 +168,10 @@ class Event(commands.Cog):
     async def participate(self, ctx, *, code):
         code_channel = self.bot.get_channel(self.code_channel_id)
 
-        regex = re.search(r'(```)?(?:(\S*)\s)(\s*\S[\S\s]*)(?(1)```|)', code)
-        if not regex:
+        re_match = RE_GET_CODE_PARTICIPATION.search(code)
+        if not re_match:
             raise commands.CommandError(_('Your message must contains a block of code (with code language) ! *look `/tag discord markdown`*'))
-        language, code = regex.groups()[1:]
+        language, code = re_match.groups()[1:]
         code = code.strip()
         if len(code) > 1000:
             return await ctx.send(_("Looks like your code is too long! Try to remove the useless parts, the goal is to have a short and optimized code!"))
@@ -164,6 +199,50 @@ class Event(commands.Cog):
         except asyncio.TimeoutError: return
 
         if str(reaction.emoji) == '✅':
+            event_informations = self.get_informations()
+
+            if autotests := event_informations['autotests']:
+                embed = discord.Embed(title=_('<a:typing:832608019920977921> Your code is passing some tests...'),
+                                      description='\n'.join(f'➖ Test {i+1}/{len(autotests)}' for i in range(len(autotests))),
+                                      color=misc.Color.grey_embed().discord)
+
+                testing_message: discord.Message = await ctx.send(embed=embed)
+
+                for i, (args, result) in enumerate(autotests):
+                    try: execution_result = await misc.execute_piston_code(language['name'], code, args=args.split('|'))
+                    except Exception: return await testing_message.edit(content=_('An error occurred.'))
+
+                    if error_message := execution_result.get('stderr'):
+                        embed.title = _('Your code excited with an error.')
+                        embed.description = f'```\n{error_message[:2000]}\n```'
+                        embed.colour = misc.Color(255, 100, 100).discord
+
+                        return await testing_message.edit(embed=embed)
+
+                    stdout = execution_result['stdout'].strip()
+                    stdout = RE_ENDLINE_SPACES.sub('\n', stdout)
+                    if stdout != result:
+                        embed.title = _("Your code didn't pass all the tests. If you think it's an error, please contact a staff.")
+                        embed.colour = misc.Color(255, 100, 100).discord
+
+                        description_lines = embed.description.split('\n')
+                        description_lines[i] = f'❌ Test {i+1}/{len(autotests)}'
+                        embed.description = '\n'.join(description_lines)
+
+                        return await testing_message.edit(embed=embed)
+
+                    description_lines = embed.description.split('\n')
+                    description_lines[i] = f'✅ Test {i + 1}/{len(autotests)}'
+                    embed.description = '\n'.join(description_lines)
+                    await testing_message.edit(embed=embed)
+
+                    await asyncio.sleep(1)
+
+                embed.title = _('All tests passed successfully.')
+                embed.colour = misc.Color(100, 255, 100).discord
+
+                await testing_message.edit(embed=embed)
+
             embed = discord.Embed(
                 title="Participation :",
                 color=misc.Color.grey_embed().discord
@@ -242,7 +321,7 @@ class Event(commands.Cog):
         datas, datas_global, user_infos = await self.get_participations(ctx.author)
 
         if not datas:
-            return await ctx.send(_("There is not participations at the moment."))
+            return await ctx.send(_("There is no participation at the moment."))
 
         embed = discord.Embed(
             title=_('Some informations...'),
@@ -308,10 +387,7 @@ class Event(commands.Cog):
     async def start(self, ctx, *, name):
         code_channel: discord.TextChannel = self.bot.get_channel(self.code_channel_id)
 
-        topic = RE_DESC_EVENT_STATE.sub("open", code_channel.topic)
-        topic = RE_DESC_EVENT_DATE.sub(datetime.now().strftime("%d/%m/%Y"), topic)
-        topic = RE_DESC_EVENT_NAME.sub(name, topic)
-        await code_channel.edit(topic=topic)
+        await self.edit_informations(state='open', date=datetime.now(), name=name)
 
         await ctx.send(f'Event `{name}` started ! Participations are now open !')
         await code_channel.send('```diff\n'
@@ -325,13 +401,9 @@ class Event(commands.Cog):
     )
     @checkers.is_high_staff()
     async def stop(self, ctx):
-        code_channel: discord.TextChannel = self.bot.get_channel(self.code_channel_id)
+        await self.edit_informations(state='ended')
 
-        topic = RE_DESC_EVENT_STATE.sub("ended", code_channel.topic)
-        await code_channel.edit(topic=topic)
-
-        name = RE_DESC_EVENT_NAME.search(topic).group()
-
+        event_informations = self.get_informations()
         datas, datas_global, *__ = await self.get_participations()
 
         medals = ['🥇', '🥈', '🥉']
@@ -361,7 +433,7 @@ class Event(commands.Cog):
         buffer = io.StringIO(formatted_text)
         buffer.seek(0)
 
-        await ctx.send(f'Event `{name}` is now ended ! Participations are closed !', file=discord.File(buffer, "ranking.txt"))
+        await ctx.send(f"Event `{event_informations['name']}` is now ended ! Participations are closed !", file=discord.File(buffer, 'ranking.txt'))
 
     @event.command(
         name='close',
@@ -370,13 +442,10 @@ class Event(commands.Cog):
     )
     @checkers.is_high_staff()
     async def close(self, ctx):
-        code_channel: discord.TextChannel = self.bot.get_channel(self.code_channel_id)
+        await self.edit_informations(state='closed')
+        event_informations = self.get_informations()
 
-        topic = RE_DESC_EVENT_STATE.sub("closed", code_channel.topic)
-        await code_channel.edit(topic=topic)
-
-        name = RE_DESC_EVENT_NAME.search(topic).group()
-        await ctx.send(f'Event `{name}` is now closed !')
+        await ctx.send(f"Event `{event_informations['name']}` is now closed !")
 
 
 def setup(bot):
