@@ -321,7 +321,7 @@ class Event(commands.Cog):
         datas, datas_global, user_infos = await self.get_participations(ctx.author)
 
         if not datas:
-            return await ctx.send(_("There is not participations at the moment."))
+            return await ctx.send(_("There is no participation at the moment."))
 
         embed = discord.Embed(
             title=_('Some informations...'),

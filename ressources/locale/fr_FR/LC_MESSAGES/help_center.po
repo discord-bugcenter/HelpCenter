@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-03-12 23:56+0100\n"
-"PO-Revision-Date: 2021-03-12 23:59+0100\n"
+"POT-Creation-Date: 2021-04-16 23:36+0200\n"
+"PO-Revision-Date: 2021-04-16 23:36+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -48,27 +48,27 @@ msgstr "Il manque un argument obligatoire dans la commande !\n"
 msgid "This command must be executed in Private Messages"
 msgstr "Cette commande doit être exécutée en messages privés"
 
-#: cogs/event.py:53
+#: cogs/event.py:48
 msgid "There is no event right now, sorry !"
 msgstr "Il n'y a pas d'évènement actuellement, désolé !"
 
-#: cogs/event.py:68
+#: cogs/event.py:63
 msgid "The event is ended, sorry !"
 msgstr "L'évènement est terminé, désolé !"
 
-#: cogs/event.py:83
+#: cogs/event.py:78
 msgid "Participate or get informations about an event."
 msgstr "Participer ou obtenir des informations sur un évènement."
 
-#: cogs/event.py:91
+#: cogs/event.py:86
 msgid "Use of /event"
 msgstr "Utilisation de /event"
 
-#: cogs/event.py:139
+#: cogs/event.py:162
 msgid "Participate to the contest !"
 msgstr "Participez au concours !"
 
-#: cogs/event.py:150
+#: cogs/event.py:173
 msgid ""
 "Your message must contains a block of code (with code language) ! *look `/"
 "tag discord markdown`*"
@@ -76,7 +76,7 @@ msgstr ""
 "Votre message doit contenir un bloque de code (avec le code du langage) ! "
 "*Regardez `/tag discord code block`*"
 
-#: cogs/event.py:153
+#: cogs/event.py:177
 msgid ""
 "Looks like your code is too long! Try to remove the useless parts, the goal "
 "is to have a short and optimized code!"
@@ -84,11 +84,11 @@ msgstr ""
 "On dirait que votre code est trop long ! Essayez de supprimer les parties "
 "inutiles, le but est d'avoir un code court et optimisé !"
 
-#: cogs/event.py:155
+#: cogs/event.py:181
 msgid "Your language seems not be valid for the event."
 msgstr "Votre langage ne pas être valide pour l'évènement."
 
-#: cogs/event.py:160
+#: cogs/event.py:190
 msgid ""
 "**This is your participation :**\n"
 "\n"
@@ -96,57 +96,87 @@ msgstr ""
 "**Voici votre participation :**\n"
 "\n"
 
-#: cogs/event.py:161
+#: cogs/event.py:191
 #, python-brace-format
 msgid "`Language` -> `{0}`\n"
 msgstr "`Langage` -> `{0}`\n"
 
-#: cogs/event.py:162
+#: cogs/event.py:192
 #, python-brace-format
 msgid "`Length` -> `{0}`\n"
 msgstr "`Longueur` -> `{0}`\n"
 
-#: cogs/event.py:164
+#: cogs/event.py:194
 msgid "Do you want ot post it ? ✅ ❌"
 msgstr "Voulez-vous l'envoyer ? ✅ ❌"
 
-#: cogs/event.py:184
+#: cogs/event.py:205
+msgid "<a:typing:832608019920977921> Your code is passing some tests..."
+msgstr ""
+"<a:typing:832608019920977921> Votre code est en train de faire quelques "
+"tests…"
+
+#: cogs/event.py:213 cogs/help.py:20 cogs/miscellaneous.py:97
+msgid "An error occurred."
+msgstr "Une erreur est survenue."
+
+#: cogs/event.py:216
+msgid "Your code excited with an error."
+msgstr "Votre code s'est arrêté avec une erreur."
+
+#: cogs/event.py:225
+msgid ""
+"Your code didn't pass all the tests. If you think it's an error, please "
+"contact a staff."
+msgstr ""
+"Votre code n'a pas passé tout les tests. Si vous pensez qu'il s'agit d'une "
+"erreur, veuillez contacter un staff."
+
+#: cogs/event.py:241
+msgid "All tests passed successfully."
+msgstr "Tout les tests ont été passé avec succès !"
+
+#: cogs/event.py:259
 msgid "Your entry has been successfully modified !"
 msgstr "Votre participation a été modifiée avec succès !"
 
-#: cogs/event.py:187
+#: cogs/event.py:262
 msgid "Your entry has been successfully sent !"
 msgstr "Votre participation a été envoyée avec succès !"
 
-#: cogs/event.py:192
+#: cogs/event.py:267
 msgid "Cancelled"
 msgstr "Annulé"
 
-#: cogs/event.py:197
+#: cogs/event.py:272
 msgid "Remove your participation from the contest"
 msgstr "Retirer votre participation du concours"
 
-#: cogs/event.py:208
+#: cogs/event.py:283
 msgid "You didn't participate !"
 msgstr "Vous n'avez pas participé !"
 
-#: cogs/event.py:217
+#: cogs/event.py:292
 msgid "__Choose which participation you want to cancel :__\n"
 msgstr "__Choisissez quel participation vous souhaitez annuler :__\n"
 
-#: cogs/event.py:234
+#: cogs/event.py:309
 msgid "Your participation has been successfully deleted"
 msgstr "Votre participation a été supprimée avec succès"
 
-#: cogs/event.py:238
+#: cogs/event.py:313
 msgid "Get some stats about the current contest"
 msgstr "Obtenir quelques statistiques a propos du concours actuel"
 
-#: cogs/event.py:249
+#: cogs/event.py:324
+msgid "There is no participation at the moment."
+msgstr "Il n'y a aucune participation pour le moment."
+
+#: cogs/event.py:327
 msgid "Some informations..."
 msgstr "Quelques informations..."
 
-#: cogs/event.py:251
+#: cogs/event.py:329
 msgid ""
 "**Number of participations :** {}\n"
 "\\u200b"
@@ -154,23 +184,23 @@ msgstr ""
 "**Nombre de participations :**{}\n"
 "\\u200b"
 
-#: cogs/event.py:258
+#: cogs/event.py:336
 msgid "• Global ranking : **{}** *({} > you > {})*\n"
 msgstr "• Classement global : **{}** *({} > vous  > {})*\n"
 
-#: cogs/event.py:260 cogs/event.py:261 cogs/event.py:266 cogs/event.py:267
+#: cogs/event.py:338 cogs/event.py:339 cogs/event.py:344 cogs/event.py:345
 msgid "nobody"
 msgstr "personne"
 
-#: cogs/event.py:264
+#: cogs/event.py:342
 msgid "• By language ranking : **{}** *({} > you > {})*"
 msgstr "• Classement par langage : **{}** *({} > vous  > {})*"
 
-#: cogs/event.py:270
+#: cogs/event.py:348
 msgid "Your participation with {}"
 msgstr "Votre participation avec {}"
 
-#: cogs/event.py:276
+#: cogs/event.py:354
 msgid "Breakdown by languages used."
 msgstr "Répartition par langages utilisés."
 
@@ -185,10 +215,6 @@ msgstr "L'outil google est très puissant, voici comment il fonctionne!\n"
 #: cogs/help.py:11
 msgid "Show bot commands."
 msgstr "Afficher les commandes du bot."
-
-#: cogs/help.py:20 cogs/miscellaneous.py:97
-msgid "An error occurred."
-msgstr "Une erreur est survenue."
 
 #: cogs/help.py:28
 msgid "Here are my commands:"
