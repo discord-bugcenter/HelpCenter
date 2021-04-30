@@ -28,9 +28,9 @@ RE_ENDLINE_SPACES = re.compile(r' *\n')
 CODE_CHANNEL_ID = 810511403202248754
 
 with request.urlopen('https://emkc.org/api/v1/piston/versions') as r:
-    AVAILABLE_LANGAGES: list = json.loads(r.read().decode('utf-8'))
+    AVAILABLE_LANGUAGES: list = json.loads(r.read().decode('utf-8'))
 
-LANGAGES_EQUIVALENT = {
+LANGUAGES_EQUIVALENT = {
     ('node', 'typescript', 'deno'): 'javascript',
     ('cpp', 'c'): 'c++',
     ('nasm', 'nasm64'): 'nasm',
@@ -176,16 +176,16 @@ class Event(commands.Cog):
         if len(code) > 1000:
             return await ctx.send(_("Looks like your code is too long! Try to remove the useless parts, the goal is to have a short and optimized code!"))
 
-        language = discord.utils.find(lambda i: language.lower() in i['aliases'], AVAILABLE_LANGAGES)
+        language = discord.utils.find(lambda i: language.lower() in i['aliases'], AVAILABLE_LANGUAGES)
         if not language:
             return await ctx.send(_('Your language seems not be valid for the event.'))
 
         __, __, user_infos = await self.get_participations(user=ctx.author)
         old_participation: discord.Message = obj[0] if (obj := user_infos.get(language['name'])) else None
 
-        aliased_language = discord.utils.find(lambda couple: language['name'] in couple[0], LANGAGES_EQUIVALENT.items())
+        aliased_language = discord.utils.find(lambda couple: language['name'] in couple[0], LANGUAGES_EQUIVALENT.items())
         if aliased_language:
-            language = discord.utils.find(lambda i: aliased_language[1] == i['name'], AVAILABLE_LANGAGES) or language
+            language = discord.utils.find(lambda i: aliased_language[1] == i['name'], AVAILABLE_LANGUAGES) or language
 
         valid_message = await ctx.send(_('**This is your participation :**\n\n') +
                                        _('`Language` -> `{0}`\n').format(language['name']) +
