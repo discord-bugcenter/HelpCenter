@@ -4,11 +4,12 @@ import json
 import asyncio
 from urllib import request
 from functools import partial
-from datetime import datetime
+from datetime import datetime, timedelta
 from collections import OrderedDict
 
 import discord
 from discord.ext import commands
+from discord.utils import find
 import matplotlib.pyplot as plt
 from matplotlib.ticker import StrMethodFormatter
 
@@ -27,15 +28,16 @@ RE_ENDLINE_SPACES = re.compile(r' *\n')
 
 CODE_CHANNEL_ID = 810511403202248754
 
-with request.urlopen('https://emkc.org/api/v1/piston/versions') as r:
+with request.urlopen('https://emkc.org/api/v2/piston/runtimes') as r:
     AVAILABLE_LANGUAGES: list = json.loads(r.read().decode('utf-8'))
 
-LANGUAGES_EQUIVALENT = {
-    ('node', 'typescript', 'deno'): 'javascript',
-    ('cpp', 'c'): 'c++',
-    ('nasm', 'nasm64'): 'nasm',
-    ('python2', 'python3'): 'python'
-}
+LANGUAGES_EQUIVALENT = (
+    ('javascript', 'typescript'),
+    ('c++', 'c', 'd', 'fortran'),
+    ('nasm', 'nasm64'),
+    ('python2', 'python', 'yeethon'),
+    ('kotlin', 'java')
+)
 
 
 def event_not_closed():
@@ -109,7 +111,7 @@ class Event(commands.Cog):
             try: code_author = self.bot.get_user(user_id := int(fields[0].value.split('|')[0])) or await self.bot.fetch_user(user_id)
             except: continue
 
-            language = fields[1].value
+            language = fields[1].value.split(' ')[0]  # If the language is e.g. javascript (node), just take "javascript"
             length = int(fields[2].value)
             date = datetime.fromisoformat(fields[3].value)
 
@@ -135,7 +137,7 @@ class Event(commands.Cog):
         state = RE_EVENT_STATE.search(channel.topic).group()
 
         day, month, year = RE_EVENT_DATE.search(channel.topic).groups()
-        date = datetime(int(year), int(month), int(day) - 1)  # remove one date to use properly the after param
+        date = datetime(int(year), int(month), int(day)) - timedelta(days=1)  # Remove one day to use properly the after param.
 
         name = RE_EVENT_NAME.search(channel.topic).group()
 
@@ -176,21 +178,22 @@ class Event(commands.Cog):
         if len(code) > 1000:
             return await ctx.send(_("Looks like your code is too long! Try to remove the useless parts, the goal is to have a short and optimized code!"))
 
-        language = discord.utils.find(lambda i: language.lower() in i['aliases'], AVAILABLE_LANGUAGES)
+        language = discord.utils.find(lambda i: language.lower() in i['aliases'] + [i['language']], AVAILABLE_LANGUAGES)  # Check if the used language is available.
         if not language:
             return await ctx.send(_('Your language seems not be valid for the event.'))
 
         __, __, user_infos = await self.get_participations(user=ctx.author)
-        old_participation: discord.Message = obj[0] if (obj := user_infos.get(language['name'])) else None
 
-        aliased_language = discord.utils.find(lambda couple: language['name'] in couple[0], LANGUAGES_EQUIVALENT.items())
-        if aliased_language:
-            language = discord.utils.find(lambda i: aliased_language[1] == i['name'], AVAILABLE_LANGUAGES) or language
+        equivalents_languages = find(lambda x: language['language'] in x, LANGUAGES_EQUIVALENT) or (language['language'], )  # May be a tuple with multiple languages names or just a single.
+        old_participation = None
+        for language_name, infos in user_infos.items():
+            if language_name in equivalents_languages:
+                old_participation = infos[0]  # Search in participations if the user already participated.
 
         valid_message = await ctx.send(_('**This is your participation :**\n\n') +
-                                       _('`Language` -> `{0}`\n').format(language['name']) +
+                                       _('`Language` -> `{0}` ({1})\n').format(language['language'], language.get('runtime', language['language'])) +
                                        _('`Length` -> `{0}`\n').format(len(code)) +
-                                       f'```{language["name"]}\n{code}```\n' +
+                                       f"```{language['language']}\n{code}```\n" +
                                        _('Do you want ot post it ? ✅ ❌'))
 
         self.bot.loop.create_task(misc.add_reactions(valid_message, ['✅', '❌']))
@@ -209,7 +212,10 @@ class Event(commands.Cog):
                 testing_message: discord.Message = await ctx.send(embed=embed)
 
                 for i, (args, result) in enumerate(autotests):
-                    try: execution_result = await misc.execute_piston_code(language['name'], code, args=args.split('|'))
+                    try: execution_result = await misc.execute_piston_code(language=language['language'],
+                                                                           version=language['version'],
+                                                                           files=[{'content': code}],
+                                                                           args=args.split('|'))
                     except Exception: return await testing_message.edit(content=_('An error occurred.'))
 
                     if error_message := execution_result.get('stderr'):
@@ -248,10 +254,10 @@ class Event(commands.Cog):
                 color=misc.Color.grey_embed().discord
             )
             embed.add_field(name='User', value=f'{ctx.author.id}|{ctx.author.mention}', inline=False)
-            embed.add_field(name='Language', value=language['name'], inline=True)
+            embed.add_field(name='Language', value=f"{language['language']} ({language.get('runtime', language['language'])})", inline=True)
             embed.add_field(name='Length', value=str(len(code)), inline=True)
             embed.add_field(name='Date', value=str(datetime.now().isoformat()), inline=False)
-            embed.add_field(name='Code', value=f"```{language['name']}\n{code}\n```", inline=False)
+            embed.add_field(name='Code', value=f"```{language['language']}\n{code}\n```", inline=False)
 
             if old_participation:
                 await old_participation.edit(embed=embed)

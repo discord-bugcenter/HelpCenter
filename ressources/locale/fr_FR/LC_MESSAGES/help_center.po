@@ -1,15 +1,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-04-16 23:36+0200\n"
-"PO-Revision-Date: 2021-04-16 23:36+0200\n"
+"POT-Creation-Date: 2021-05-01 14:29+0200\n"
+"PO-Revision-Date: 2021-05-01 14:29+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.2\n"
+"X-Generator: Poedit 2.4.3\n"
 "X-Poedit-Basepath: ../../../..\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Poedit-SearchPath-0: cogs\n"
@@ -88,7 +88,7 @@ msgstr ""
 msgid "Your language seems not be valid for the event."
 msgstr "Votre langage ne pas être valide pour l'évènement."
 
-#: cogs/event.py:190
+#: cogs/event.py:192
 msgid ""
 "**This is your participation :**\n"
 "\n"
@@ -96,35 +96,35 @@ msgstr ""
 "**Voici votre participation :**\n"
 "\n"
 
-#: cogs/event.py:191
+#: cogs/event.py:193
 #, python-brace-format
-msgid "`Language` -> `{0}`\n"
-msgstr "`Langage` -> `{0}`\n"
+msgid "`Language` -> `{0}` ({1})\n"
+msgstr "`Langage` -> `{0}` ({1})\n"
 
-#: cogs/event.py:192
+#: cogs/event.py:194
 #, python-brace-format
 msgid "`Length` -> `{0}`\n"
 msgstr "`Longueur` -> `{0}`\n"
 
-#: cogs/event.py:194
+#: cogs/event.py:196
 msgid "Do you want ot post it ? ✅ ❌"
 msgstr "Voulez-vous l'envoyer ? ✅ ❌"
 
-#: cogs/event.py:205
+#: cogs/event.py:207
 msgid "<a:typing:832608019920977921> Your code is passing some tests..."
 msgstr ""
 "<a:typing:832608019920977921> Votre code est en train de faire quelques "
 "tests…"
 
-#: cogs/event.py:213 cogs/help.py:20 cogs/miscellaneous.py:97
+#: cogs/event.py:215 cogs/help.py:20 cogs/miscellaneous.py:97
 msgid "An error occurred."
 msgstr "Une erreur est survenue."
 
-#: cogs/event.py:216
+#: cogs/event.py:218
 msgid "Your code excited with an error."
 msgstr "Votre code s'est arrêté avec une erreur."
 
-#: cogs/event.py:225
+#: cogs/event.py:227
 msgid ""
 "Your code didn't pass all the tests. If you think it's an error, please "
 "contact a staff."
@@ -132,51 +132,51 @@ msgstr ""
 "Votre code n'a pas passé tout les tests. Si vous pensez qu'il s'agit d'une "
 "erreur, veuillez contacter un staff."
 
-#: cogs/event.py:241
+#: cogs/event.py:243
 msgid "All tests passed successfully."
-msgstr "Tout les tests ont été passé avec succès !"
+msgstr "Tout les tests ont été passé avec succès."
 
-#: cogs/event.py:259
+#: cogs/event.py:261
 msgid "Your entry has been successfully modified !"
 msgstr "Votre participation a été modifiée avec succès !"
 
-#: cogs/event.py:262
+#: cogs/event.py:264
 msgid "Your entry has been successfully sent !"
 msgstr "Votre participation a été envoyée avec succès !"
 
-#: cogs/event.py:267
+#: cogs/event.py:269
 msgid "Cancelled"
 msgstr "Annulé"
 
-#: cogs/event.py:272
+#: cogs/event.py:274
 msgid "Remove your participation from the contest"
 msgstr "Retirer votre participation du concours"
 
-#: cogs/event.py:283
+#: cogs/event.py:285
 msgid "You didn't participate !"
 msgstr "Vous n'avez pas participé !"
 
-#: cogs/event.py:292
+#: cogs/event.py:294
 msgid "__Choose which participation you want to cancel :__\n"
 msgstr "__Choisissez quel participation vous souhaitez annuler :__\n"
 
-#: cogs/event.py:309
+#: cogs/event.py:311
 msgid "Your participation has been successfully deleted"
 msgstr "Votre participation a été supprimée avec succès"
 
-#: cogs/event.py:313
+#: cogs/event.py:315
 msgid "Get some stats about the current contest"
 msgstr "Obtenir quelques statistiques a propos du concours actuel"
 
-#: cogs/event.py:324
+#: cogs/event.py:326
 msgid "There is no participation at the moment."
 msgstr "Il n'y a aucune participation pour le moment."
 
-#: cogs/event.py:327
+#: cogs/event.py:329
 msgid "Some informations..."
 msgstr "Quelques informations..."
 
-#: cogs/event.py:329
+#: cogs/event.py:331
 msgid ""
 "**Number of participations :** {}\n"
 "\\u200b"
@@ -184,23 +184,23 @@ msgstr ""
 "**Nombre de participations :**{}\n"
 "\\u200b"
 
-#: cogs/event.py:336
+#: cogs/event.py:338
 msgid "• Global ranking : **{}** *({} > you > {})*\n"
 msgstr "• Classement global : **{}** *({} > vous  > {})*\n"
 
-#: cogs/event.py:338 cogs/event.py:339 cogs/event.py:344 cogs/event.py:345
+#: cogs/event.py:340 cogs/event.py:341 cogs/event.py:346 cogs/event.py:347
 msgid "nobody"
 msgstr "personne"
 
-#: cogs/event.py:342
+#: cogs/event.py:344
 msgid "• By language ranking : **{}** *({} > you > {})*"
 msgstr "• Classement par langage : **{}** *({} > vous  > {})*"
 
-#: cogs/event.py:348
+#: cogs/event.py:350
 msgid "Your participation with {}"
 msgstr "Votre participation avec {}"
 
-#: cogs/event.py:354
+#: cogs/event.py:356
 msgid "Breakdown by languages used."
 msgstr "Répartition par langages utilisés."
 
