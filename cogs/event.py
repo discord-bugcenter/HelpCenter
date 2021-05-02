@@ -11,6 +11,7 @@ import discord
 from discord.ext import commands
 from discord.utils import find
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 from matplotlib.ticker import StrMethodFormatter
 
 from .utils import custom_errors, checkers, misc
@@ -32,11 +33,11 @@ with request.urlopen('https://emkc.org/api/v2/piston/runtimes') as r:
     AVAILABLE_LANGUAGES: list = json.loads(r.read().decode('utf-8'))
 
 LANGUAGES_EQUIVALENT = (
-    ('javascript', 'typescript'),
+    ('javascript', 'typescript', 'coffeescript'),
     ('c++', 'c', 'd', 'fortran'),
     ('nasm', 'nasm64'),
     ('python2', 'python', 'yeethon'),
-    ('kotlin', 'java')
+    ('kotlin', 'java', 'dotnet')
 )
 
 
@@ -124,7 +125,7 @@ class Event(commands.Cog):
             datas[language].append(infos)
             datas_global.append(infos)
 
-        sort_key = lambda obj: obj[2:3]  # length and date
+        sort_key = lambda obj: (obj[2], obj[3])  # length and date
 
         datas = {key: sorted(value, key=sort_key) for key, value in datas.items()}
         datas_global = sorted(datas_global, key=sort_key)
@@ -165,6 +166,7 @@ class Event(commands.Cog):
         usage="/event participate {code}"
     )
     @commands.dm_only()
+    @commands.max_concurrency(1, per=commands.BucketType.user)
     @event_not_ended()
     @event_not_closed()
     async def participate(self, ctx, *, code):
@@ -301,7 +303,7 @@ class Event(commands.Cog):
             try:
                 reaction, __ = await self.bot.wait_for('reaction_add', timeout=120,
                                                        check=lambda react, usr: str(react.emoji) in reactions[:len(selectable)] and usr.id == ctx.author.id and react.message.id == message.id)
-            except TimeoutError:
+            except asyncio.TimeoutError:
                 try: await message.delete()
                 except: pass
                 return
@@ -332,7 +334,8 @@ class Event(commands.Cog):
         embed = discord.Embed(
             title=_('Some informations...'),
             color=misc.Color.grey_embed().discord,
-            description=_('**Number of participations :** {}\n\u200b').format(len(datas_global))
+            description=(_('**Number of participations :** {}\n').format(len(datas_global)) +
+                         _('**Number of unique participations :** {}\n\u200b').format(len(set(d[1] for d in datas_global))))
         )
 
         for language, data in user_infos.items():
@@ -351,13 +354,19 @@ class Event(commands.Cog):
                 datas[language][language_ranking - 2][2] if language_ranking - 1 else _('nobody')  # if rang index isn't 0
             )
 
-            embed.add_field(name=_('Your participation with {}').format(language),
+            embed.add_field(name=_('**Your participation with {} :**').format(language),
                             value=formatted_informations,
                             inline=False)
 
         embed.set_image(url="attachment://graph.png")
 
-        fn = partial(self.create_graph_bars, datas, _("Breakdown by languages used."))
+        texts = {
+            'title': _("Breakdown by languages used."),
+            'nb_parts': _('Number of participations'),
+            'chars_parts': _('Number of characters')
+        }
+
+        fn = partial(self.create_graph_bars, datas, texts)
         final_buffer = await self.bot.loop.run_in_executor(None, fn)
 
         file = discord.File(filename="graph.png", fp=final_buffer)
@@ -365,22 +374,40 @@ class Event(commands.Cog):
         await ctx.channel.send(embed=embed, file=file)
 
     @staticmethod
-    def create_graph_bars(datas, title):  # title in arguments because translations doesn't work in a separated thread
+    def create_graph_bars(datas, translated_texts: dict):  # title in arguments because translations doesn't work in a separated thread
+        ax: plt.Axes
         fig, ax = plt.subplots()
-        langs = datas.keys()
-        values = [len(v) for v in datas.values()]
-        ax.bar(langs, values,
-               color=misc.Color(10, 100, 255, 0.5).mpl,
-               edgecolor=misc.Color(10, 100, 255).mpl,
-               linewidth=5)
+
+        languages = list(datas.keys())
+        number_per_language = [len(v) for v in datas.values()]
+        lengths_per_language = [sorted([i[2] for i in v]) for v in datas.values()]
+
+        cmap = mcolors.LinearSegmentedColormap.from_list("", ["red", "yellow", "green"])
+
+        lengths: plt.Axes = ax.twinx()
+
+        ax.bar(range(1, len(languages)+1), number_per_language,
+               color=cmap([i/max(number_per_language) for i in number_per_language]))
+        lengths.boxplot(lengths_per_language,
+                        medianprops=dict(color='black'),
+                        labels=languages)
+        #  lengths.bar(langs, max_length, bottom=min_length, width=0.1, color='black')
 
         ax.yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))  # No decimal places
-        ax.set_yticks(range(1, max(values) + 1))
-        ax.set_title(title)
+        ax.set_yticks(range(1, max(number_per_language) + 1))
+
+        for label in ax.get_xticklabels():
+            label.set_ha("right")
+            label.set_rotation(45)
+
+        ax.set_title(translated_texts['title'])
+        ax.set_ylabel(translated_texts['nb_parts'])
+        lengths.set_ylabel(translated_texts['chars_parts'])
+
         buff = io.BytesIO()
         fig.savefig(buff)
         buff.seek(0)
-        del fig
+        plt.close(fig)
 
         return buff
 
