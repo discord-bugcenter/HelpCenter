@@ -19,7 +19,7 @@ from .utils.i18n import use_current_gettext as _
 class Miscellaneous(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.re_token = re.compile(r"[\w\-=]+\.[\w\-=]+\.[\w\-=]+", re.ASCII)
+        self.re_token = re.compile(r"[\w\-=]{24}\.[\w\-=]{6}\.[\w\-=]{27}", re.ASCII)
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
