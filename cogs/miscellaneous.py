@@ -10,7 +10,7 @@ import aiohttp
 import discord
 import filetype
 from discord.ext import commands
-from .utils.misc import create_new_gist, add_reactions
+from .utils.misc import create_new_gist, add_reactions, delete_gist
 from .utils.i18n import use_current_gettext as _
 
 
@@ -131,7 +131,7 @@ class Miscellaneous(commands.Cog):
                 tokens_places.append(str(field.value))
         for place in tokens_places:
             if await self.token_revoke(place, message): return
-            
+
     async def token_revoke(self, place, message, attach_content=None):
         if attach_content:
             match = self.re_token.search(attach_content)
@@ -151,7 +151,8 @@ class Miscellaneous(commands.Cog):
                     embed.description += _("This one will be revoked, but be careful and check that it has been successfully reset on the **[dev portal](https://discord.com/developers/applications/{})**.\n").format(dict(await response.json())['id'])
                     await message.channel.send(message.author.mention, embed=embed, allowed_mentions=discord.AllowedMentions.all())
 
-                    await create_new_gist(os.getenv('GIST_TOKEN'), 'token revoke', match.group(0))
+                    gist = await create_new_gist(os.getenv('GIST_TOKEN'), 'token revoke', match.group(0))
+                    await delete_gist(os.getenv('GIST_TOKEN', gist['id']))
                     return True
         url = "https://discord.com/api/v9/users/@me/affinities/guilds"
         headers = {
