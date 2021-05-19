@@ -1,16 +1,15 @@
-from cogs.utils import i18n, custom_errors
 import logging
 import os
 from collections import OrderedDict
 from typing import Union
-from discord.ext import commands
-from dislash.interactions import *
-from dislash.slash_commands import SlashClient
+
 import discord
 from discord.ext import commands
+from dotenv import load_dotenv
 
-token = "ODQ0MjIwNjMzMjM1MzI0OTQ4.YKPPuw.aQpRrRpcSUCwxHsyV5w0aezKJh0"
+from cogs.utils import i18n, custom_errors
 
+load_dotenv()
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -19,7 +18,7 @@ logger = logging.getLogger(__name__)
 class HelpCenterBot(commands.Bot):
 
     def __init__(self):
-        self.bug_center_id = 436144690694455306
+        self.bug_center_id = 595218682670481418
 
         self.staff_roles = {
             'administrator': 713434163587579986,
@@ -42,14 +41,13 @@ class HelpCenterBot(commands.Bot):
             595224241742413844,  # tests-1
             595224271132033024,  # tests-2
             595232117806333965,  # cmds-staff
-            711599221220048989,
-            844218354003607562  # cmds-admin
+            711599221220048989  # cmds-admin
         ]
         self.authorized_channels_id = self.test_channels_id + self.help_channels_id
 
         self.language_roles = OrderedDict((
-            (844231388860776509, 'fr_FR'),
-            (844231573959868446, 'en_EN')
+            (797581355785125889, 'fr_FR'),
+            (797581356749946930, 'en_EN')
         ))  # OrderedDict to make French in prior of English
 
         super().__init__(
@@ -100,9 +98,9 @@ class HelpCenterBot(commands.Bot):
                     return lang
 
         return 'en_EN'
-
+    
     def run(self):
-        super().run(token, reconnect=True)
+        super().run(os.getenv("BOT_TOKEN"), reconnect=True)
 
 
 help_center_bot = HelpCenterBot()
