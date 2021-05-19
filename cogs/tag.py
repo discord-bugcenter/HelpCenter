@@ -2,7 +2,8 @@ import os
 from os import path
 import json
 from difflib import SequenceMatcher
-
+from dislash import slash_commands as slash
+from dislash.interactions import *
 import discord
 from discord.ext import commands
 from schema import SchemaError
