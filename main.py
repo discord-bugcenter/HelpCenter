@@ -9,7 +9,8 @@ from discord.ext import commands
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
-token = "ODQ0MjIwNjMzMjM1MzI0OTQ4.YKPPuw.fmwmxlElrJr4i1v-1TPVtexHNoA"
+
+load_dotenv()
 
 class HelpCenterBot(commands.Bot):
 
@@ -96,8 +97,9 @@ class HelpCenterBot(commands.Bot):
 
         return 'en_EN'
 
+    
     def run(self):
-        super().run(token, reconnect=True)
+        super().run(os.getenv("BOT_TOKEN"), reconnect=True)
 
 
 help_center_bot = HelpCenterBot()
