@@ -11,7 +11,7 @@ import filetype
 from discord.ext import commands
 from .utils.misc import create_new_gist, add_reactions, delete_gist
 from .utils.i18n import use_current_gettext as _
-token = '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'
+token = os.getenv('GIST_TOKEN')
 
 class Miscellaneous(commands.Cog):
     def __init__(self, bot):
