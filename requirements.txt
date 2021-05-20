@@ -5,3 +5,4 @@ schema
 contextvars
 python-dotenv
 filetype
+aiohttp

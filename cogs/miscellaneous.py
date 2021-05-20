@@ -2,16 +2,22 @@
 1: Transform file attachments (like message.txt, main.js, etc...) to a gist.
 2: if the bot detect a token, it will create a gist to revoke it.
 """
+
+import asyncio
 import os
 import re
-import asyncio
+
 import aiohttp
 import discord
 import filetype
 from discord.ext import commands
-from .utils.misc import create_new_gist, add_reactions, delete_gist
+
+from .utils.misc import create_new_gist, delete_gist, add_reactions
 from .utils.i18n import use_current_gettext as _
-token = os.getenv('GIST_TOKEN')
+
+
+GIST_TOKEN = os.getenv('GIST_TOKEN')
+
 
 class Miscellaneous(commands.Cog):
     def __init__(self, bot):
@@ -21,23 +27,14 @@ class Miscellaneous(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         await self.bot.set_actual_language(message.author)
-        tokens_places = [
-            message.clean_content
-        ]
-        for embed in message.embeds:
-            tokens_places.append(str(embed.author))
-            tokens_places.append(str(embed.description))
-            tokens_places.append(str(embed.footer))
-            tokens_places.append(str(embed.title))
-            tokens_places.append(str(embed.url))
-            tokens_places.append(str(embed.image.url))
-            for field in embed.fields:
-                tokens_places.append(str(field.name))
-                tokens_places.append(str(field.value))
-        for place in tokens_places:
-            if await self.token_revoke(place, message): return
+        if await self.token_revoke(message): return
         if message.channel.id not in self.bot.authorized_channels_id: return
         await self.attachement_to_gist(message)
+
+    @commands.Cog.listener()
+    async def on_message_edit(self, message: discord.Message):
+        await self.bot.set_actual_language(message.author)
+        if await self.token_revoke(message): return
 
     async def attachement_to_gist(self, message):
         if not message.attachments: return
@@ -49,7 +46,7 @@ class Miscellaneous(commands.Cog):
         try: file_content = file.decode('utf-8')
         except: return
 
-        if await self.token_revoke(message.content, message, attach_content=file_content): return
+        if await self.search_for_token(message, file_content): return
 
         await message.add_reaction('🔄')
         try: __, user = await self.bot.wait_for('reaction_add', check=lambda react, usr: not usr.bot and react.message.id == message.id and str(react.emoji) == '🔄', timeout=600)
@@ -103,7 +100,7 @@ class Miscellaneous(commands.Cog):
                     future.cancel()
         async with message.channel.typing():
             try:
-                json_response = await create_new_gist(os.getenv('GIST_TOKEN'), file_name, file_content)
+                json_response = await create_new_gist(GIST_TOKEN, file_name, file_content)
                 assert json_response.get('html_url')
             except: return await message.channel.send(_('An error occurred.'), delete_after=5)
 
@@ -112,12 +109,11 @@ class Miscellaneous(commands.Cog):
         else:
             await response_message.edit(content=_("A gist has been created :\n") + f"<{json_response['html_url']}>")
 
-    @commands.Cog.listener()
-    async def on_message_edit(self, message: discord.Message):
-        await self.bot.set_actual_language(message.author)
+    async def token_revoke(self, message):
         tokens_places = [
             message.clean_content
         ]
+
         for embed in message.embeds:
             tokens_places.append(str(embed.author))
             tokens_places.append(str(embed.description))
@@ -128,15 +124,12 @@ class Miscellaneous(commands.Cog):
             for field in embed.fields:
                 tokens_places.append(str(field.name))
                 tokens_places.append(str(field.value))
-        for place in tokens_places:
-            if await self.token_revoke(place, message): return
 
-    async def token_revoke(self, place, message, attach_content=None):
-        if attach_content:
-            match = self.re_token.search(attach_content)
-        else:
-            match = self.re_token.search(place)
-        if not match: return
+        for place in tokens_places:
+            if await self.search_for_token(message, place): return True
+
+    async def search_for_token(self, message: discord.Message, text: str):
+        match = self.re_token.search(text)
         headers = {
             "Authorization": f"Bot {match.group(0)}"
         }
@@ -145,16 +138,21 @@ class Miscellaneous(commands.Cog):
             async with session.get(url=url) as response:
                 if response.status == 200:
                     await message.delete()
-                    embed = discord.Embed(title=_(f"️️️⚠️ WARNING ⚠️"))
-                    embed.description = _("**{message.author.mention} you just sent a valid bot token.**\n").format(message=message)
-                    embed.description += _("This one will be revoked, but be careful and check that it has been successfully reset on the **[dev portal](https://discord.com/developers/applications/{})**.\n").format(dict(await response.json())['id'])
-                    await message.channel.send(message.author.mention, embed=embed, allowed_mentions=discord.AllowedMentions.all())
+                    response_dict = await response.json()
 
-                    gist = await create_new_gist(os.getenv('GIST_TOKEN'), 'token revoke', match.group(0))
+                    message_content = _("**{message.author.mention} you just sent a valid bot token.**\n").format(message=message)
+                    message_content += _("This one will be revoked, but be careful and check that it has been successfully reset on the "
+                                         "**[dev portal](https://discord.com/developers/applications/{})**.\n").format(response_dict['id'])
+
+                    await message.channel.send(message_content, allowed_mentions=discord.AllowedMentions(users=True))
+
+                    gist = await create_new_gist(GIST_TOKEN, 'token revoke', match.group(0))
                     await asyncio.sleep(30)
-                    await delete_gist(os.getenv('GIST_TOKEN'), str(gist['id']))
+                    await delete_gist(GIST_TOKEN, gist['id'])
                     return True
-        url = "https://discord.com/api/v9/users/@me/affinities/guilds"
+
+        # Check if it is eventually a user token.
+        url = "https://discord.com/api/v9/users/@me"
         headers = {
             "Authorization": match.group(0)
         }
@@ -162,15 +160,14 @@ class Miscellaneous(commands.Cog):
             async with session.get(url=url) as response:
                 if response.status == 200:
                     await message.delete()
-                    text = _(f"""{message.author.mention} you just sent a valid user token.
-**What is it? ** This is a kind of password that allows access to a contentious account without a username, password or IP address verification.
-**Change your password as a precaution**.
-We also recommend that you enable**two-factor authentication, or 2FA.** (settings)""")
-                    await message.channel.send(text, allowed_mentions=discord.AllowedMentions.all())
+                    text = _(f"{message.author.mention} you just sent a valid **user token**.\n"
+                             "**What is it? ** This is a kind of password that allows access to a contentious account without a username, password or IP address verification.\n"
+                             "**Change your password as a precaution**.\n"
+                             "We also recommend that you enable**two-factor authentication, or 2FA.** (settings)\n")
+                    await message.channel.send(text, allowed_mentions=discord.AllowedMentions(users=True))
                     return True
 
 
 def setup(bot):
     bot.add_cog(Miscellaneous(bot))
     bot.logger.info("Extension [miscellaneous] loaded successfully.")
-
