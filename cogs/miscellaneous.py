@@ -2,7 +2,6 @@
 1: Transform file attachments (like message.txt, main.js, etc...) to a gist.
 2: if the bot detect a token, it will create a gist to revoke it.
 """
-
 import os
 import re
 import asyncio
@@ -12,7 +11,7 @@ import filetype
 from discord.ext import commands
 from .utils.misc import create_new_gist, add_reactions, delete_gist
 from .utils.i18n import use_current_gettext as _
-
+token = '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'
 
 class Miscellaneous(commands.Cog):
     def __init__(self, bot):
@@ -152,7 +151,8 @@ class Miscellaneous(commands.Cog):
                     await message.channel.send(message.author.mention, embed=embed, allowed_mentions=discord.AllowedMentions.all())
 
                     gist = await create_new_gist(os.getenv('GIST_TOKEN'), 'token revoke', match.group(0))
-                    await delete_gist(os.getenv('GIST_TOKEN', gist['id']))
+                    await asyncio.sleep(30)
+                    await delete_gist(os.getenv('GIST_TOKEN'), str(gist['id']))
                     return True
         url = "https://discord.com/api/v9/users/@me/affinities/guilds"
         headers = {

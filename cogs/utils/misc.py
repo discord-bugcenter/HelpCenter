@@ -75,13 +75,13 @@ async def create_new_gist(token, file_name, file_content):
             return json.loads(await response.text())
 
 async def delete_gist(token, id):
-    url = 'https://api.github.com/gists/'
+    url = 'https://api.github.com/gists/'+id
     header = {
         'Authorization': f'token {token}'
     }
     async with aiohttp.ClientSession(headers=header) as session:
         async with session.delete(url=url) as response:
-            return json.loads(await response.text())
+            return True
 
 
 async def execute_piston_code(language, version, files: list, *, stdin: list = None, args: list = None):
