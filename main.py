@@ -1,21 +1,24 @@
-from cogs.utils import i18n, custom_errors
 import logging
 import os
 from collections import OrderedDict
 from typing import Union
-from discord.ext import commands
+
 import discord
 from discord.ext import commands
+from dotenv import load_dotenv
+
+from cogs.utils import i18n, custom_errors
+
+load_dotenv()
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
-load_dotenv()
 
 class HelpCenterBot(commands.Bot):
 
     def __init__(self):
-        self.bug_center_id = 436144690694455306
+        self.bug_center_id = 595218682670481418
 
         self.staff_roles = {
             'administrator': 713434163587579986,
@@ -38,14 +41,13 @@ class HelpCenterBot(commands.Bot):
             595224241742413844,  # tests-1
             595224271132033024,  # tests-2
             595232117806333965,  # cmds-staff
-            711599221220048989,
-            844218354003607562  # cmds-admin
+            711599221220048989  # cmds-admin
         ]
         self.authorized_channels_id = self.test_channels_id + self.help_channels_id
 
         self.language_roles = OrderedDict((
-            (844231388860776509, 'fr_FR'),
-            (844231573959868446, 'en_EN')
+            (797581355785125889, 'fr_FR'),
+            (797581356749946930, 'en_EN')
         ))  # OrderedDict to make French in prior of English
 
         super().__init__(
@@ -56,11 +58,10 @@ class HelpCenterBot(commands.Bot):
             allowed_mentions=discord.AllowedMentions.none(),
             intents=discord.Intents.all()
         )
-
+        
         self.logger = logger
 
-        extensions = ['event', 'tag', 'help', 'command_error',
-                      'miscellaneous', 'lines', 'google_it']
+        extensions = ['event', 'tag', 'help', 'command_error', 'miscellaneous', 'lines', 'google_it']
         for extension in extensions:
             self.load_extension('cogs.'+extension)
 
@@ -78,16 +79,14 @@ class HelpCenterBot(commands.Bot):
             raise custom_errors.NotInBugCenter()
         return True
 
-    # function called when a command is executed
-    async def set_command_language(self, ctx: commands.Context) -> None:
+    async def set_command_language(self, ctx: commands.Context) -> None:  # function called when a command is executed
         await self.set_actual_language(ctx.author)
 
     async def set_actual_language(self, user: Union[discord.Member, discord.User]) -> None:
         i18n.current_locale.set(self.get_user_language(user))
 
     def get_user_language(self, user: Union[discord.Member, discord.User]) -> str:
-        # if the function was executed in DM
-        if not hasattr(user, 'guild') or user.guild.id != self.bug_center_id:
+        if not hasattr(user, 'guild') or user.guild.id != self.bug_center_id:  # if the function was executed in DM
             user = self.get_guild(self.bug_center_id).get_member(user.id)
 
         if user:
@@ -97,10 +96,8 @@ class HelpCenterBot(commands.Bot):
 
         return 'en_EN'
 
-    
     def run(self):
         super().run(os.getenv("BOT_TOKEN"), reconnect=True)
-
 
 help_center_bot = HelpCenterBot()
 help_center_bot.run()
