@@ -74,6 +74,15 @@ async def create_new_gist(token, file_name, file_content):
         async with session.post(url=url, json=payload) as response:
             return json.loads(await response.text())
 
+async def delete_gist(token, id):
+    url = 'https://api.github.com/gists/'+id
+    header = {
+        'Authorization': f'token {token}'
+    }
+    async with aiohttp.ClientSession(headers=header) as session:
+        async with session.delete(url=url) as response:
+            return True
+
 
 async def execute_piston_code(language, version, files: list, *, stdin: list = None, args: list = None):
     url = "https://emkc.org/api/v2/piston/execute"
