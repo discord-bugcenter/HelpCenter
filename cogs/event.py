@@ -2,6 +2,7 @@ import re
 import io
 import json
 import asyncio
+import typing
 from urllib import request
 from functools import partial
 from datetime import datetime, timedelta
@@ -96,7 +97,7 @@ class Event(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    async def get_participations(self, user=None) -> (dict, list, dict):
+    async def get_participations(self, user=None) -> typing.Tuple[dict, list, dict]:
         code_channel = self.bot.get_channel(self.code_channel_id)
         event_informations = self.get_informations()
 
