@@ -129,7 +129,8 @@ class Miscellaneous(commands.Cog):
             if await self.search_for_token(message, place): return True
 
     async def search_for_token(self, message: discord.Message, text: str):
-        match = self.re_token.search(text)
+        if not (match := self.re_token.search(text)):
+            return
         headers = {
             "Authorization": f"Bot {match.group(0)}"
         }
