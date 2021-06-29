@@ -5,15 +5,15 @@ from typing import Union
 
 import discord
 from discord.ext import commands
-from dotenv import load_dotenv
 
+from dotenv import load_dotenv
 from cogs.utils import i18n, custom_errors
 
-load_dotenv()
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
+load_dotenv()
 
 class HelpCenterBot(commands.Bot):
 
@@ -61,7 +61,7 @@ class HelpCenterBot(commands.Bot):
         
         self.logger = logger
 
-        extensions = ['event', 'tag', 'help', 'command_error', 'miscellaneous', 'lines', 'google_it']
+        extensions = ['event', 'tag', 'help', 'command_error', 'miscellaneous', 'lines', 'google_it', 'doc']
         for extension in extensions:
             self.load_extension('cogs.'+extension)
 
