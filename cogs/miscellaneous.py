@@ -32,9 +32,9 @@ class Miscellaneous(commands.Cog):
         await self.attachement_to_gist(message)
 
     @commands.Cog.listener()
-    async def on_message_edit(self, message: discord.Message):
-        await self.bot.set_actual_language(message.author)
-        if await self.token_revoke(message): return
+    async def on_message_edit(self, old_message: discord.Message, _):
+        await self.bot.set_actual_language(old_message.author)
+        if await self.token_revoke(old_message): return
 
     async def attachement_to_gist(self, message):
         if not message.attachments: return
