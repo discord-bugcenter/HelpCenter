@@ -19,3 +19,17 @@ class NotAuthorizedRoles(errors.CheckFailure):
 
 class NotInBugCenter(errors.CommandError):
     pass
+
+
+class COCLinkNotValid(errors.BadArgument):
+    def __init__(self, link, message=None, *args):
+        self.link = link
+        super().__init__(message, *args)
+    pass
+
+
+class AlreadyProcessingCOC(errors.BadArgument):
+    def __init__(self, code, message=None, *args):
+        self.code = code
+        super().__init__(message, *args)
+    pass
