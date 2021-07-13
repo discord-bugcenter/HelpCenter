@@ -74,6 +74,7 @@ async def create_new_gist(token, file_name, file_content):
         async with session.post(url=url, json=payload) as response:
             return json.loads(await response.text())
 
+
 async def delete_gist(token, id):
     url = 'https://api.github.com/gists/'+id
     header = {
@@ -105,6 +106,12 @@ async def execute_piston_code(language, version, files: list, *, stdin: list = N
 
 
 class Color:
+    def __init__(self, r, g, b, a=1.0):
+        self.r = r
+        self.g = g
+        self.b = b
+        self.a = a
+
     @classmethod
     def black(cls):
         return cls(0, 0, 0)
@@ -113,11 +120,17 @@ class Color:
     def grey_embed(cls):
         return cls(47, 49, 54)
 
-    def __init__(self, r, g, b, a=1.0):
-        self.r = r
-        self.g = g
-        self.b = b
-        self.a = a
+    @classmethod
+    def green(cls):
+        return cls(87, 242, 135)
+
+    @classmethod
+    def red(cls):
+        return cls(237, 66, 69)
+
+    @classmethod
+    def yellow(cls):
+        return cls(254, 231, 92)
 
     @property
     def mpl(self):  # matplotlib
