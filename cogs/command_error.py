@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord.ext.commands import errors
 
 from .utils import custom_errors
-from.utils.misc import Color
+from .utils.misc import Color
 from .utils.i18n import use_current_gettext as _
 
 
@@ -45,6 +45,10 @@ class CommandError(commands.Cog):
             formatted_text = (_("You can't execute this command, you need one of these roles :\n\n").format(**locals()) +
                               f"<@&{'>, <@&'.join(str(role_id) for role_id in error.list_roles_id)}>")
             return await self.send_error(ctx, formatted_text)
+        if isinstance(error, custom_errors.COCLinkNotValid):
+            return await self.send_error(ctx, _("You send an invalid link/code, or the game cannot be joined anymore, or the game doesn't exist !"))
+        if isinstance(error, custom_errors.AlreadyProcessingCOC):
+            return await self.send_error(ctx, _("This clash is already published !"))
         if isinstance(error, commands.MissingRequiredArgument):
             formatted_text = (_("A required argument is missing in the command !\n") +
                               f"`{ctx.command.usage}`")

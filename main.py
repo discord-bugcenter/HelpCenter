@@ -61,7 +61,7 @@ class HelpCenterBot(commands.Bot):
         
         self.logger = logger
 
-        extensions = ['event', 'tag', 'help', 'command_error', 'miscellaneous', 'lines', 'google_it']
+        extensions = ['clash_of_code', 'event', 'tag', 'help', 'command_error', 'miscellaneous', 'lines', 'google_it']
         for extension in extensions:
             self.load_extension('cogs.'+extension)
 
@@ -98,6 +98,3 @@ class HelpCenterBot(commands.Bot):
 
     def run(self):
         super().run(os.getenv("BOT_TOKEN"), reconnect=True)
-
-help_center_bot = HelpCenterBot()
-help_center_bot.run()
