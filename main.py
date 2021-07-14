@@ -5,15 +5,16 @@ from typing import Union
 
 import discord
 from discord.ext import commands
-
 from dotenv import load_dotenv
+
 from cogs.utils import i18n, custom_errors
 
+
+load_dotenv()
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
-load_dotenv()
 
 class HelpCenterBot(commands.Bot):
 
@@ -98,6 +99,7 @@ class HelpCenterBot(commands.Bot):
 
     def run(self):
         super().run(os.getenv("BOT_TOKEN"), reconnect=True)
+
 
 help_center_bot = HelpCenterBot()
 help_center_bot.run()
