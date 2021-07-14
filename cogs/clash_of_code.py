@@ -47,7 +47,7 @@ class COCPlayer:
     rank: int
     position: int
     score: Optional[int]
-    duration: Optional[int]
+    duration: Optional[datetime.timedelta]
     criterion: Optional[int]
     language: Optional[str]
 
@@ -57,6 +57,12 @@ class COCPlayer:
         parsed = parsed._replace(query=urlencode({'id': self.id, 'format': 'profile_avatar'}))
 
         return urlunparse(parsed)
+
+    @property
+    def human_duration(self):
+        if not self.duration: return None
+        date = datetime.datetime.fromtimestamp(self.duration.total_seconds())
+        return date.strftime('%Mm%Ss')
 
 
 @dataclass()
@@ -88,7 +94,8 @@ class COC(commands.Cog):
         self.current_coc = []
         self.coc_channel_id = 864282088722006036
 
-    @commands.command('coc', aliases=['clash'])
+    @commands.command('coc', aliases=['clash'],
+                      description=_('Publish a clash of code !'))
     async def _coc(self, ctx: commands.Context, link: str) -> None:
         if match := COC_URL.match(link):
             code = match.group(1)
@@ -129,7 +136,7 @@ class COC(commands.Cog):
             rank=_json.get('rank'),
             position=_json.get('position'),
             score=_json.get('score'),
-            duration=_json.get('duration'),
+            duration=datetime.timedelta(milliseconds=_json['duration']) if _json.get('duration') else None,
             criterion=_json.get('criterion'),
             language=_json.get('languageId')
         )
@@ -158,33 +165,33 @@ class COC(commands.Cog):
 
     @staticmethod
     def create_embed(coc: COCInformations) -> discord.Embed:
-        y_n = (_('yes'), _('no'))
+        y_n = (_('no'), _('yes'))
         embed = discord.Embed(
             title=_("New clash of code !"),
             url="https://www.codingame.com/clashofcode/clash/" + coc.code,
             description=_("> `public` : {0}\n"
                           "> `mode` : {1}\n"
                           "> `started` : {2}\n"
-                          "> `finis` : {3}")
+                          "> `finished` : {3}")
                 .format(y_n[coc.public],
                         coc.mode.name.lower(),
                         y_n[coc.started],
                         y_n[coc.finished])
         )
         embed.add_field(
-            name=_("Created :"),
+            name=_("**Created :**"),
             value=f"<t:{int(coc.creation_time.timestamp())}:R>",
             inline=True
         )
         embed.add_field(
-            name=_("Start planned :"),
+            name=_("**Start planned :**"),
             value=f"<t:{int(coc.start_time.timestamp())}:R>",
             inline=True
         )
 
         if coc.started:
             embed.add_field(
-                name=_("End :"),
+                name=_("**End :**"),
                 value=f"<t:{int(coc.end_time.timestamp())}:R>",
                 inline=True
             )
@@ -192,14 +199,19 @@ class COC(commands.Cog):
         def format_player(player: COCPlayer):
             if coc.started:
                 if player.game_status == COCPlayerGameStatus.COMPLETED:
-                    return f"**{player.rank:0>2}. {player.nickname}** - {player.score}% - {player.duration if coc.mode in (COCMode.FASTEST, COCMode.REVERSE) else player.criterion}"
+                    string = f"**{player.rank:0>2}. {player.nickname}** - {player.score}% - "
+                    if coc.mode == COCMode.SHORTEST:
+                        string += f"{player.criterion}chars"
+                    else:
+                        string += f" - {player.human_duration}"
+                    return string
                 if player.game_status == COCPlayerGameStatus.READY:
-                    return f"**NA. {player.nickname}"
+                    return f"**NA. {player.nickname}**"
             else:
                 return f"**{player.position: >2}. {player.nickname}**"
 
         embed.add_field(
-            name="Participants",
+            name="**Participants**",
             value="\n".join(format_player(player) for player in coc.players) or _("aucun"),
             inline=False
         )
@@ -259,9 +271,7 @@ class COC(commands.Cog):
                 result = await r.json()
 
         coc = self.parse_coc(result, coc.message, coc.share_author)
-
         await coc.message.edit(embed=self.create_embed(coc))
-
         await self.start_processing(coc)
 
 
