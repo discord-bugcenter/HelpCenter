@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 
 from cogs.utils import i18n, custom_errors
 
+
 load_dotenv()
 
 logging.basicConfig()
@@ -61,7 +62,7 @@ class HelpCenterBot(commands.Bot):
         
         self.logger = logger
 
-        extensions = ['clash_of_code', 'event', 'tag', 'help', 'command_error', 'miscellaneous', 'lines', 'google_it']
+        extensions = ['clash_of_code', 'event', 'tag', 'help', 'command_error', 'miscellaneous', 'lines', 'google_it', 'doc']
         for extension in extensions:
             self.load_extension('cogs.'+extension)
 

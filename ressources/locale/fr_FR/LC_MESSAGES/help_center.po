@@ -1,68 +1,19 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-07-14 20:18+0200\n"
-"PO-Revision-Date: 2021-07-14 21:34+0200\n"
+"POT-Creation-Date: 2021-06-29 13:06+0200\n"
+"PO-Revision-Date: 2021-06-29 13:07+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.0\n"
+"X-Generator: Poedit 2.4.3\n"
 "X-Poedit-Basepath: ../../../..\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Poedit-SearchPath-0: cogs\n"
 "X-Poedit-SearchPath-1: main.py\n"
-
-#: cogs/clash_of_code.py:98
-msgid "Publish a clash of code !"
-msgstr "Publiez un clash of code !"
-
-#: cogs/clash_of_code.py:109 cogs/clash_of_code.py:126
-msgid "Published !"
-msgstr "Publié !"
-
-#: cogs/clash_of_code.py:168
-msgid "no"
-msgstr "non"
-
-#: cogs/clash_of_code.py:168
-msgid "yes"
-msgstr "oui"
-
-#: cogs/clash_of_code.py:170
-msgid "New clash of code !"
-msgstr "Nouveau clash of code !"
-
-#: cogs/clash_of_code.py:172
-#, python-brace-format
-msgid ""
-"> `public` : {0}\n"
-"> `mode` : {1}\n"
-"> `started` : {2}\n"
-"> `finished` : {3}"
-msgstr ""
-"> `publique` : {0}\n"
-"> `mode` : {1}\n"
-"> `commencé` : {2}\n"
-"> `finis` : {3}"
-
-#: cogs/clash_of_code.py:182
-msgid "**Created :**"
-msgstr "**Créé :**"
-
-#: cogs/clash_of_code.py:187
-msgid "**Start planned :**"
-msgstr "**Début prévu :**"
-
-#: cogs/clash_of_code.py:194
-msgid "**End :**"
-msgstr "**Fin :**"
-
-#: cogs/clash_of_code.py:215
-msgid "aucun"
-msgstr ""
 
 #: cogs/command_error.py:28
 #, python-brace-format
@@ -90,24 +41,20 @@ msgstr ""
 "\n"
 
 #: cogs/command_error.py:49
-msgid ""
-"You send an invalid link/code, or the game cannot be joined anymore, or the "
-"game doesn't exist !"
-msgstr ""
-"Vous avez envoyé un lien/code invalide, ou la partie ne peut plus être "
-"rejoindre, ou la partie n'existe pas !"
-
-#: cogs/command_error.py:51
-msgid "This clash is already published !"
-msgstr "Ce clash a déjà été publié !"
-
-#: cogs/command_error.py:53
 msgid "A required argument is missing in the command !\n"
 msgstr "Il manque un argument obligatoire dans la commande !\n"
 
-#: cogs/command_error.py:57
+#: cogs/command_error.py:53
 msgid "This command must be executed in Private Messages"
 msgstr "Cette commande doit être exécutée en messages privés"
+
+#: cogs/doc.py:19
+msgid "Shows a documentation for discord.js or discord.py :D"
+msgstr "Affiche une documentation pour discord.js ou discord.py :D"
+
+#: cogs/doc.py:24 cogs/doc.py:28
+msgid "This is the api reference for {}!\n"
+msgstr "Ceci est la référence de l'API pour {}!\n"
 
 #: cogs/event.py:52
 msgid "There is no event right now, sorry !"
@@ -341,11 +288,12 @@ msgstr ""
 #: cogs/miscellaneous.py:145
 msgid ""
 "This one will be revoked, but be careful and check that it has been "
-"successfully reset on the **[dev portal](https://discord.com/developers/"
-"applications/{})**.\n"
+"successfully reset on the **dev portal : https://discord.com/developers/"
+"applications/{}**.\n"
 msgstr ""
 "Celui-ci va être révoqué, mais faites tout de même attention et vérifiez "
-"qu'il ai bien été réinitialisé sur le **portail dev**.\n"
+"qu'il ai bien été réinitialisé sur le **portail dev : https://discord.com/"
+"developers/applications/{}**.\n"
 
 #: cogs/miscellaneous.py:164
 #, python-brace-format
@@ -358,14 +306,14 @@ msgid ""
 "We also recommend that you enable**two-factor authentication, or 2FA.** "
 "(settings)\n"
 msgstr ""
-"{message.author.mention} Vous venez tout juste d'envoyer un token "
-"utilisateur valide !**\n"
-"**Qu'est-ce que c'est ? ** C'est une sorte de mot de passe qui vous permet "
-"d'accéder a un compte Discord sans avoir besoin d'e-mail ou de mot de "
-"passe !\n"
-"**Changez votre mot de passe par précaution !**\n"
-"Nous vous recommandons aussi d'activer un système de **double "
-"authentification** (paramètres)\n"
+"{message.author.mention} vous venez d’envoyer un token d’utilisateur "
+"valide.\n"
+"**C’est quoi ?** C’est une sorte de mot de passe qui permet d’accéder à un "
+"compte discord sans identifiant ni mot de passe ou encore vérification "
+"d’adresse IP.\n"
+"**Changez votre mot de passe par précaution**.\n"
+"Nous vous conseillons aussi d’activer l'**authentification à deux facteurs, "
+"ou A2F.** (paramètres)\n"
 
 #: cogs/tag.py:62
 msgid "Send redundent help messages."

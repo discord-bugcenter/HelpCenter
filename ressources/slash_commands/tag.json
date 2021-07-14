@@ -12,12 +12,16 @@
           "value": "general"
         },
         {
-          "name": "discord",
-          "value": "discord"
+          "name": "errors",
+          "value": "errors"
         },
         {
           "name": "programmation",
           "value": "programmation"
+        },
+        {
+          "name": "discord",
+          "value": "discord"
         }
       ],
       "required": true
