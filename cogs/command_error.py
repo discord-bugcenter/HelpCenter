@@ -26,11 +26,11 @@ class CommandError(commands.Cog):
         )
         embed.set_author(
             name=f'{ctx.author.name}#{ctx.author.discriminator}',
-            icon_url=ctx.author.avatar_url
+            icon_url=ctx.author.avatar.url
         )
         embed.set_footer(
             text=_("{ctx.bot.user.name}#{ctx.bot.user.discriminator} open-source project").format(**locals()),
-            icon_url=ctx.bot.user.avatar_url
+            icon_url=ctx.bot.user.avatar.url
         )
 
         return await ctx.send(embed=embed, delete_after=10)
