@@ -8,6 +8,7 @@ from .utils.i18n import use_current_gettext as _
 
 class HelpCommand(commands.HelpCommand):
     def __init__(self) -> None:
+        """Help command will allow the user to see the command list and ask for specific help for each commands."""
         super().__init__(command_attrs={
             'description': _("Show bot commands.")
         })

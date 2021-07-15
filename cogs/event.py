@@ -79,6 +79,7 @@ def event_not_ended() -> Callable:
 
 class Event(commands.Cog):
     def __init__(self, bot: HelpCenterBot) -> None:
+        """All the commands to manage code-contests."""
         self.bot = bot
         self.code_channel_id = 810511403202248754
 
@@ -88,7 +89,7 @@ class Event(commands.Cog):
         invoke_without_command=True
     )
     async def event(self, ctx: commands.Context) -> None:
-        """The parent command to manage event (participations, creation...)."""
+        """The parent command which allow you to participate or start a code-contest."""
         if ctx.guild and ctx.channel.id not in self.bot.test_channels_id:  # Not in dm or in tests channels
             raise custom_errors.NotAuthorizedChannels(self.bot.test_channels_id)
 
@@ -178,6 +179,7 @@ class Event(commands.Cog):
     @event_not_ended()
     @event_not_closed()
     async def participate(self, ctx: commands.Context, *, code):
+        """The participate command allow you to participate to a code-contest event."""
         code_channel: Optional[discord.TextChannel] = self.bot.get_channel(self.code_channel_id)
 
         re_match = RE_GET_CODE_PARTICIPATION.search(code)
