@@ -206,7 +206,7 @@ class COC(commands.Cog):
                     if coc.mode == COCMode.SHORTEST:
                         string += f"{player.criterion}chars"
                     else:
-                        string += f" - {player.human_duration}"
+                        string += f"{player.human_duration}"
                     return string
                 if player.game_status == COCPlayerGameStatus.READY:
                     return f"**NA. {player.nickname}**"
