@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class HelpCenterBot(commands.Bot):
 
     def __init__(self) -> None:
-        """'HelpCenter' is a cool bot."""
+        """A cool Discord bot."""
         self.bug_center_id = 595218682670481418
 
         self.staff_roles = {

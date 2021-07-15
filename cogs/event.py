@@ -88,7 +88,7 @@ class Event(commands.Cog):
         description=_('Participate or get informations about an event.'),
         invoke_without_command=True
     )
-    async def event(self, ctx: commands.Context) -> None:
+    async def event(self, ctx: commands.Context) -> None:  # TODO : Simplify this function.
         """The parent command which allow you to participate or start a code-contest."""
         if ctx.guild and ctx.channel.id not in self.bot.test_channels_id:  # Not in dm or in tests channels
             raise custom_errors.NotAuthorizedChannels(self.bot.test_channels_id)

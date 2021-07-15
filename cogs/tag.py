@@ -64,7 +64,7 @@ class Tag(commands.Cog):
         description=_("Send redundant help messages.")
     )
     @checkers.authorized_channels()
-    async def _tag(self, ctx: commands.Context, category: str = None, *, query: str = None) -> None:
+    async def _tag(self, ctx: commands.Context, category: str = None, *, query: str = None) -> None:  # TODO : Simplify this function.
         """The tag command, that will do a research into savec tags, using the category and the query gived."""
         category_tags = self.tags.get(category)  # category_tags is a dict with categories of the tag
 
