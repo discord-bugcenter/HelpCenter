@@ -1,5 +1,5 @@
 import asyncio
-from typing import Union
+from typing import Union, Iterable
 
 import aiohttp
 import json
@@ -43,7 +43,7 @@ inner_tag_schema = Schema({
 tag_schema = Schema(Or([inner_tag_schema], inner_tag_schema))
 
 
-async def add_reactions(message: discord.Message, reactions: list[Union[discord.Emoji, discord.PartialEmoji, str]]) -> None:
+async def add_reactions(message: discord.Message, reactions: Iterable[Union[discord.Emoji, discord.PartialEmoji, str]]) -> None:
     for react in reactions:
         await message.add_reaction(react)
 
