@@ -15,6 +15,7 @@ from .utils.i18n import use_current_gettext as _
 
 class Tag(commands.Cog):
     def __init__(self, bot: HelpCenterBot) -> None:
+        """Tag command allow you to search for help in pre-saved topics."""
         self.bot = bot
 
         tags_folder = {
@@ -64,6 +65,7 @@ class Tag(commands.Cog):
     )
     @checkers.authorized_channels()
     async def _tag(self, ctx: commands.Context, category: str = None, *, query: str = None) -> None:
+        """The tag command, that will do a research into savec tags, using the category and the query gived."""
         category_tags = self.tags.get(category)  # category_tags is a dict with categories of the tag
 
         if category_tags is None and category is not None:

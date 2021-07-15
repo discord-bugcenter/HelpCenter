@@ -10,6 +10,7 @@ from .utils.i18n import use_current_gettext as _
 
 class GoogleIt(commands.Cog):
     def __init__(self, bot: HelpCenterBot) -> None:
+        """GoogleIt allow you to transform a query to a google research using https://letmegooglethat.com."""
         self.bot = bot
 
     @commands.command(

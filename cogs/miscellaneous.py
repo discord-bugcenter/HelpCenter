@@ -17,6 +17,7 @@ GIST_TOKEN = os.getenv('GIST_TOKEN')
 
 class Miscellaneous(commands.Cog):
     def __init__(self, bot: HelpCenterBot) -> None:
+        """Miscellaneous will check for files in messages and will convert is as gist, and will also check for discord tokens."""
         self.bot = bot
         self.re_token = re.compile(r"[\w\-=]{24}\.[\w\-=]{6}\.[\w\-=]{27}", re.ASCII)
 

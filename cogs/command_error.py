@@ -11,6 +11,7 @@ from .utils.i18n import use_current_gettext as _
 
 class CommandError(commands.Cog):
     def __init__(self, bot: HelpCenterBot) -> None:
+        """Handle error for the bot commands."""
         self.bot = bot
 
     @staticmethod
@@ -37,7 +38,6 @@ class CommandError(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error: Exception) -> Optional[discord.Message]:
         """Function called when a command raise an error."""
-
         await self.bot.set_actual_language(ctx.author)
 
         if isinstance(error, commands.CommandNotFound):
