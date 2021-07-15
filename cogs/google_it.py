@@ -2,13 +2,14 @@ from urllib import parse
 
 from discord.ext import commands
 
+from main import HelpCenterBot
 from .utils import checkers
 from .utils.misc import delete_with_emote
 from .utils.i18n import use_current_gettext as _
 
 
 class GoogleIt(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: HelpCenterBot) -> None:
         self.bot = bot
 
     @commands.command(
@@ -18,7 +19,8 @@ class GoogleIt(commands.Cog):
         description=_('Show how to do a google search :D')
     )
     @checkers.authorized_channels()
-    async def google_it(self, ctx, *, string):  # Using string (with *, arg) instead of array (*arg) to prevent argument missing.
+    async def google_it(self, ctx: commands.Context, *, string: str) -> None:  # Using string (with *, arg) instead of array (*arg) to prevent argument missing.
+        """Return a url link that animate a google research."""
         stringed_array = " ".join(word[:50] for word in string.split(' ')[:32])  # Maximum of 32 words, and a word has 50 chars max.
         query = parse.quote_plus(stringed_array)
 
@@ -27,6 +29,6 @@ class GoogleIt(commands.Cog):
         await delete_with_emote(ctx, response)
 
 
-def setup(bot):
+def setup(bot: HelpCenterBot) -> None:
     bot.add_cog(GoogleIt(bot))
     bot.logger.info("Extension [google_it] loaded successfully.")

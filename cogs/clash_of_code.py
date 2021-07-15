@@ -52,14 +52,14 @@ class COCPlayer:
     language: Optional[str]
 
     @property
-    def avatar_url(self):
+    def avatar_url(self) -> str:
         parsed = urlparse('https://www.codingame.com/servlet/fileservlet')
         parsed = parsed._replace(query=urlencode({'id': self.id, 'format': 'profile_avatar'}))
 
         return urlunparse(parsed)
 
     @property
-    def human_duration(self):
+    def human_duration(self) -> Optional[str]:
         if not self.duration: return None
         date = datetime.datetime.fromtimestamp(self.duration.total_seconds())
         return date.strftime('%Mm%Ss')
@@ -83,20 +83,23 @@ class COCInformations:
     mode: COCMode
 
     @property
-    def reachable(self):
+    def reachable(self) -> bool:
         return not self.finished and (not self.started or (self.started and not self.public))
 
 
 class COC(commands.Cog):
-    def __init__(self, bot: HelpCenterBot):
+    def __init__(self, bot: HelpCenterBot) -> None:
         self.bot = bot
 
-        self.current_coc = []
+        self.current_coc: list[str] = []
         self.coc_channel_id = 864282088722006036
 
-    @commands.command('coc', aliases=['clash'],
+    @commands.command('coc',
+                      aliases=['clash'],
+                      usage='/coc {code/link}',
                       description=_('Publish a clash of code !'))
     async def _coc(self, ctx: commands.Context, link: str) -> None:
+        """A command to publish a clash of code."""
         if match := COC_URL.match(link):
             code = match.group(1)
         elif match := COC_CODE.match(link):
@@ -104,13 +107,13 @@ class COC(commands.Cog):
         else:
             raise COCLinkNotValid(link)
 
-        message = await self.process_coc(code, ctx.author)
+        message: discord.Message = await self.process_coc(code, ctx.author)
         if ctx.channel.id != self.coc_channel_id:
             await ctx.send(embed=discord.Embed(title=_("Published !"), url=f"https://discord.com/channels/595218682670481418/{self.coc_channel_id}/{message.id}", colour=Color.green().discord))
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
-        """If a message is equal to a coc url, add a reaction to send it in the coc challenge"""
+        """If a message is equal to a coc url, add a reaction to send it in the coc challenge."""
         if message.channel.id == self.coc_channel_id and not message.author == message.guild.me and not (not message.author.bot and message.author.guild_permissions.administrator):
             await message.delete()
         if message.author.bot: return
@@ -219,7 +222,7 @@ class COC(commands.Cog):
         if coc.share_author:
             embed.set_author(
                 name=str(coc.share_author),
-                icon_url=coc.share_author.avatar_url
+                icon_url=coc.share_author.avatar.url
             )
 
         if coc.reachable:
@@ -232,7 +235,7 @@ class COC(commands.Cog):
 
         return embed
 
-    async def process_coc(self, code, author: discord.User):
+    async def process_coc(self, code, author: discord.User) -> discord.Message:
         async with aiohttp.ClientSession() as session:
             async with session.post('https://www.codingame.com/services/ClashOfCode/findClashReportInfoByHandle', json=[code]) as r:
                 result = await r.json()
@@ -246,34 +249,32 @@ class COC(commands.Cog):
         coc = self.parse_coc(result, author=author)
         self.current_coc.append(code)
 
-        coc_channel: discord.TextChannel = self.bot.get_channel(self.coc_channel_id)
-        message: discord.Message = await coc_channel.send(embed=self.create_embed(coc))
-
-        coc.message = message
+        coc_channel: Optional[discord.TextChannel] = self.bot.get_channel(self.coc_channel_id)
+        coc.message = await coc_channel.send(embed=self.create_embed(coc))
 
         self.bot.loop.create_task(self.start_processing(coc))
 
-        return message
+        return coc.message
 
     async def start_processing(self, coc: COCInformations):
-        if not coc.started:
-            time = min(15, int(coc.ms_before_start/1000))
-        elif not coc.finished:
-            time = min(25, int(coc.ms_before_end/1000))
+        while not coc.finished:
+            if not coc.started:
+                time = min(15, int(coc.ms_before_start/1000))
+            else:
+                time = min(30, int(coc.ms_before_end/1000))
+
+            await asyncio.sleep(time)
+
+            async with aiohttp.ClientSession() as session:
+                async with session.post('https://www.codingame.com/services/ClashOfCode/findClashReportInfoByHandle', json=[coc.code]) as r:
+                    result = await r.json()
+
+            coc = self.parse_coc(result, coc.message, coc.share_author)
+            await coc.message.edit(embed=self.create_embed(coc))
         else:
             self.current_coc.remove(coc.code)
-            return
-
-        await asyncio.sleep(time)
-
-        async with aiohttp.ClientSession() as session:
-            async with session.post('https://www.codingame.com/services/ClashOfCode/findClashReportInfoByHandle', json=[coc.code]) as r:
-                result = await r.json()
-
-        coc = self.parse_coc(result, coc.message, coc.share_author)
-        await coc.message.edit(embed=self.create_embed(coc))
-        await self.start_processing(coc)
 
 
 def setup(bot: HelpCenterBot) -> None:
     bot.add_cog(COC(bot))
+    bot.logger.info("Extension [clash_of_code] loaded successfully.")
