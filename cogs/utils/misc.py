@@ -1,13 +1,16 @@
 import asyncio
+from typing import Union, Iterable
+
 import aiohttp
 import json
 
+from discord.ext import commands
 from schema import Schema, Or, And, Use, Optional, Regex
 import discord
 
-text_or_list = Schema(Or(str, And(list, Use(lambda iterable: '\n'.join(iterable)))))
+text_or_list = Schema(Or(str, And(list, Use('\n'.join))))
 
-embed_shema = Schema({
+embed_schema = Schema({
     'title': str,
     'description': text_or_list,
     Optional('image'): {
@@ -22,30 +25,30 @@ embed_shema = Schema({
     ]
 })
 
-inner_tag_shema = Schema({
+inner_tag_schema = Schema({
     Optional('lang'): Regex(r'[a-z]{2}_[A-Z]{2}'),
     'name': str,
     Optional('aliases'): list,
     'description': str,
-    'response': Or({'embed': embed_shema}, {
+    'response': Or({'embed': embed_schema}, {
         'choices': [
             {
                 "choice_name": str,
-                "embed": embed_shema
+                "embed": embed_schema
             }
         ]
     })
 })
 
-tag_shema = Schema(Or([inner_tag_shema], inner_tag_shema))
+tag_schema = Schema(Or([inner_tag_schema], inner_tag_schema))
 
 
-async def add_reactions(message, reactions) -> None:
+async def add_reactions(message: discord.Message, reactions: Iterable[Union[discord.Emoji, discord.PartialEmoji, str]]) -> None:
     for react in reactions:
         await message.add_reaction(react)
 
 
-async def delete_with_emote(ctx, bot_message):
+async def delete_with_emote(ctx: commands.Context, bot_message: discord.Message) -> None:
     await bot_message.add_reaction("🗑️")
 
     try:
@@ -53,15 +56,15 @@ async def delete_with_emote(ctx, bot_message):
                                check=lambda react, usr: str(react.emoji) == "🗑️" and react.message.id == bot_message.id and usr.id == ctx.author.id)
     except asyncio.TimeoutError:
         try: await bot_message.remove_reaction("🗑️", ctx.me)
-        except: pass
+        except discord.HTTPException: pass
     else:
         try:
             await bot_message.delete()
             await ctx.message.delete()
-        except: pass
+        except discord.HTTPException: pass
 
 
-async def create_new_gist(token, file_name, file_content):
+async def create_new_gist(token: str, file_name: str, file_content: str) -> dict:
     url = 'https://api.github.com/gists'
     header = {
         'Authorization': f'token {token}'
@@ -75,17 +78,17 @@ async def create_new_gist(token, file_name, file_content):
             return json.loads(await response.text())
 
 
-async def delete_gist(token, id):
-    url = 'https://api.github.com/gists/'+id
+async def delete_gist(token: str, gist_id: str) -> bool:
+    url = 'https://api.github.com/gists/' + gist_id
     header = {
         'Authorization': f'token {token}'
     }
     async with aiohttp.ClientSession(headers=header) as session:
-        async with session.delete(url=url) as response:
+        async with session.delete(url=url):
             return True
 
 
-async def execute_piston_code(language, version, files: list, *, stdin: list = None, args: list = None):
+async def execute_piston_code(language: str, version: str, files: list, *, stdin: list = None, args: list = None) -> dict:
     url = "https://emkc.org/api/v2/piston/execute"
     payload = {
         'language': language,
@@ -106,7 +109,8 @@ async def execute_piston_code(language, version, files: list, *, stdin: list = N
 
 
 class Color:
-    def __init__(self, r, g, b, a=1.0):
+    def __init__(self, r: int, g: int, b: int, a: int = 1.0) -> None:
+        """Represent a Color object with pre-done colors that can be used as discord.Color etc..."""
         self.r = r
         self.g = g
         self.b = b

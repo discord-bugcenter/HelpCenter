@@ -1,7 +1,6 @@
 #  i18n for discord bot, source here :
 #  https://github.com/XuaTheGrate/i18n/blob/master/i18n.py
 
-import builtins
 import contextvars
 import gettext
 import os.path
@@ -39,4 +38,3 @@ def use_current_gettext(*args, **kwargs):
 
 current_locale = contextvars.ContextVar('i18n')
 current_locale.set(LOCALE_DEFAULT)
-

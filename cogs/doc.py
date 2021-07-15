@@ -5,6 +5,8 @@ from .utils.misc import delete_with_emote
 from .utils.i18n import use_current_gettext as _
 import re
 
+# TODO : this command should be recreated with a real research into documentations.
+
 
 class Doc(commands.Cog):
     def __init__(self, bot):
