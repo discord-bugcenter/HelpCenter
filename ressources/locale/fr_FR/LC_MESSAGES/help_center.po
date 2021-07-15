@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-07-14 21:38+0200\n"
-"PO-Revision-Date: 2021-07-14 21:42+0200\n"
+"POT-Creation-Date: 2021-07-15 17:25+0200\n"
+"PO-Revision-Date: 2021-07-15 17:26+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -15,27 +15,27 @@ msgstr ""
 "X-Poedit-SearchPath-0: cogs\n"
 "X-Poedit-SearchPath-1: main.py\n"
 
-#: cogs/clash_of_code.py:98
+#: cogs/clash_of_code.py:100
 msgid "Publish a clash of code !"
 msgstr "Publiez un clash of code !"
 
-#: cogs/clash_of_code.py:109 cogs/clash_of_code.py:126
+#: cogs/clash_of_code.py:112 cogs/clash_of_code.py:129
 msgid "Published !"
 msgstr "Publié !"
 
-#: cogs/clash_of_code.py:168
+#: cogs/clash_of_code.py:171
 msgid "no"
 msgstr "non"
 
-#: cogs/clash_of_code.py:168
+#: cogs/clash_of_code.py:171
 msgid "yes"
 msgstr "oui"
 
-#: cogs/clash_of_code.py:170
+#: cogs/clash_of_code.py:173
 msgid "New clash of code !"
 msgstr "Nouveau clash of code !"
 
-#: cogs/clash_of_code.py:172
+#: cogs/clash_of_code.py:175
 #, python-brace-format
 msgid ""
 "> `public` : {0}\n"
@@ -48,28 +48,28 @@ msgstr ""
 "> `commandé` : {2}\n"
 "> `finis` : {3}"
 
-#: cogs/clash_of_code.py:182
+#: cogs/clash_of_code.py:185
 msgid "**Created :**"
 msgstr "**Créé :**"
 
-#: cogs/clash_of_code.py:187
+#: cogs/clash_of_code.py:190
 msgid "**Start planned :**"
 msgstr "**Début prévu :**"
 
-#: cogs/clash_of_code.py:194
+#: cogs/clash_of_code.py:197
 msgid "**End :**"
 msgstr "**Fin :**"
 
-#: cogs/clash_of_code.py:215
+#: cogs/clash_of_code.py:218
 msgid "aucun"
 msgstr ""
 
-#: cogs/command_error.py:28
+#: cogs/command_error.py:31
 #, python-brace-format
 msgid "{ctx.bot.user.name}#{ctx.bot.user.discriminator} open-source project"
 msgstr "{ctx.bot.user.name}#{ctx.bot.user.discriminator} projet open-source"
 
-#: cogs/command_error.py:41
+#: cogs/command_error.py:49
 #, python-brace-format
 msgid ""
 "You can't execute this command in <#{ctx.channel.id}>. Try in one of these "
@@ -80,7 +80,7 @@ msgstr ""
 "dans l'un de ces salons :\n"
 "\n"
 
-#: cogs/command_error.py:45
+#: cogs/command_error.py:53
 msgid ""
 "You can't execute this command, you need one of these roles :\n"
 "\n"
@@ -89,7 +89,7 @@ msgstr ""
 "rôles  :\n"
 "\n"
 
-#: cogs/command_error.py:49
+#: cogs/command_error.py:57
 msgid ""
 "You send an invalid link/code, or the game cannot be joined anymore, or the "
 "game doesn't exist !"
@@ -97,47 +97,47 @@ msgstr ""
 "Vous avez envoyé un lien/code invalide, ou la partie ne peut plus être "
 "rejointe, ou la partie n'existe pas !"
 
-#: cogs/command_error.py:51
+#: cogs/command_error.py:59
 msgid "This clash is already published !"
 msgstr "Ce clash a déjà été publié !"
 
-#: cogs/command_error.py:53
+#: cogs/command_error.py:64
 msgid "A required argument is missing in the command !\n"
 msgstr "Il manque un argument obligatoire dans la commande !\n"
 
-#: cogs/command_error.py:57
+#: cogs/command_error.py:68
 msgid "This command must be executed in Private Messages"
 msgstr "Cette commande doit être exécutée en messages privés"
 
-#: cogs/doc.py:17
+#: cogs/doc.py:19
 msgid "Shows a documentation for discord.js or discord.py :D"
 msgstr "Affiche une documentation pour discord.js ou discord.py :D"
 
-#: cogs/doc.py:22 cogs/doc.py:25
+#: cogs/doc.py:24 cogs/doc.py:27
 msgid "This is the api reference for {}!\n"
 msgstr "Ceci est la référence de l'API pour {}!\n"
 
-#: cogs/event.py:52
+#: cogs/event.py:57
 msgid "There is no event right now, sorry !"
 msgstr "Il n'y a pas d'évènement actuellement, désolé !"
 
-#: cogs/event.py:67
+#: cogs/event.py:72
 msgid "The event is ended, sorry !"
 msgstr "L'évènement est terminé, désolé !"
 
-#: cogs/event.py:82
+#: cogs/event.py:87
 msgid "Participate or get informations about an event."
 msgstr "Participer ou obtenir des informations sur un évènement."
 
-#: cogs/event.py:90
+#: cogs/event.py:96
 msgid "Use of /event"
 msgstr "Utilisation de /event"
 
-#: cogs/event.py:166
+#: cogs/event.py:173
 msgid "Participate to the contest !"
 msgstr "Participez au concours !"
 
-#: cogs/event.py:178
+#: cogs/event.py:185
 msgid ""
 "Your message must contains a block of code (with code language) ! *look `/"
 "tag discord markdown`*"
@@ -145,7 +145,7 @@ msgstr ""
 "Votre message doit contenir un bloque de code (avec le code du langage) ! "
 "*Regardez `/tag discord code block`*"
 
-#: cogs/event.py:182
+#: cogs/event.py:189
 msgid ""
 "Looks like your code is too long! Try to remove the useless parts, the goal "
 "is to have a short and optimized code!"
@@ -153,11 +153,11 @@ msgstr ""
 "On dirait que votre code est trop long ! Essayez de supprimer les parties "
 "inutiles, le but est d'avoir un code court et optimisé !"
 
-#: cogs/event.py:186
+#: cogs/event.py:193
 msgid "Your language seems not be valid for the event."
 msgstr "Votre langage ne semple pas être valide pour l'évènement."
 
-#: cogs/event.py:196
+#: cogs/event.py:203
 msgid ""
 "**This is your participation :**\n"
 "\n"
@@ -165,35 +165,35 @@ msgstr ""
 "**Voici votre participation :**\n"
 "\n"
 
-#: cogs/event.py:197
+#: cogs/event.py:204
 #, python-brace-format
 msgid "`Language` -> `{0}` ({1})\n"
 msgstr "`Langage` -> `{0}` ({1})\n"
 
-#: cogs/event.py:198
+#: cogs/event.py:205
 #, python-brace-format
 msgid "`Length` -> `{0}`\n"
 msgstr "`Longueur` -> `{0}`\n"
 
-#: cogs/event.py:200
+#: cogs/event.py:207
 msgid "Do you want ot post it ? ✅ ❌"
 msgstr "Voulez-vous l'envoyer ? ✅ ❌"
 
-#: cogs/event.py:211
+#: cogs/event.py:218
 msgid "<a:typing:832608019920977921> Your code is passing some tests..."
 msgstr ""
 "<a:typing:832608019920977921> Votre code est en train de faire quelques "
 "tests…"
 
-#: cogs/event.py:222 cogs/help.py:20 cogs/miscellaneous.py:105
+#: cogs/event.py:229 cogs/help.py:21 cogs/miscellaneous.py:115
 msgid "An error occurred."
 msgstr "Une erreur est survenue."
 
-#: cogs/event.py:225
+#: cogs/event.py:232
 msgid "Your code excited with an error."
 msgstr "Votre code s'est arrêté avec une erreur."
 
-#: cogs/event.py:234
+#: cogs/event.py:241
 msgid ""
 "Your code didn't pass all the tests. If you think it's an error, please "
 "contact a staff."
@@ -201,55 +201,55 @@ msgstr ""
 "Votre code n'a pas passé tout les tests. Si vous pensez qu'il s'agit d'une "
 "erreur, veuillez contacter un staff."
 
-#: cogs/event.py:250
+#: cogs/event.py:257
 msgid "All tests passed successfully."
 msgstr "Tout les tests ont été passés avec succès."
 
-#: cogs/event.py:268
+#: cogs/event.py:275
 msgid "Your entry has been successfully modified !"
 msgstr "Votre participation a été modifiée avec succès !"
 
-#: cogs/event.py:271
+#: cogs/event.py:278
 msgid "Your entry has been successfully sent !"
 msgstr "Votre participation a été envoyée avec succès !"
 
-#: cogs/event.py:276
+#: cogs/event.py:283
 msgid "Cancelled"
 msgstr "Annulé"
 
-#: cogs/event.py:281
+#: cogs/event.py:288
 msgid "Remove your participation from the contest"
 msgstr "Retirer votre participation du concours"
 
-#: cogs/event.py:292
+#: cogs/event.py:299
 msgid "You didn't participate !"
 msgstr "Vous n'avez pas participé !"
 
-#: cogs/event.py:301
+#: cogs/event.py:308
 msgid "__Choose which participation you want to cancel :__\n"
 msgstr "__Choisissez quel participation vous souhaitez annuler :__\n"
 
-#: cogs/event.py:318
+#: cogs/event.py:325
 msgid "Your participation has been successfully deleted"
 msgstr "Votre participation a été supprimée avec succès"
 
-#: cogs/event.py:322
+#: cogs/event.py:329
 msgid "Get some stats about the current contest"
 msgstr "Obtenir quelques statistiques a propos du concours actuel"
 
-#: cogs/event.py:333
+#: cogs/event.py:340
 msgid "There is no participation at the moment."
 msgstr "Il n'y a aucune participation pour le moment."
 
-#: cogs/event.py:336
+#: cogs/event.py:343
 msgid "Some informations..."
 msgstr "Quelques informations..."
 
-#: cogs/event.py:338
+#: cogs/event.py:345
 msgid "**Number of participations :** {}\n"
 msgstr "**Nombre de participations :**{}\n"
 
-#: cogs/event.py:339
+#: cogs/event.py:346
 msgid ""
 "**Number of unique participations :** {}\n"
 "\\u200b"
@@ -257,51 +257,51 @@ msgstr ""
 "**Nombre de participatants uniques :**{}\n"
 "\\u200b"
 
-#: cogs/event.py:346
+#: cogs/event.py:353
 msgid "• Global ranking : **{}** *({} > you > {})*\n"
 msgstr "• Classement global : **{}** *({} > vous  > {})*\n"
 
-#: cogs/event.py:348 cogs/event.py:349 cogs/event.py:354 cogs/event.py:355
+#: cogs/event.py:355 cogs/event.py:356 cogs/event.py:361 cogs/event.py:362
 msgid "nobody"
 msgstr "personne"
 
-#: cogs/event.py:352
+#: cogs/event.py:359
 msgid "• By language ranking : **{}** *({} > you > {})*"
 msgstr "• Classement par langage : **{}** *({} > vous  > {})*"
 
-#: cogs/event.py:358
+#: cogs/event.py:365
 msgid "**Your participation with {} :**"
 msgstr "**Votre participation avec {} :**"
 
-#: cogs/event.py:365
+#: cogs/event.py:372
 msgid "Breakdown by languages used."
 msgstr "Répartition par langages utilisés."
 
-#: cogs/event.py:366
+#: cogs/event.py:373
 msgid "Number of participations"
 msgstr "Nombre de participations"
 
-#: cogs/event.py:367
+#: cogs/event.py:374
 msgid "Number of characters"
 msgstr "Nombre de caractères"
 
-#: cogs/google_it.py:18
+#: cogs/google_it.py:19
 msgid "Show how to do a google search :D"
 msgstr "Montrer comment faire une recherche google ! :D"
 
-#: cogs/google_it.py:25
+#: cogs/google_it.py:27
 msgid "The google tool is very powerful, see how it works!\n"
 msgstr "L'outil google est très puissant, voici comment il fonctionne!\n"
 
-#: cogs/help.py:11
+#: cogs/help.py:12
 msgid "Show bot commands."
 msgstr "Afficher les commandes du bot."
 
-#: cogs/help.py:28
+#: cogs/help.py:30
 msgid "Here are my commands:"
 msgstr "Voice mes commandes :"
 
-#: cogs/help.py:47
+#: cogs/help.py:51
 #, python-brace-format
 msgid "The command {string} way not found."
 msgstr "La commande {string} n'a pas été trouvée."
@@ -310,23 +310,23 @@ msgstr "La commande {string} n'a pas été trouvée."
 msgid "Add the lines number to your code."
 msgstr "Ajoute le numéro des lignes au code."
 
-#: cogs/lines.py:25
+#: cogs/lines.py:26
 msgid ""
 "Your message must contains a block of code ! *look `/tag discord code block`*"
 msgstr ""
 "Votre message doit contenir un bloque de code ! *Regardez `/tag discord code "
 "block`*"
 
-#: cogs/lines.py:31
+#: cogs/lines.py:32
 #, python-brace-format
 msgid "Numbered code of {ctx.author} :\n"
 msgstr "Code numéroté de {ctx.author} : \n"
 
-#: cogs/miscellaneous.py:76
+#: cogs/miscellaneous.py:85
 msgid "What's the programmation language ?\n"
 msgstr "Quel est le langage de programmation ?\n"
 
-#: cogs/miscellaneous.py:77
+#: cogs/miscellaneous.py:86
 msgid ""
 "Click on the correspondant reaction, or send a message with the extension (`."
 "js`, `.py`...)\n"
@@ -336,32 +336,27 @@ msgstr ""
 "l'extension (`.js`, `.py`...)\n"
 "\n"
 
-#: cogs/miscellaneous.py:108 cogs/miscellaneous.py:110
+#: cogs/miscellaneous.py:119 cogs/miscellaneous.py:121
 msgid "A gist has been created :\n"
 msgstr "Un gist a été créé :\n"
 
-#: cogs/miscellaneous.py:144
+#: cogs/miscellaneous.py:155
 #, python-brace-format
 msgid "**{message.author.mention} you just sent a valid bot token.**\n"
 msgstr ""
 "**{message.author.mention} vous venez d'envoyer un token de bot valide.**\n"
 
-#: cogs/miscellaneous.py:145
-#, fuzzy
-#| msgid ""
-#| "This one will be revoked, but be careful and check that it has been "
-#| "successfully reset on the **dev portal : https://discord.com/developers/"
-#| "applications/{}**.\n"
+#: cogs/miscellaneous.py:156
 msgid ""
 "This one will be revoked, but be careful and check that it has been "
-"successfully reset on the **[dev portal](https://discord.com/developers/"
-"applications/{})**.\n"
+"successfully reset on the **dev portal** (https://discord.com/developers/"
+"applications/{}).\n"
 msgstr ""
 "Celui-ci va être révoqué, mais faites tout de même attention et vérifiez "
-"qu'il ai bien été réinitialisé sur le **portail dev : https://discord.com/"
-"developers/applications/{}**.\n"
+"qu'il ai bien été réinitialisé sur le **portail dev** (https://discord.com/"
+"developers/applications/{}).\n"
 
-#: cogs/miscellaneous.py:164
+#: cogs/miscellaneous.py:175
 #, python-brace-format
 msgid ""
 "{message.author.mention} you just sent a valid **user token**.\n"
@@ -381,30 +376,30 @@ msgstr ""
 "Nous vous conseillons aussi d’activer l'**authentification à deux facteurs, "
 "ou A2F.** (paramètres)\n"
 
-#: cogs/tag.py:62
-msgid "Send redundent help messages."
+#: cogs/tag.py:63
+msgid "Send redundant help messages."
 msgstr "Envoyer les messages d'aides répétitifs."
 
-#: cogs/tag.py:79
+#: cogs/tag.py:81
 msgid "Category not found. Try among :"
 msgstr "Catégorie non trouvée. Essayez parmi :"
 
-#: cogs/tag.py:95
+#: cogs/tag.py:97
 #, python-brace-format
 msgid "Here are the tags from the `{0}` category :"
 msgstr "Voice les tags de la catégorie `{0}` :"
 
-#: cogs/tag.py:111
+#: cogs/tag.py:114
 #, python-brace-format
 msgid "do you mean `{0}` ? Otherwise "
 msgstr "voulez-vous dire `{0}` ? Sinon "
 
-#: cogs/tag.py:112
+#: cogs/tag.py:115
 #, python-brace-format
 msgid "Tag not found, {0}look `/tag list`"
 msgstr "Le tag n'a pas été trouvé, {0}look `/tag list`"
 
-#: cogs/tag.py:121
+#: cogs/tag.py:125
 msgid "__Choose the target :__\n"
 msgstr "__Choisissez la cible :__\n"
 

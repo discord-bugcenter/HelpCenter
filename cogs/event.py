@@ -2,7 +2,7 @@ import re
 import io
 import json
 import asyncio
-import typing
+from typing import Optional, Callable
 from urllib import request
 from functools import partial
 from datetime import datetime, timedelta
@@ -15,8 +15,12 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from matplotlib.ticker import StrMethodFormatter
 
+from main import HelpCenterBot
 from .utils import custom_errors, checkers, misc
 from .utils.i18n import use_current_gettext as _
+
+# TODO : create specific object to parse data from the API
+# TODO : finish to add typing
 
 RE_EVENT_DATE = re.compile(r'(?<=event-date : )(\d{,2})/(\d{,2})/(\d{4})')
 RE_EVENT_STATE = re.compile(r'(?<=event-state : )(\S+)')
@@ -24,13 +28,14 @@ RE_EVENT_NAME = re.compile(r'(?<=event-name : )(.+)')
 RE_EVENT_AUTOTESTS_GROUP = re.compile(r'event-autotests : \[\[\n(.*)\n]]', re.MULTILINE | re.DOTALL)
 RE_EVENT_AUTOTEST = re.compile(r'{(.*?)} : \[\s*(.*?)\s*]', re.MULTILINE | re.DOTALL)
 
-RE_GET_CODE_PARTICIPATION = re.compile(r'(```)?(?:(\S*)\s)(\s*\S[\S\s]*)(?(1)```|)')
+RE_GET_CODE_PARTICIPATION = re.compile(r'(```)?((\S*)\s)(\s*\S[\S\s]*)(?(1)```|)')
 RE_ENDLINE_SPACES = re.compile(r' *\n')
 
 
 CODE_CHANNEL_ID = 810511403202248754
 
-with request.urlopen('https://emkc.org/api/v2/piston/runtimes') as r:
+req = request.Request('https://emkc.org/api/v2/piston/runtimes')
+with request.urlopen(req) as r:
     AVAILABLE_LANGUAGES: list = json.loads(r.read().decode('utf-8'))
 
 LANGUAGES_EQUIVALENT = (
@@ -42,9 +47,9 @@ LANGUAGES_EQUIVALENT = (
 )
 
 
-def event_not_closed():
-    async def inner(ctx):
-        code_channel = ctx.bot.get_channel(CODE_CHANNEL_ID)
+def event_not_closed() -> Callable:
+    async def inner(ctx: commands.Context) -> bool:
+        code_channel: discord.TextChannel = ctx.bot.get_channel(CODE_CHANNEL_ID)
         state = RE_EVENT_STATE.search(code_channel.topic).group()
 
         if state == 'closed':
@@ -57,9 +62,9 @@ def event_not_closed():
     return commands.check(inner)
 
 
-def event_not_ended():
-    async def inner(ctx):
-        code_channel = ctx.bot.get_channel(CODE_CHANNEL_ID)
+def event_not_ended() -> Callable:
+    async def inner(ctx: commands.Context) -> bool:
+        code_channel: discord.TextChannel = ctx.bot.get_channel(CODE_CHANNEL_ID)
         state = RE_EVENT_STATE.search(code_channel.topic).group()
 
         if state == 'ended':
@@ -73,7 +78,7 @@ def event_not_ended():
 
 
 class Event(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: HelpCenterBot) -> None:
         self.bot = bot
         self.code_channel_id = 810511403202248754
 
@@ -82,7 +87,8 @@ class Event(commands.Cog):
         description=_('Participate or get informations about an event.'),
         invoke_without_command=True
     )
-    async def event(self, ctx):
+    async def event(self, ctx: commands.Context) -> None:
+        """The parent command to manage event (participations, creation...)."""
         if ctx.guild and ctx.channel.id not in self.bot.test_channels_id:  # Not in dm or in tests channels
             raise custom_errors.NotAuthorizedChannels(self.bot.test_channels_id)
 
@@ -97,8 +103,9 @@ class Event(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    async def get_participations(self, user=None) -> typing.Tuple[dict, list, dict]:
-        code_channel = self.bot.get_channel(self.code_channel_id)
+    async def get_participations(self, user: discord.User = None) -> tuple[dict, list, dict]:
+        """Get all the participations using channel history."""
+        code_channel: Optional[discord.TextChannel] = self.bot.get_channel(self.code_channel_id)
         event_informations = self.get_informations()
 
         datas = dict()
@@ -111,7 +118,7 @@ class Event(commands.Cog):
             fields = message.embeds[0].fields
 
             try: code_author = self.bot.get_user(user_id := int(fields[0].value.split('|')[0])) or await self.bot.fetch_user(user_id)
-            except: continue
+            except discord.HTTPException: continue
 
             language = fields[1].value.split(' ')[0]  # If the language is e.g. javascript (node), just take "javascript"
             length = int(fields[2].value)
@@ -126,7 +133,7 @@ class Event(commands.Cog):
             datas[language].append(infos)
             datas_global.append(infos)
 
-        sort_key = lambda obj: (obj[2], obj[3])  # length and date
+        def sort_key(obj): return obj[2], obj[3]  # length, date
 
         datas = {key: sorted(value, key=sort_key) for key, value in datas.items()}
         datas_global = sorted(datas_global, key=sort_key)
@@ -134,7 +141,7 @@ class Event(commands.Cog):
         return datas, datas_global, user_infos
 
     def get_informations(self):
-        channel = self.bot.get_channel(CODE_CHANNEL_ID)
+        channel: Optional[discord.TextChannel] = self.bot.get_channel(CODE_CHANNEL_ID)
 
         state = RE_EVENT_STATE.search(channel.topic).group()
 
@@ -149,7 +156,7 @@ class Event(commands.Cog):
         return {'state': state, 'date': date, 'name': name, 'autotests': autotests}
 
     async def edit_informations(self, state=None, date=None, name=None):
-        channel: discord.TextChannel = self.bot.get_channel(CODE_CHANNEL_ID)
+        channel: Optional[discord.TextChannel] = self.bot.get_channel(CODE_CHANNEL_ID)
         new_topic = channel.topic
 
         if state:
@@ -170,8 +177,8 @@ class Event(commands.Cog):
     @commands.max_concurrency(1, per=commands.BucketType.user)
     @event_not_ended()
     @event_not_closed()
-    async def participate(self, ctx, *, code):
-        code_channel = self.bot.get_channel(self.code_channel_id)
+    async def participate(self, ctx: commands.Context, *, code):
+        code_channel: Optional[discord.TextChannel] = self.bot.get_channel(self.code_channel_id)
 
         re_match = RE_GET_CODE_PARTICIPATION.search(code)
         if not re_match:
@@ -271,10 +278,10 @@ class Event(commands.Cog):
                 response = _("Your entry has been successfully sent !")
 
             try: await ctx.send(response)
-            except: pass
+            except discord.HTTPException: pass
         else:
             try: await ctx.send(_('Cancelled'))
-            except: pass  # prevent error if the user close his MP
+            except discord.HTTPException: pass  # prevent error if the user close his MP
 
     @event.command(
         name='cancel',
@@ -306,11 +313,11 @@ class Event(commands.Cog):
                                                        check=lambda react, usr: str(react.emoji) in reactions[:len(selectable)] and usr.id == ctx.author.id and react.message.id == message.id)
             except asyncio.TimeoutError:
                 try: await message.delete()
-                except: pass
+                except discord.HTTPException: pass
                 return
 
             try: await message.clear_reactions()
-            except: pass
+            except discord.HTTPException: pass
 
             old_participation: discord.Message = list(user_infos.values())[reactions.index(str(reaction.emoji))][0]
 
@@ -392,7 +399,6 @@ class Event(commands.Cog):
         lengths.boxplot(lengths_per_language,
                         medianprops=dict(color='black'),
                         labels=languages)
-        #  lengths.bar(langs, max_length, bottom=min_length, width=0.1, color='black')
 
         ax.yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))  # No decimal places
         ax.set_yticks(range(1, max(number_per_language) + 1))
@@ -419,7 +425,7 @@ class Event(commands.Cog):
     )
     @checkers.is_high_staff()
     async def start(self, ctx, *, name):
-        code_channel: discord.TextChannel = self.bot.get_channel(self.code_channel_id)
+        code_channel: Optional[discord.TextChannel] = self.bot.get_channel(self.code_channel_id)
 
         await self.edit_informations(state='open', date=datetime.now(), name=name)
 
@@ -467,7 +473,7 @@ class Event(commands.Cog):
         buffer = io.StringIO(formatted_text)
         buffer.seek(0)
 
-        await ctx.send(f"Event `{event_informations['name']}` is now ended ! Participations are closed !", file=discord.File(buffer, 'ranking.txt'))
+        await ctx.send(f"Event `{event_informations['name']}` is now ended ! Participations are closed !", file=discord.File(buffer.read(), 'ranking.txt'))
 
     @event.command(
         name='close',
@@ -482,5 +488,6 @@ class Event(commands.Cog):
         await ctx.send(f"Event `{event_informations['name']}` is now closed !")
 
 
-def setup(bot):
+def setup(bot: HelpCenterBot) -> None:
     bot.add_cog(Event(bot))
+    bot.logger.info("Extension [event] loaded successfully.")
