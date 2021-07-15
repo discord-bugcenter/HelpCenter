@@ -1,8 +1,3 @@
-"""
-1: Transform file attachments (like message.txt, main.js, etc...) to a gist.
-2: if the bot detect a token, it will create a gist to revoke it.
-"""
-
 import asyncio
 import os
 import re
@@ -12,6 +7,7 @@ import discord
 import filetype
 from discord.ext import commands
 
+from main import HelpCenterBot
 from .utils.misc import create_new_gist, delete_gist, add_reactions
 from .utils.i18n import use_current_gettext as _
 
@@ -20,33 +16,47 @@ GIST_TOKEN = os.getenv('GIST_TOKEN')
 
 
 class Miscellaneous(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: HelpCenterBot) -> None:
+        """Miscellaneous will check for files in messages and will convert is as gist, and will also check for discord tokens."""
         self.bot = bot
         self.re_token = re.compile(r"[\w\-=]{24}\.[\w\-=]{6}\.[\w\-=]{27}", re.ASCII)
 
     @commands.Cog.listener()
-    async def on_message(self, message: discord.Message):
+    async def on_message(self, message: discord.Message) -> None:
         await self.bot.set_actual_language(message.author)
-        if await self.token_revoke(message): return
-        if message.channel.id not in self.bot.authorized_channels_id: return
+
+        if await self.token_revoke(message):
+            return
+
+        if message.channel.id not in self.bot.authorized_channels_id:
+            return
+
         await self.attachement_to_gist(message)
 
     @commands.Cog.listener()
-    async def on_message_edit(self, old_message: discord.Message, _):
+    async def on_message_edit(self, old_message: discord.Message, __) -> None:
+        """Look for discord token on message editing."""
         await self.bot.set_actual_language(old_message.author)
-        if await self.token_revoke(old_message): return
 
-    async def attachement_to_gist(self, message):
-        if not message.attachments: return
-        else: attachment = message.attachments[0]
+        await self.token_revoke(old_message)
+
+    async def attachement_to_gist(self, message: discord.Message) -> None:
+        if not message.attachments:
+            return
+        else:
+            attachment = message.attachments[0]
 
         file = await message.attachments[0].read()
-        if filetype.guess(file) is not None: return
+        if filetype.guess(file) is not None:
+            return
 
-        try: file_content = file.decode('utf-8')
-        except: return
+        try:
+            file_content = file.decode('utf-8')
+        except UnicodeDecodeError:
+            return
 
-        if await self.search_for_token(message, file_content): return
+        if await self.search_for_token(message, file_content):
+            return
 
         await message.add_reaction('🔄')
         try: __, user = await self.bot.wait_for('reaction_add', check=lambda react, usr: not usr.bot and react.message.id == message.id and str(react.emoji) == '🔄', timeout=600)
@@ -102,7 +112,9 @@ class Miscellaneous(commands.Cog):
             try:
                 json_response = await create_new_gist(GIST_TOKEN, file_name, file_content)
                 assert json_response.get('html_url')
-            except: return await message.channel.send(_('An error occurred.'), delete_after=5)
+            except Exception:
+                await message.channel.send(_('An error occurred.'), delete_after=5)
+                return
 
         if not response_message:
             await message.reply(content=_("A gist has been created :\n") + f"<{json_response['html_url']}>", mention_author=False)
@@ -128,9 +140,9 @@ class Miscellaneous(commands.Cog):
         for place in tokens_places:
             if await self.search_for_token(message, place): return True
 
-    async def search_for_token(self, message: discord.Message, text: str):
+    async def search_for_token(self, message: discord.Message, text: str) -> bool:
         if not (match := self.re_token.search(text)):
-            return
+            return False
         headers = {
             "Authorization": f"Bot {match.group(0)}"
         }
@@ -143,7 +155,7 @@ class Miscellaneous(commands.Cog):
 
                     message_content = _("**{message.author.mention} you just sent a valid bot token.**\n").format(message=message)
                     message_content += _("This one will be revoked, but be careful and check that it has been successfully reset on the "
-                                         "**[dev portal](https://discord.com/developers/applications/{})**.\n").format(response_dict['id'])
+                                         "**dev portal** (https://discord.com/developers/applications/{}).\n").format(response_dict['id'])
 
                     await message.channel.send(message_content, allowed_mentions=discord.AllowedMentions(users=True))
 
@@ -169,6 +181,6 @@ class Miscellaneous(commands.Cog):
                     return True
 
 
-def setup(bot):
+def setup(bot: HelpCenterBot) -> None:
     bot.add_cog(Miscellaneous(bot))
     bot.logger.info("Extension [miscellaneous] loaded successfully.")

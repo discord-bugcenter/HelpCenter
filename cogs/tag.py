@@ -7,13 +7,15 @@ import discord
 from discord.ext import commands
 from schema import SchemaError
 
-from .utils.misc import tag_shema
+from main import HelpCenterBot
+from .utils.misc import tag_schema
 from .utils import checkers, misc
 from .utils.i18n import use_current_gettext as _
 
 
 class Tag(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: HelpCenterBot) -> None:
+        """Tag command allow you to search for help in pre-saved topics."""
         self.bot = bot
 
         tags_folder = {
@@ -45,7 +47,7 @@ class Tag(commands.Cog):
                         loaded_tag = json.load(f)
 
                         try:
-                            loaded_tag = tag_shema.validate(loaded_tag)
+                            loaded_tag = tag_schema.validate(loaded_tag)
                         except SchemaError as e:
                             self.bot.logger.warning(f'The tag {tag_name} from category {category_name} is improper.\n{e}')
                             continue
@@ -59,10 +61,11 @@ class Tag(commands.Cog):
     @commands.command(
         name="tag",
         usage="/tag <category> (<tag_name>|'list')",
-        description=_("Send redundent help messages.")
+        description=_("Send redundant help messages.")
     )
     @checkers.authorized_channels()
-    async def _tag(self, ctx, category=None, *, query=None):
+    async def _tag(self, ctx: commands.Context, category: str = None, *, query: str = None) -> None:  # TODO : Simplify this function.
+        """The tag command, that will do a research into savec tags, using the category and the query gived."""
         category_tags = self.tags.get(category)  # category_tags is a dict with categories of the tag
 
         if category_tags is None and category is not None:
@@ -74,7 +77,8 @@ class Tag(commands.Cog):
                 category_tags = self.tags.get(category)
 
         if category_tags is None:  # if the given category isn't ~= or == to any category
-            format_list = lambda keys: "\n".join([f"- `{key}`" for key in keys])
+            def format_list(keys): return "\n".join([f"- `{key}`" for key in keys])
+
             embed = discord.Embed(
                 title=_("Category not found. Try among :"),
                 description=format_list(self.tags.keys()),
@@ -91,12 +95,13 @@ class Tag(commands.Cog):
             return found_tag or tag[0]
 
         if query is None or query == "list":  # if no tag name was given, or the tag name is "list"
-            format_list = lambda tags_values: "\n".join([f"- `{get_tag_lang(tag).get('name')}` : {get_tag_lang(tag).get('description')}" for tag in tags_values])
+            def format_list(tags_values): return "\n".join([f"- `{get_tag_lang(tag).get('name')}` : {get_tag_lang(tag).get('description')}" for tag in tags_values])
             message = await ctx.channel.send(embed=discord.Embed(title=_("Here are the tags from the `{0}` category :").format(category),
                                                                  description=format_list(category_tags.values()),
                                                                  color=misc.Color.grey_embed().discord)
                                              )
-            return await misc.delete_with_emote(ctx, message)
+            await misc.delete_with_emote(ctx, message)
+            return
 
         selected_tag = category_tags.get(query) or discord.utils.find(lambda tag: (aliases := get_tag_lang(tag).get('aliases')) and query in aliases, category_tags.values())
 
@@ -109,7 +114,8 @@ class Tag(commands.Cog):
                 selected_tag = category_tags.get(query)
             else:
                 similar_text = _("do you mean `{0}` ? Otherwise ").format(similors[0][0])
-                return await ctx.send(_("Tag not found, {0}look `/tag list`").format(similar_text if similors[0][1] > 0.5 else ''), delete_after=10)
+                await ctx.send(_("Tag not found, {0}look `/tag list`").format(similar_text if similors[0][1] > 0.5 else ''), delete_after=10)
+                return
 
         selected_tag = get_tag_lang(selected_tag)
 
@@ -128,15 +134,15 @@ class Tag(commands.Cog):
                 return await message.delete()
 
             try: await message.clear_reactions()
-            except: pass
+            except discord.HTTPException: pass
             response = choices[reactions.index(str(reaction.emoji))]
 
         embed = discord.Embed.from_dict(response.get("embed"))
-        embed.color = misc.Color.grey_embed().discord
+        embed.colour = misc.Color.grey_embed().discord
         embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
 
         text = f'/tag {category} {query}'
-        url = self.bot.user.avatar_url
+        url = self.bot.user.avatar.url
         embed.set_footer(
             text=text,
             icon_url=url
@@ -146,9 +152,9 @@ class Tag(commands.Cog):
         else: message = await ctx.channel.send(embed=embed)
 
         try: await ctx.message.delete()  # delete the trigger message (the command)
-        except: pass
+        except discord.HTTPException: pass
         try: await misc.delete_with_emote(ctx, message)
-        except: pass
+        except discord.HTTPException: pass
 
 
 def setup(bot):

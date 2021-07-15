@@ -18,25 +18,27 @@ logger = logging.getLogger(__name__)
 
 class HelpCenterBot(commands.Bot):
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """A cool Discord bot."""
         self.bug_center_id = 595218682670481418
 
         self.staff_roles = {
             'administrator': 713434163587579986,
             'assistant': 627445515159732224,
-            'depister': 713452724603191367,
+            'screening': 713452724603191367,
             'brillant': 713452621196820510,
             'normal': 627836152350769163
         }
 
         self.help_channels_id = [
-            692712497844584448,  # discussion-dev
-            595981741542604810,  # aide-dev
-            707555362458304663,  # aide-dev-2
-            779040873236136007,  # aide-dev-3
-            810970318641954856,  # aide-dev-4
-            754322079418941441,  # aide-autres
-            780123502660681728,  # aide-autres-2
+            692712497844584448,  # general_tech
+            833077274458849340,  # tech_international
+            595981741542604810,  # help-dev
+            707555362458304663,  # help-dev-2
+            779040873236136007,  # help-dev-3
+            810970318641954856,  # help-dev-4
+            754322079418941441,  # misc-help
+            780123502660681728,  # misc-help-2
         ]
         self.test_channels_id = [
             595224241742413844,  # tests-1
@@ -52,7 +54,7 @@ class HelpCenterBot(commands.Bot):
         ))  # OrderedDict to make French in prior of English
 
         super().__init__(
-            command_prefix="/",
+            command_prefix=["/", "\\", "<@789210466492481597> ", "<@!789210466492481597> "],
             case_insensitive=True,
             member_cache_flags=discord.MemberCacheFlags.all(),
             chunk_guilds_at_startup=True,
