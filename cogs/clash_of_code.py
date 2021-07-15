@@ -9,6 +9,7 @@ from typing import Optional
 import discord
 import aiohttp
 import pytz as pytz
+from discord import ui
 from discord.ext import commands
 
 from main import HelpCenterBot
@@ -18,6 +19,9 @@ from .utils.i18n import use_current_gettext as _
 
 COC_URL = re.compile(r'https://www\.codingame\.com/clashofcode/clash/(\w{39})')
 COC_CODE = re.compile(r'\w{39}')
+
+COC_CHANNEL_ID = 864282088722006036
+COC_NOTIFICATION_ROLE_ID = 865173675711135745
 
 
 class COCMode(Enum):
@@ -87,12 +91,66 @@ class COCInformations:
         return not self.finished and (not self.started or (self.started and not self.public))
 
 
+class COCView(ui.View):
+    def __init__(self, bot: HelpCenterBot, coc_url: str = None) -> None:
+        super().__init__(timeout=None)
+        self.bot = bot
+
+        coc_url = coc_url or 'https://example.com/'
+        self.children.insert(0, ui.Button(label="Join", url=coc_url, row=4))
+
+    @ui.button(label="Subscribe", custom_id="add_coc_notification_role", emoji="🔔")
+    async def subscribe(self, _, inter: discord.Interaction):
+        await inter.response.send_message("Sélectionnez la durée pour la quelle vous voulez être mentionné :", view=RoleSubscription(self.bot), ephemeral=True)
+
+    @ui.button(label="Unsubscribe", custom_id="remove_coc_notification_role", emoji="🔕")
+    async def unsubscribe(self, _, inter: discord.Interaction):
+        old_task = discord.utils.find(lambda task: task.get_name() == str(inter.user.id), asyncio.all_tasks(loop=self.bot.loop))
+
+        if old_task:
+            old_task.cancel()
+
+        member = inter.guild.get_member(inter.user.id) or await inter.guild.fetch_member(inter.user.id)
+        role = discord.utils.get(inter.guild.roles, id=COC_NOTIFICATION_ROLE_ID)
+
+        await member.remove_roles(role, reason=f"Unsubscribe to COC notifications.")
+
+
+class RoleSubscription(ui.View):
+    def __init__(self, bot: HelpCenterBot):
+        super().__init__(timeout=None)
+        self.bot = bot
+
+    @ui.select(options=[discord.SelectOption(label=_('30 minutes'), value='1_800'),
+                        discord.SelectOption(label=_('1 heure'), value='3_600'),
+                        discord.SelectOption(label=_('3 heures'), value='10_800'),
+                        discord.SelectOption(label=_('12 heures'), value='43_200'),
+                        discord.SelectOption(label=_('1 journée'), value='86_400')])
+    async def give_role(self, select: ui.Select, inter: discord.Interaction):
+        time = datetime.timedelta(seconds=int(select.values[0]))
+        old_task = discord.utils.find(lambda task: task.get_name() == str(inter.user.id), asyncio.all_tasks(loop=self.bot.loop))
+
+        if old_task: old_task.cancel()
+
+        member = inter.guild.get_member(inter.user.id) or await inter.guild.fetch_member(inter.user.id)
+        role = discord.utils.get(inter.guild.roles, id=COC_NOTIFICATION_ROLE_ID)
+        self.bot.loop.create_task(COC.give_role_timed(member, role, time), name=str(inter.user.id))
+
+
 class COC(commands.Cog):
     def __init__(self, bot: HelpCenterBot) -> None:
         self.bot = bot
 
         self.current_coc: list[str] = []
-        self.coc_channel_id = 864282088722006036
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        self.bot.add_view(COCView(self.bot))
+
+        guild = self.bot.get_guild(self.bot.bug_center_id)
+        for member in guild.members:
+            if discord.utils.get(member.roles, id=COC_NOTIFICATION_ROLE_ID):
+                await member.remove_roles(discord.Object(COC_NOTIFICATION_ROLE_ID))
 
     @commands.command('coc',
                       aliases=['clash'],
@@ -108,13 +166,13 @@ class COC(commands.Cog):
             raise COCLinkNotValid(link)
 
         message: discord.Message = await self.process_coc(code, ctx.author)
-        if ctx.channel.id != self.coc_channel_id:
-            await ctx.send(embed=discord.Embed(title=_("Published !"), url=f"https://discord.com/channels/595218682670481418/{self.coc_channel_id}/{message.id}", colour=Color.green().discord))
+        if ctx.channel.id != COC_CHANNEL_ID:
+            await ctx.send(embed=discord.Embed(title=_("Published !"), url=f"https://discord.com/channels/595218682670481418/{COC_CHANNEL_ID}/{message.id}", colour=Color.green().discord))
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
         """If a message is equal to a coc url, add a reaction to send it in the coc challenge."""
-        if message.channel.id == self.coc_channel_id and not message.author == message.guild.me and not (not message.author.bot and message.author.guild_permissions.administrator):
+        if message.channel.id == COC_CHANNEL_ID and not message.author == self.bot.user and not (not message.author.bot and message.author.guild_permissions.administrator):
             await message.delete()
         if message.author.bot: return
 
@@ -125,8 +183,12 @@ class COC(commands.Cog):
             try: coc_message = await self.process_coc(match.group(1), message.author)
             except (COCLinkNotValid, AlreadyProcessingCOC): pass
             else:
-                if message.channel.id != self.coc_channel_id:
-                    await message.channel.send(embed=discord.Embed(title=_("Published !"), url=f"https://discord.com/channels/595218682670481418/{self.coc_channel_id}/{coc_message.id}", colour=Color.green().discord))
+                if message.channel.id != COC_CHANNEL_ID:
+                    await message.channel.send(embed=discord.Embed(title=_("Published !"), url=f"https://discord.com/channels/595218682670481418/{COC_CHANNEL_ID}/{coc_message.id}", colour=Color.green().discord))
+
+    @commands.command()
+    async def test(self, ctx):
+        await ctx.send('Wesh gros', view=COCView(ctx, ''))
 
     @staticmethod
     def parse_player(_json: dict) -> COCPlayer:
@@ -235,6 +297,12 @@ class COC(commands.Cog):
 
         return embed
 
+    @staticmethod
+    async def give_role_timed(member: discord.Member, role: discord.Role, time: datetime.timedelta) -> None:
+        await member.add_roles(role, reason=f"Subscribe to COC notifications for {time}.")
+        await asyncio.sleep(time.total_seconds())
+        await member.remove_roles(role, reason=f"Automatic unsubscribe to COC notifications after {time}.")
+
     async def process_coc(self, code, author: discord.User) -> discord.Message:
         async with aiohttp.ClientSession() as session:
             async with session.post('https://www.codingame.com/services/ClashOfCode/findClashReportInfoByHandle', json=[code]) as r:
@@ -249,8 +317,11 @@ class COC(commands.Cog):
         coc = self.parse_coc(result, author=author)
         self.current_coc.append(code)
 
-        coc_channel: Optional[discord.TextChannel] = self.bot.get_channel(self.coc_channel_id)
-        coc.message = await coc_channel.send(embed=self.create_embed(coc))
+        coc_channel: Optional[discord.TextChannel] = self.bot.get_channel(COC_CHANNEL_ID)
+        coc.message = await coc_channel.send(content=f"<@&{COC_NOTIFICATION_ROLE_ID}>",
+                                             embed=self.create_embed(coc),
+                                             view=COCView(self.bot, "https://www.codingame.com/clashofcode/clash/" + code),
+                                             allowed_mentions=discord.AllowedMentions(roles=True))
 
         self.bot.loop.create_task(self.start_processing(coc))
 
@@ -270,7 +341,7 @@ class COC(commands.Cog):
                     result = await r.json()
 
             coc = self.parse_coc(result, coc.message, coc.share_author)
-            await coc.message.edit(embed=self.create_embed(coc))
+            await coc.message.edit(content=None, embed=self.create_embed(coc))
         else:
             self.current_coc.remove(coc.code)
 
