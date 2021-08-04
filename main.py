@@ -33,12 +33,7 @@ class HelpCenterBot(commands.Bot):
         self.help_channels_id = [
             692712497844584448,  # general_tech
             833077274458849340,  # tech_international
-            595981741542604810,  # help-dev
-            707555362458304663,  # help-dev-2
-            779040873236136007,  # help-dev-3
-            810970318641954856,  # help-dev-4
-            754322079418941441,  # misc-help
-            780123502660681728,  # misc-help-2
+            870023524985761822   # ask_for_help
         ]
         self.test_channels_id = [
             595224241742413844,  # tests-1
