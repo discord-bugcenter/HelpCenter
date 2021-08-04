@@ -1,4 +1,6 @@
+import asyncio
 from typing import Optional
+from urllib import parse
 
 import discord
 from discord import ui
@@ -91,7 +93,11 @@ class CreateHelpChannelButton(ui.View):
         await inter.response.send_message(content, ephemeral=True)
 
         async def wait_for_title() -> discord.Message:
-            return await self.bot.wait_for("message", check=lambda msg: msg.channel.id == inter.channel_id and msg.author.id == inter.user.id)
+            try:
+                message = await self.bot.wait_for("message", check=lambda msg: msg.channel.id == inter.channel_id and msg.author.id == inter.user.id)
+            except asyncio.TimeoutError:
+                await inter.channel.set_permissions(member, overwrite=None)
+
 
         while len((message := await wait_for_title()).content) > 200:
             await self.bot.set_actual_language(inter.user)  # define bot langage for the next text
@@ -100,22 +106,25 @@ class CreateHelpChannelButton(ui.View):
                                                         "Your current request:```\n{1}\n```").format(content, message.content)
                                               )
             await message.delete()
+
+        if message.type is discord.MessageType.thread_created:
+            return  # The user can created a thread by it-self
+
         await message.delete()
 
-        # TODO : wait for a fix of discord.py
-        data = await inter.channel._state.http.start_private_thread(
-            inter.channel.id,
+        thread = await inter.channel.start_thread(
             name=f"{message.content[:100]}",
             auto_archive_duration=1440,
-            type=discord.ChannelType.public_thread.value,
+            type=discord.ChannelType.public_thread,
+            reason="HelpCenter help-thread system."
         )
 
-        thread = discord.Thread(guild=inter.guild, state=inter.channel._state, data=data)
         await inter.channel.set_permissions(member, overwrite=None)
 
         view = ui.View()
         view.stop()
-        view.add_item(ui.Button(label=_("Archiver"), custom_id=f"archive_help_thread_{inter.user.id}"))
+        view.add_item(ui.Button(label=_("Archive"), custom_id=f"archive_help_thread_{inter.user.id}"))
+        view.add_item(ui.Button(label=_("Delete"), custom_id=f"delete_help_thread_{inter.user.id}"))
 
         await self.bot.set_actual_language(inter.user)  # redefine the language, if he was long to write his answer
 
@@ -126,7 +135,18 @@ class CreateHelpChannelButton(ui.View):
         embed.add_field(
             name=_("Ask your question."),
             value=_("Be as clear as possible, remember to send code if there is, or screens highlighting the problem! \n\n"
-                    "**\⚠️ Do not share passwords, bot tokens... if anyone in demand, warn a staff member** \⚠️")
+                    "**\⚠️ Do not share passwords, bot tokens... if anyone in demand, warn a staff member** \⚠️"),
+            inline=False
+        )
+        embed.add_field(
+            name=_('How to ask a question ?'),
+            value=_(":ballot_box_with_check: have you searched on Google ? [Search](https://google.com/search?q={0})\n"
+                    ":ballot_box_with_check: have you read the doc ?"
+                    ":ballot_box_with_check: don't ask to ask, just ask. https://dontasktoask.com/\n"
+                    ":ballot_box_with_check: asking about your attempted solution rather than your actual problem. https://xyproblem.info/").format(
+                        parse.quote_plus(" ".join(word[:50] for word in message.content.split(' ')[:32]))
+                    ),
+            inline=False
         )
         embed.set_footer(text=_("⬇ click to archive the thread"))
 
