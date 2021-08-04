@@ -1,4 +1,5 @@
 from typing import Optional
+from urllib import parse
 
 import discord
 from discord import ui
@@ -115,7 +116,8 @@ class CreateHelpChannelButton(ui.View):
 
         view = ui.View()
         view.stop()
-        view.add_item(ui.Button(label=_("Archiver"), custom_id=f"archive_help_thread_{inter.user.id}"))
+        view.add_item(ui.Button(label=_("Archive"), custom_id=f"archive_help_thread_{inter.user.id}"))
+        view.add_item(ui.Button(label=_("Delete"), custom_id=f"delete_help_thread_{inter.user.id}"))
 
         await self.bot.set_actual_language(inter.user)  # redefine the language, if he was long to write his answer
 
@@ -126,7 +128,18 @@ class CreateHelpChannelButton(ui.View):
         embed.add_field(
             name=_("Ask your question."),
             value=_("Be as clear as possible, remember to send code if there is, or screens highlighting the problem! \n\n"
-                    "**\⚠️ Do not share passwords, bot tokens... if anyone in demand, warn a staff member** \⚠️")
+                    "**\⚠️ Do not share passwords, bot tokens... if anyone in demand, warn a staff member** \⚠️"),
+            inline=False
+        )
+        embed.add_field(
+            name=_('How to ask a question ?'),
+            value=_(":ballot_box_with_check: have you searched on Google ? [Search](https://google.com/search?q={0})\n"
+                    ":ballot_box_with_check: have you read the doc ?"
+                    ":ballot_box_with_check: don't ask to ask, just ask. https://dontasktoask.com/\n"
+                    ":ballot_box_with_check: asking about your attempted solution rather than your actual problem. https://xyproblem.info/").format(
+                        parse.quote_plus(" ".join(word[:50] for word in message.content.split(' ')[:32]))
+                    ),
+            inline=False
         )
         embed.set_footer(text=_("⬇ click to archive the thread"))
 
