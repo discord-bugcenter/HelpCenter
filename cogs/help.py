@@ -29,13 +29,16 @@ class HelpCommand(commands.HelpCommand):
         """Shaw the bot commands."""
         embed = discord.Embed(
             title=_("Here are my commands:"),
-            description="\n".join([f"`{self.context.prefix}{cmd.name}` : {_(cmd.description)}" for cmd in self.context.bot.commands]),
+            description="\n".join([f"`{self.context.prefix}{cmd.name}` : {_(cmd.description)}" for cmd in self.context.bot.commands if not cmd.hidden]),
             color=misc.Color.grey_embed().discord
         )
         await self.context.send(embed=embed)
 
     async def send_command_help(self, command: commands.Command) -> None:
         """Show help for a specific command."""
+        if command.hidden:
+            return self.command_not_found(command.name)
+            
         embed = discord.Embed(
             title=f"{command.name}",
             description=command.description,
