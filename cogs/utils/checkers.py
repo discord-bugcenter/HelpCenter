@@ -9,7 +9,11 @@ from main import HelpCenterBot
 
 
 def authorized_channels_check(ctx: commands.Context) -> bool:
-    if ctx.channel.id in ctx.bot.authorized_channels_id:
+    target = ctx.channel.id
+    if isinstance(ctx.channel, discord.Thread):
+        target = ctx.channel.parent_id
+
+    if target in ctx.bot.authorized_channels_id:
         return True
 
     raise custom_errors.NotAuthorizedChannels(ctx.bot.authorized_channels_id)
