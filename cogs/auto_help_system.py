@@ -103,15 +103,12 @@ class CreateHelpChannelButton(ui.View):
             await message.delete()
         await message.delete()
 
-        # TODO : wait for a fix of discord.py
-        data = await inter.channel._state.http.start_private_thread(
-            inter.channel.id,
+        thread = await inter.channel.start_thread(
             name=f"{message.content[:100]}",
             auto_archive_duration=1440,
-            type=discord.ChannelType.public_thread.value,
+            type=discord.ChannelType.public_thread,
+            reason="HelpCenter help-thread system."
         )
-
-        thread = discord.Thread(guild=inter.guild, state=inter.channel._state, data=data)
         await inter.channel.set_permissions(member, overwrite=None)
 
         view = ui.View()
