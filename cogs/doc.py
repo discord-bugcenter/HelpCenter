@@ -16,7 +16,8 @@ class Doc(commands.Cog):
         name='doc',
         usage='/doc {query}',
         aliases=['docu', 'documentation'],
-        description=_('Shows a documentation for discord.js or discord.py :D')
+        description=_('Shows a documentation for discord.js or discord.py :D'),
+        hidden=True
     )
     @checkers.authorized_channels()  # Using query (with *, arg) instead of array (*arg) to prevent argument missing.
     async def doc(self, ctx, doc_name, *, query):
