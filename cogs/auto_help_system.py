@@ -1,3 +1,4 @@
+import asyncio
 from typing import Optional
 from urllib import parse
 
@@ -92,7 +93,11 @@ class CreateHelpChannelButton(ui.View):
         await inter.response.send_message(content, ephemeral=True)
 
         async def wait_for_title() -> discord.Message:
-            return await self.bot.wait_for("message", check=lambda msg: msg.channel.id == inter.channel_id and msg.author.id == inter.user.id)
+            try:
+                message = await self.bot.wait_for("message", check=lambda msg: msg.channel.id == inter.channel_id and msg.author.id == inter.user.id)
+            except asyncio.TimeoutError:
+                await inter.channel.set_permissions(member, overwrite=None)
+
 
         while len((message := await wait_for_title()).content) > 200:
             await self.bot.set_actual_language(inter.user)  # define bot langage for the next text
