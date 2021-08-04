@@ -101,7 +101,11 @@ class COCView(ui.View):
 
     @ui.button(label="Subscribe", custom_id="add_coc_notification_role", emoji="🔔")
     async def subscribe(self, _, inter: discord.Interaction):
-        await inter.response.send_message("Sélectionnez la durée pour la quelle vous voulez être mentionné :", view=RoleSubscription(self.bot), ephemeral=True)
+        member = inter.guild.get_member(inter.user.id) or await inter.guild.fetch_member(inter.user.id)
+        role = discord.utils.get(inter.guild.roles, id=COC_NOTIFICATION_ROLE_ID)
+        await member.add_roles(role, reason=f"Subscribe to COC notifications.")
+
+        await inter.response.send_message("Si vous le souhaitez, le bot peut vous retirer le rôle après une certaine durée.", view=RoleSubscription(self.bot), ephemeral=True)
 
     @ui.button(label="Unsubscribe", custom_id="remove_coc_notification_role", emoji="🔕")
     async def unsubscribe(self, _, inter: discord.Interaction):
@@ -113,7 +117,7 @@ class COCView(ui.View):
         member = inter.guild.get_member(inter.user.id) or await inter.guild.fetch_member(inter.user.id)
         role = discord.utils.get(inter.guild.roles, id=COC_NOTIFICATION_ROLE_ID)
 
-        await member.remove_roles(role, reason=f"Unsubscribe to COC notifications.")
+        await member.remove_roles(role, reason=f"Manually unsubscribe to COC notifications.")
 
 
 class RoleSubscription(ui.View):
@@ -134,7 +138,7 @@ class RoleSubscription(ui.View):
 
         member = inter.guild.get_member(inter.user.id) or await inter.guild.fetch_member(inter.user.id)
         role = discord.utils.get(inter.guild.roles, id=COC_NOTIFICATION_ROLE_ID)
-        self.bot.loop.create_task(COC.give_role_timed(member, role, time), name=str(inter.user.id))
+        self.bot.loop.create_task(COC.remove_role_after(member, role, time), name=str(inter.user.id))
 
 
 class COC(commands.Cog):
@@ -146,11 +150,6 @@ class COC(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         self.bot.add_view(COCView(self.bot))
-
-        guild = self.bot.get_guild(self.bot.bug_center_id)
-        for member in guild.members:
-            if discord.utils.get(member.roles, id=COC_NOTIFICATION_ROLE_ID):
-                await member.remove_roles(discord.Object(COC_NOTIFICATION_ROLE_ID))
 
     @commands.command('coc',
                       aliases=['clash'],
@@ -298,10 +297,9 @@ class COC(commands.Cog):
         return embed
 
     @staticmethod
-    async def give_role_timed(member: discord.Member, role: discord.Role, time: datetime.timedelta) -> None:
-        await member.add_roles(role, reason=f"Subscribe to COC notifications for {time}.")
+    async def remove_role_after(member: discord.Member, role: discord.Role, time: datetime.timedelta) -> None:
         await asyncio.sleep(time.total_seconds())
-        await member.remove_roles(role, reason=f"Automatic unsubscribe to COC notifications after {time}.")
+        await member.remove_roles(role, reason=f"Automatic unsubscribe to COC notifications after {time} seconds.")
 
     async def process_coc(self, code, author: discord.User) -> discord.Message:
         async with aiohttp.ClientSession() as session:
