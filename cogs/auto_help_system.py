@@ -101,6 +101,10 @@ class CreateHelpChannelButton(ui.View):
                                                         "Your current request:```\n{1}\n```").format(content, message.content)
                                               )
             await message.delete()
+
+        if message.type is discord.MessageType.thread_created:
+            return  # The user can created a thread by it-self
+
         await message.delete()
 
         thread = await inter.channel.start_thread(
@@ -109,6 +113,7 @@ class CreateHelpChannelButton(ui.View):
             type=discord.ChannelType.public_thread,
             reason="HelpCenter help-thread system."
         )
+
         await inter.channel.set_permissions(member, overwrite=None)
 
         view = ui.View()
