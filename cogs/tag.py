@@ -139,7 +139,7 @@ class Tag(commands.Cog):
 
         embed = discord.Embed.from_dict(response.get("embed"))
         embed.colour = misc.Color.grey_embed().discord
-        embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+        embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar.url)
 
         text = f'/tag {category} {query}'
         url = self.bot.user.avatar.url
