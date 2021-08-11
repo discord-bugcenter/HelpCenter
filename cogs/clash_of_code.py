@@ -186,10 +186,6 @@ class COC(commands.Cog):
                 if message.channel.id != COC_CHANNEL_ID:
                     await message.channel.send(embed=discord.Embed(title=_("Published !"), url=f"https://discord.com/channels/595218682670481418/{COC_CHANNEL_ID}/{coc_message.id}", colour=Color.green().discord))
 
-    @commands.command()
-    async def test(self, ctx):
-        await ctx.send('Wesh gros', view=COCView(ctx, ''))
-
     @staticmethod
     def parse_player(_json: dict) -> COCPlayer:
         return COCPlayer(
