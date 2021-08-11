@@ -46,39 +46,45 @@ class AutoHelpSystem(commands.Cog):
                        view=CreateHelpChannelButton(self.bot))
 
     @commands.Cog.listener()
-    async def on_interaction(self, inter: discord.Interaction) -> None:
+    async def on_interaction(self, inter: discord.Interaction) -> None:  # on_interaction should not be used, but..
         if not inter.type == discord.InteractionType.component: return
         if not inter.message: return
         if not inter.channel: return
         if not isinstance(inter.channel, discord.Thread): return
 
-        component = inter.message.components[0]
-        if isinstance(component, discord.ActionRow):
-            component = component.children[0]
-        if not isinstance(component, discord.Button): return
-        if not component.custom_id: return
+        custom_id = inter.data.get('custom_id')
+        if not custom_id: return
         
-        if component.custom_id.startswith('archive_help_thread_'):
+        if custom_id.startswith('archive_help_thread_'):
             async def strategy():
                 if not inter.channel.archived: await inter.channel.edit(archived=True)
-        elif component.custom_id.startswith('delete_help_thread_'):
+        elif custom_id.startswith('delete_help_thread_'):
             strategy = inter.channel.delete
         else: return
 
-        if component.custom_id.endswith(str(inter.user.id)) or checkers.is_high_staff_check(self.bot, inter.user)[0]:
+        if custom_id.endswith(str(inter.user.id)) or checkers.is_high_staff_check(self.bot, inter.user)[0]:
             await strategy()
             await inter.response.defer(ephemeral=True)
 
     @commands.Cog.listener()
     async def on_thread_update(self, thread_before: discord.Thread, thread_after: discord.Thread) -> None:
+        if not thread_before.parent_id == ASK_CHANNEL_ID: return
         if not (not thread_before.archived and thread_after.archived): return
 
-        ask_channel: Optional[discord.TextChannel] = self.bot.get_channel(ASK_CHANNEL_ID)
-
-        async for message in ask_channel.history():
+        async for message in thread_before.parent.history():
             if message.id == thread_after.id:
                 await message.delete()
                 break
+
+    @commands.Cog.listener()
+    async def on_thread_delete(self, thread: discord.Thread) -> None:
+        if not thread.parent_id == ASK_CHANNEL_ID: return
+
+        async for message in thread.parent.history():
+            if message.id == thread.id:
+                await message.delete()
+                break
+
 
 
 class CreateHelpChannelButton(ui.View):
