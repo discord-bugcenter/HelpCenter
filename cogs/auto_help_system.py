@@ -49,17 +49,24 @@ class AutoHelpSystem(commands.Cog):
     async def on_interaction(self, inter: discord.Interaction) -> None:
         if not inter.type == discord.InteractionType.component: return
         if not inter.message: return
+        if not inter.channel: return
+        if not isinstance(inter.channel, discord.Thread): return
 
         component = inter.message.components[0]
         if isinstance(component, discord.ActionRow):
             component = component.children[0]
         if not isinstance(component, discord.Button): return
         if not component.custom_id: return
-        if not component.custom_id.startswith('archive_help_thread_'): return
+        
+        if component.custom_id.startswith('archive_help_thread_'):
+            async def strategy():
+                if not inter.channel.archived: await inter.channel.edit(archived=True)
+        elif component.custom_id.startswith('delete_help_thread_'):
+            strategy = inter.channel.delete
+        else: return
 
         if component.custom_id.endswith(str(inter.user.id)) or checkers.is_high_staff_check(self.bot, inter.user)[0]:
-            if inter.channel and not inter.channel.archived:
-                await inter.channel.edit(archived=True)
+            await strategy()
             await inter.response.defer(ephemeral=True)
 
     @commands.Cog.listener()
