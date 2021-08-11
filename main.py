@@ -61,7 +61,7 @@ class HelpCenterBot(commands.Bot):
 
         extensions = ['clash_of_code', 'event', 'tag', 'help', 'command_error', 'miscellaneous', 'lines', 'google_it', 'doc', 'auto_help_system']
         for extension in extensions:
-            self.load_extension('cogs.'+extension)
+            self.load_extension('cogs.' + extension)
 
         self.before_invoke(self.set_command_language)
         self.add_check(self.is_on_bug_center)

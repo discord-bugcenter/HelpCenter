@@ -46,32 +46,45 @@ class AutoHelpSystem(commands.Cog):
                        view=CreateHelpChannelButton(self.bot))
 
     @commands.Cog.listener()
-    async def on_interaction(self, inter: discord.Interaction) -> None:
+    async def on_interaction(self, inter: discord.Interaction) -> None:  # on_interaction should not be used, but..
         if not inter.type == discord.InteractionType.component: return
         if not inter.message: return
+        if not inter.channel: return
+        if not isinstance(inter.channel, discord.Thread): return
 
-        component = inter.message.components[0]
-        if isinstance(component, discord.ActionRow):
-            component = component.children[0]
-        if not isinstance(component, discord.Button): return
-        if not component.custom_id: return
-        if not component.custom_id.startswith('archive_help_thread_'): return
+        custom_id = inter.data.get('custom_id')
+        if not custom_id: return
+        
+        if custom_id.startswith('archive_help_thread_'):
+            async def strategy():
+                if not inter.channel.archived: await inter.channel.edit(archived=True)
+        elif custom_id.startswith('delete_help_thread_'):
+            strategy = inter.channel.delete
+        else: return
 
-        if component.custom_id.endswith(str(inter.user.id)) or checkers.is_high_staff_check(self.bot, inter.user)[0]:
-            if inter.channel and not inter.channel.archived:
-                await inter.channel.edit(archived=True)
+        if custom_id.endswith(str(inter.user.id)) or checkers.is_high_staff_check(self.bot, inter.user)[0]:
+            await strategy()
             await inter.response.defer(ephemeral=True)
 
     @commands.Cog.listener()
     async def on_thread_update(self, thread_before: discord.Thread, thread_after: discord.Thread) -> None:
+        if not thread_before.parent_id == ASK_CHANNEL_ID: return
         if not (not thread_before.archived and thread_after.archived): return
 
-        ask_channel: Optional[discord.TextChannel] = self.bot.get_channel(ASK_CHANNEL_ID)
-
-        async for message in ask_channel.history():
+        async for message in thread_before.parent.history():
             if message.id == thread_after.id:
                 await message.delete()
                 break
+
+    @commands.Cog.listener()
+    async def on_thread_delete(self, thread: discord.Thread) -> None:
+        if not thread.parent_id == ASK_CHANNEL_ID: return
+
+        async for message in thread.parent.history():
+            if message.id == thread.id:
+                await message.delete()
+                break
+
 
 
 class CreateHelpChannelButton(ui.View):
@@ -92,20 +105,23 @@ class CreateHelpChannelButton(ui.View):
                     "> Example: \"[Python - Discord.py] Is it possible to kick any one of a server with its id?\"")
         await inter.response.send_message(content, ephemeral=True)
 
-        async def wait_for_title() -> discord.Message:
+        async def wait_for_title() -> Optional[discord.Message]:
             try:
-                message = await self.bot.wait_for("message", check=lambda msg: msg.channel.id == inter.channel_id and msg.author.id == inter.user.id)
+                return await self.bot.wait_for("message", check=lambda msg: msg.channel.id == inter.channel_id and msg.author.id == inter.user.id)
             except asyncio.TimeoutError:
                 await inter.channel.set_permissions(member, overwrite=None)
 
 
-        while len((message := await wait_for_title()).content) > 200:
+
+        while (message := await wait_for_title()) and len(message.content) > 200:
             await self.bot.set_actual_language(inter.user)  # define bot langage for the next text
             await inter.edit_original_message(content=_("{0}\n\n"
                                                         "⚠ **This is not your full message of the request, the title must be short (less than 100 characters)**.\n\n"
                                                         "Your current request:```\n{1}\n```").format(content, message.content)
                                               )
             await message.delete()
+        
+        if not message: return
 
         if message.type is discord.MessageType.thread_created:
             return  # The user can created a thread by it-self
