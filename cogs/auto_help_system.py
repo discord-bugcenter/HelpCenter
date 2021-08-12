@@ -107,7 +107,7 @@ class CreateHelpChannelButton(ui.View):
 
         async def wait_for_title() -> Optional[discord.Message]:
             try:
-                return await self.bot.wait_for("message", check=lambda msg: msg.channel.id == inter.channel_id and msg.author.id == inter.user.id)
+                return await self.bot.wait_for("message", check=lambda msg: msg.channel.id == inter.channel_id and msg.author.id == inter.user.id, timeout=300)
             except asyncio.TimeoutError:
                 await inter.channel.set_permissions(member, overwrite=None)
 
@@ -121,52 +121,57 @@ class CreateHelpChannelButton(ui.View):
                                               )
             await message.delete()
         
-        if not message: return
+        if not message: return  # Timeout reached
 
-        if message.type is discord.MessageType.thread_created:
-            return  # The user can created a thread by it-self
+        if message.type is discord.MessageType.thread_created:  # The user can created a thread by him-self
+            embed = discord.Embed()
+            thread = inter.guild.get_channel(message.id)
+        else:
+            await message.delete()
 
-        await message.delete()
+            thread = await inter.channel.create_thread(
+                name=f"{message.content[:100]}",
+                auto_archive_duration=1440,
+                type=discord.ChannelType.public_thread,
+                reason="HelpCenter help-thread system."
+            )
 
-        thread = await inter.channel.start_thread(
-            name=f"{message.content[:100]}",
-            auto_archive_duration=1440,
-            type=discord.ChannelType.public_thread,
-            reason="HelpCenter help-thread system."
-        )
+            await inter.channel.set_permissions(member, overwrite=None)
 
-        await inter.channel.set_permissions(member, overwrite=None)
+            view = ui.View()
+            view.stop()
+            view.add_item(ui.Button(label=_("Archive"), custom_id=f"archive_help_thread_{inter.user.id}"))
+            view.add_item(ui.Button(label=_("Delete"), custom_id=f"delete_help_thread_{inter.user.id}"))
 
-        view = ui.View()
-        view.stop()
-        view.add_item(ui.Button(label=_("Archive"), custom_id=f"archive_help_thread_{inter.user.id}"))
-        view.add_item(ui.Button(label=_("Delete"), custom_id=f"delete_help_thread_{inter.user.id}"))
+            await self.bot.set_actual_language(inter.user)  # redefine the language, if he was long to write his answer
 
-        await self.bot.set_actual_language(inter.user)  # redefine the language, if he was long to write his answer
+            embed = discord.Embed(
+                color=discord.Color.yellow(),
+                title=message.content
+            )
+            embed.add_field(
+                name=_("Ask your question."),
+                value=_("Be as clear as possible, remember to send code if there is, or screens highlighting the problem! \n\n"
+                        "**\⚠️ Do not share passwords, bot tokens... if anyone in demand, warn a staff member** \⚠️"),
+                inline=False
+            )
+            
+            embed.set_footer(text=_("⬇ click to archive the thread"))
+            
+            await thread.add_user(inter.user)
 
-        embed = discord.Embed(
-            color=discord.Color.yellow(),
-            title=message.content
-        )
-        embed.add_field(
-            name=_("Ask your question."),
-            value=_("Be as clear as possible, remember to send code if there is, or screens highlighting the problem! \n\n"
-                    "**\⚠️ Do not share passwords, bot tokens... if anyone in demand, warn a staff member** \⚠️"),
-            inline=False
-        )
+        await self.bot.set_actual_language(inter.user)
         embed.add_field(
             name=_('How to ask a question ?'),
             value=_(":ballot_box_with_check: have you searched on Google ? [Search](https://google.com/search?q={0})\n"
-                    ":ballot_box_with_check: have you read the doc ?"
+                    ":ballot_box_with_check: have you read the doc ?\n"
                     ":ballot_box_with_check: don't ask to ask, just ask. https://dontasktoask.com/\n"
                     ":ballot_box_with_check: asking about your attempted solution rather than your actual problem. https://xyproblem.info/").format(
                         parse.quote_plus(" ".join(word[:50] for word in message.content.split(' ')[:32]))
                     ),
             inline=False
         )
-        embed.set_footer(text=_("⬇ click to archive the thread"))
 
-        await thread.add_user(inter.user)
         await thread.send(embed=embed, view=view)
 
 
