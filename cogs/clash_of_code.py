@@ -215,7 +215,7 @@ class COC(commands.Cog):
     async def get_coc(self, code) -> COC:
         try:
             coc = await codingame.fetch_coc(code)
-        except codingame.COCCodeNotExist as error:
+        except codingame.COCCodeNotExist:
             valid = False
         else:
             valid = not (coc.finished is True or (coc.public is True and coc.started is True))
