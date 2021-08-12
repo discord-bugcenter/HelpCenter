@@ -5,6 +5,7 @@ from discord.ext import commands
 
 from main import HelpCenterBot
 from .utils import custom_errors
+from .utils.codingame import NoPendingCOC
 from .utils.misc import Color
 from .utils.i18n import use_current_gettext as _
 
@@ -70,6 +71,11 @@ class CommandError(commands.Cog):
             return
         if isinstance(error, commands.CommandError):
             return await self.send_error(ctx, str(error))
+
+        # Other errors
+
+        if isinstance(error, NoPendingCOC):
+            return await self.send_error(ctx, _('There is not public coc started at the moment. Try again in a few seconds or go to https://www.codingame.com/multiplayer/clashofcode and click "Join a clash".'))
 
         self.bot.logger.error(error)  # if the error is not handled
 
