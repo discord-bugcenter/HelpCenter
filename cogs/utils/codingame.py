@@ -23,7 +23,7 @@ class COC:
         'players',
         'mode'
     )
-    
+
     def __init__(self, *, data: dict) -> None:
         self.data = data
         self._from_data(data)
