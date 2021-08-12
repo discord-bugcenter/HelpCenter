@@ -103,7 +103,7 @@ class COCView(ui.View):
     async def subscribe(self, _, inter: discord.Interaction):
         member = inter.guild.get_member(inter.user.id) or await inter.guild.fetch_member(inter.user.id)
         role = discord.utils.get(inter.guild.roles, id=COC_NOTIFICATION_ROLE_ID)
-        await member.add_roles(role, reason=f"Subscribe to COC notifications.")
+        await member.add_roles(role, reason="Subscribe to COC notifications.")
 
         await inter.response.send_message("Si vous le souhaitez, le bot peut vous retirer le rôle après une certaine durée.", view=RoleSubscription(self.bot), ephemeral=True)
 
@@ -117,7 +117,7 @@ class COCView(ui.View):
         member = inter.guild.get_member(inter.user.id) or await inter.guild.fetch_member(inter.user.id)
         role = discord.utils.get(inter.guild.roles, id=COC_NOTIFICATION_ROLE_ID)
 
-        await member.remove_roles(role, reason=f"Manually unsubscribe to COC notifications.")
+        await member.remove_roles(role, reason="Manually unsubscribe to COC notifications.")
 
 
 class RoleSubscription(ui.View):
