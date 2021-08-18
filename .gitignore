@@ -6,7 +6,7 @@
 .vscode/
 *.DS_Store
 *.code-workspace
-
+.devcontainer/
 .env
 
 /cogs/tests.py
