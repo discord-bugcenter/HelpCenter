@@ -1,2 +1,2 @@
 #!/bin/bash
-git pull && docker build -t help-center
+git pull && docker build -t help-center .
