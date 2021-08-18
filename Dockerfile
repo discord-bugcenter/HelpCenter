@@ -1,5 +1,6 @@
 FROM python:3.9.6
-COPY requirements.txt .
+WORKDIR /app
+COPY requirements.txt ./
 RUN pip install -r requirements.txt
 COPY . .
-CMD ["python", "./run_bot.py"]
+CMD ["python", "./main.py"]
