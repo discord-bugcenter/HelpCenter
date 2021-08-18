@@ -96,3 +96,8 @@ class HelpCenterBot(commands.Bot):
 
     def run(self):
         super().run(os.getenv("BOT_TOKEN"), reconnect=True)
+
+
+if __name__ == "__main__":
+    help_center_bot = HelpCenterBot()
+    help_center_bot.run()
