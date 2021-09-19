@@ -26,10 +26,11 @@ class HelpCommand(commands.HelpCommand):
         await self.context.send(embed=embed)
 
     async def send_bot_help(self, mapping) -> None:
-        """Shaw the bot commands."""
+        """Show the bot commands."""
+        prefix = "\\" if str(self.context.bot.user.id) in self.context.prefix  else self.context.prefix
         embed = discord.Embed(
             title=_("Here are my commands:"),
-            description="\n".join([f"`{self.context.prefix}{cmd.name}` : {_(cmd.description)}" for cmd in self.context.bot.commands if not cmd.hidden]),
+            description="\n".join([f"`{prefix}{cmd.name}` : {_(cmd.description)}" for cmd in self.context.bot.commands if not cmd.hidden]),
             color=misc.Color.grey_embed().discord
         )
         await self.context.send(embed=embed)
