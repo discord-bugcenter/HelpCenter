@@ -183,8 +183,9 @@ class Miscellaneous(commands.Cog):
     @commands.Cog.listener()  # This should be on Bot Center, but discord.js has some bugs.
     async def on_member_update(self, old_member: discord.Member, new_member: discord.Member):
         if new_member.guild.id != self.bot.bug_center_id: return
+        if len(new_member.roles) == 1: return
 
-        all_separator_roles: list[discord.Role] = [role for role in new_member.roles[1:] if role.name == '━━━━━━━━━━━━━━━ㅤ']
+        all_separator_roles: list[discord.Role] = [role for role in new_member.guild.roles[1:] if role.name == '━━━━━━━━━━━━━━━ㅤ']
 
         separator_roles: list[discord.Role] = [role for role in all_separator_roles if role.position > new_member.roles[1].position]
         needed_separators: list[discord.Role] = []
