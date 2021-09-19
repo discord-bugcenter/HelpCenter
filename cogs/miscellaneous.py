@@ -180,6 +180,30 @@ class Miscellaneous(commands.Cog):
                     await message.channel.send(text, allowed_mentions=discord.AllowedMentions(users=True))
                     return True
 
+    @commands.Cog.listener()  # This should be on Bot Center, but discord.js has some bugs.
+    async def on_member_update(self, old_member: discord.Member, new_member: discord.Member):
+        if new_member.guild.id != self.bot.bug_center_id: return
+
+        all_separator_roles: list[discord.Role] = [role for role in new_member.roles[1:] if role.name == '━━━━━━━━━━━━━━━ㅤ']
+
+        separator_roles: list[discord.Role] = [role for role in all_separator_roles if role.position > new_member.roles[1].position]
+        needed_separators: list[discord.Role] = []
+
+        member_roles: list[discord.Role] = [role for role in new_member.roles[1:] if role not in separator_roles]
+
+        for member_role in member_roles:
+            if not separator_roles: break
+
+            if member_role.position > separator_roles[0].position:
+                needed_separators.append(separator_roles[0])
+                separator_roles = [role for role in separator_roles if role.position > member_role.position]
+
+        roles_to_add: set[discord.Role] = set(needed_separators) - set(new_member.roles)
+        roles_to_remove: set[discord.Role] = set(all_separator_roles) & set(new_member.roles) - set(needed_separators)
+
+        if roles_to_add: await new_member.add_roles(*roles_to_add)
+        if roles_to_remove: await new_member.remove_roles(*roles_to_remove)
+
 
 def setup(bot: HelpCenterBot) -> None:
     bot.add_cog(Miscellaneous(bot))
