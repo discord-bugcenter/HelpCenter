@@ -43,7 +43,8 @@ class Doc(commands.Cog):
             desc += line + "\n"
         embed.description = desc
         embed.set_footer(text=_('Documentations provided by https://readthedocs.io'))
-        await delete_with_emote(await ctx.send(_("Results for query **{0}** and documentation **{1}**".format(query, doc)), embed=embed))
+        response = await ctx.send(_("Results for query **{0}** and documentation **{1}**".format(query, doc)), embed=embed)
+        await delete_with_emote(ctx, response)
 
 def setup(bot):
     bot.add_cog(Doc(bot))
