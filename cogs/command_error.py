@@ -2,6 +2,7 @@ from typing import Optional
 
 import discord
 from discord.ext import commands
+from discord.ext.commands.errors import CommandInvokeError
 
 from main import HelpCenterBot
 from .utils import custom_errors
@@ -27,11 +28,11 @@ class CommandError(commands.Cog):
         )
         embed.set_author(
             name=f'{ctx.author.name}#{ctx.author.discriminator}',
-            icon_url=ctx.author.avatar.url
+            icon_url=ctx.author.display_avatar.url
         )
         embed.set_footer(
-            text=_("{ctx.bot.user.name}#{ctx.bot.user.discriminator} open-source project").format(**locals()),
-            icon_url=ctx.bot.user.avatar.url
+            text=_(f"{ctx.bot.user.name}#{ctx.bot.user.discriminator} open-source project").format(**locals()),
+            icon_url=ctx.bot.user.display_avatar.url
         )
 
         return await ctx.send(embed=embed, delete_after=10)
@@ -69,13 +70,16 @@ class CommandError(commands.Cog):
             return await self.send_error(ctx, _('This command must be executed in Private Messages'))
         if isinstance(error, commands.CheckFailure):
             return
+        if isinstance(error, CommandInvokeError):
+            if isinstance(error.__cause__, IndexError):
+                return await self.send_error(ctx, _("That query didn't provide enough results."))
         if isinstance(error, commands.CommandError):
             return await self.send_error(ctx, str(error))
 
         # Other errors
 
         if isinstance(error, NoPendingCOC):
-            return await self.send_error(ctx, _('There is not public coc started at the moment. Try again in a few seconds or go to https://www.codingame.com/multiplayer/clashofcode and click "Join a clash".'))
+            return await self.send_error(ctx, _('There is no public coc started at the moment. Try again in a few seconds or go to https://www.codingame.com/multiplayer/clashofcode and click "Join a clash".'))
 
         self.bot.logger.error(error)  # if the error is not handled
 
