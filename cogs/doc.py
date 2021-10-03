@@ -7,7 +7,6 @@ from .utils import checkers
 from.utils.misc import delete_with_emote
 from .utils.i18n import use_current_gettext as _
 
-# TODO : this command should be recreated with a real research into documentations.
 
 class Doc(commands.Cog):
     def __init__(self, bot):
@@ -20,7 +19,6 @@ class Doc(commands.Cog):
         description=_('Shows 4 or fewer links referring to a documentation on readthedocs.io :D'),
         hidden=True
     )
-    # Using query (with *, arg) instead of array (*arg) to prevent argument missing.
     @checkers.authorized_channels()
     async def doc(self, ctx, doc, *, query):
         
