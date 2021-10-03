@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-07-28 22:19+0200\n"
-"PO-Revision-Date: 2021-07-28 22:23+0200\n"
+"POT-Creation-Date: 2021-10-03 10:26+0200\n"
+"PO-Revision-Date: 2021-10-03 10:29+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -15,7 +15,7 @@ msgstr ""
 "X-Poedit-SearchPath-0: cogs\n"
 "X-Poedit-SearchPath-1: main.py\n"
 
-#: cogs/auto_help_system.py:88
+#: cogs/auto_help_system.py:104
 msgid ""
 "**Give a title to your request.** \n"
 "*Do not send your whole problem, just a very concise description with "
@@ -31,7 +31,7 @@ msgstr ""
 "> Exemple : \\\"[python - discord.py] Est-il possible d'expulser quelqu'un "
 "d'un serveur avec son ID ?\\\""
 
-#: cogs/auto_help_system.py:98
+#: cogs/auto_help_system.py:119
 #, python-brace-format
 msgid ""
 "{0}\n"
@@ -52,15 +52,19 @@ msgstr ""
 "{1}\n"
 "```"
 
-#: cogs/auto_help_system.py:118
-msgid "Archiver"
+#: cogs/auto_help_system.py:145
+msgid "Archive"
 msgstr ""
 
-#: cogs/auto_help_system.py:127
+#: cogs/auto_help_system.py:146
+msgid "Delete"
+msgstr ""
+
+#: cogs/auto_help_system.py:155
 msgid "Ask your question."
 msgstr "Posez votre question."
 
-#: cogs/auto_help_system.py:128
+#: cogs/auto_help_system.py:156
 msgid ""
 "Be as clear as possible, remember to send code if there is, or screens "
 "highlighting the problem! \n"
@@ -74,51 +78,74 @@ msgstr ""
 "**\\⚠️ Ne partagez en aucun cas des mots de passe, des tokens de bots... si "
 "quelqu'un vous en demande, prévenez un membre du staff.**\\⚠️"
 
-#: cogs/auto_help_system.py:131
+#: cogs/auto_help_system.py:161
 msgid "⬇ click to archive the thread"
 msgstr "⬇ cliquez pour archiver le fil"
 
-#: cogs/clash_of_code.py:124
+#: cogs/auto_help_system.py:167
+msgid "How to ask a question ?"
+msgstr "Comment poser une question ?"
+
+#: cogs/auto_help_system.py:168
+#, python-brace-format
+msgid ""
+":ballot_box_with_check: have you searched on Google ? [Search](https://"
+"google.com/search?q={0})\n"
+":ballot_box_with_check: have you read the doc ?\n"
+":ballot_box_with_check: don't ask to ask, just ask. https://dontasktoask."
+"com/\n"
+":ballot_box_with_check: asking about your attempted solution rather than "
+"your actual problem. https://xyproblem.info/"
+msgstr ""
+":ballot_box_with_check: avez vous cherché sur Google ? [Rechercher](https://"
+"google.com/search?q={0})\n"
+":ballot_box_with_check: avez vous lu la documentation ?\n"
+":ballot_box_with_check: ne demandez pas pour demander, demandez simplement. "
+"https://dontasktoask.com/\n"
+":ballot_box_with_check: posez des questions sur votre tentative de solution "
+"plutôt que sur votre problème réel. https://xyproblem.info/"
+
+#: cogs/clash_of_code.py:73
 msgid "30 minutes"
-msgstr ""
+msgstr "30 minutes"
 
-#: cogs/clash_of_code.py:125
-msgid "1 heure"
-msgstr ""
+#: cogs/clash_of_code.py:74
+msgid "1 hour"
+msgstr "1 heure"
 
-#: cogs/clash_of_code.py:126
-msgid "3 heures"
-msgstr ""
+#: cogs/clash_of_code.py:75
+msgid "3 hours"
+msgstr "3 heures"
 
-#: cogs/clash_of_code.py:127
-msgid "12 heures"
-msgstr ""
+#: cogs/clash_of_code.py:76
+msgid "12 hours"
+msgstr "12 heures"
 
-#: cogs/clash_of_code.py:128
-msgid "1 journée"
-msgstr ""
+#: cogs/clash_of_code.py:77
+msgid "1 day"
+msgstr "1 journée"
 
-#: cogs/clash_of_code.py:158
+#: cogs/clash_of_code.py:102
 msgid "Publish a clash of code !"
 msgstr "Publiez un clash of code !"
 
-#: cogs/clash_of_code.py:170 cogs/clash_of_code.py:187
+#: cogs/clash_of_code.py:121 cogs/clash_of_code.py:138
 msgid "Published !"
 msgstr "Publié !"
 
-#: cogs/clash_of_code.py:233
+#: cogs/clash_of_code.py:143
 msgid "no"
 msgstr "non"
 
-#: cogs/clash_of_code.py:233
+#: cogs/clash_of_code.py:143
 msgid "yes"
 msgstr "oui"
 
-#: cogs/clash_of_code.py:235
+#: cogs/clash_of_code.py:145
 msgid "New clash of code !"
 msgstr "Nouveau clash of code !"
 
-#: cogs/clash_of_code.py:237
+#: cogs/clash_of_code.py:147
 #, python-brace-format
 msgid ""
 "> `public` : {0}\n"
@@ -131,28 +158,28 @@ msgstr ""
 "> `commandé` : {2}\n"
 "> `finis` : {3}"
 
-#: cogs/clash_of_code.py:247
+#: cogs/clash_of_code.py:157
 msgid "**Created :**"
 msgstr "**Créé :**"
 
-#: cogs/clash_of_code.py:252
+#: cogs/clash_of_code.py:162
 msgid "**Start planned :**"
 msgstr "**Début prévu :**"
 
-#: cogs/clash_of_code.py:259
+#: cogs/clash_of_code.py:169
 msgid "**End :**"
 msgstr "**Fin :**"
 
-#: cogs/clash_of_code.py:280
-msgid "aucun"
-msgstr ""
+#: cogs/clash_of_code.py:190
+msgid "none"
+msgstr "aucun"
 
-#: cogs/command_error.py:32
+#: cogs/command_error.py:34
 #, python-brace-format
 msgid "{ctx.bot.user.name}#{ctx.bot.user.discriminator} open-source project"
 msgstr "{ctx.bot.user.name}#{ctx.bot.user.discriminator} projet open-source"
 
-#: cogs/command_error.py:49
+#: cogs/command_error.py:51
 #, python-brace-format
 msgid ""
 "You can't execute this command in <#{ctx.channel.id}>. Try in one of these "
@@ -163,7 +190,7 @@ msgstr ""
 "dans l'un de ces salons :\n"
 "\n"
 
-#: cogs/command_error.py:53
+#: cogs/command_error.py:55
 msgid ""
 "You can't execute this command, you need one of these roles :\n"
 "\n"
@@ -172,7 +199,7 @@ msgstr ""
 "rôles  :\n"
 "\n"
 
-#: cogs/command_error.py:57
+#: cogs/command_error.py:59
 msgid ""
 "You send an invalid link/code, or the game cannot be joined anymore, or the "
 "game doesn't exist !"
@@ -180,25 +207,46 @@ msgstr ""
 "Vous avez envoyé un lien/code invalide, ou la partie ne peut plus être "
 "rejointe, ou la partie n'existe pas !"
 
-#: cogs/command_error.py:59
+#: cogs/command_error.py:61
 msgid "This clash is already published !"
 msgstr "Ce clash a déjà été publié !"
 
-#: cogs/command_error.py:64
+#: cogs/command_error.py:66
 msgid "A required argument is missing in the command !\n"
 msgstr "Il manque un argument obligatoire dans la commande !\n"
 
-#: cogs/command_error.py:68
+#: cogs/command_error.py:70
 msgid "This command must be executed in Private Messages"
 msgstr "Cette commande doit être exécutée en messages privés"
 
-#: cogs/doc.py:19
-msgid "Shows a documentation for discord.js or discord.py :D"
-msgstr "Affiche une documentation pour discord.js ou discord.py :D"
+#: cogs/command_error.py:75
+msgid "That query didn't provide enough results."
+msgstr "Cette recherche n'a pas donné assez de résultats."
 
-#: cogs/doc.py:24 cogs/doc.py:27
-msgid "This is the api reference for {}!\n"
-msgstr "Ceci est la référence de l'API pour {}!\n"
+#: cogs/command_error.py:82
+msgid ""
+"There is no public coc started at the moment. Try again in a few seconds or "
+"go to https://www.codingame.com/multiplayer/clashofcode and click \"Join a "
+"clash\"."
+msgstr ""
+"Il n\\'y a pas de coc public commencé pour le moment. Réessayez dans "
+"quelques secondes ou rendez-vous sur https://www.codingame.com/multiplayer/"
+"clashofcode et cliquez \"Rejoindre un clash\"."
+
+#: cogs/doc.py:19
+msgid ""
+"Shows 4 or fewer links referring to a documentation on readthedocs.io :D"
+msgstr ""
+"Affiche 4 liens ou moins renvoyant à une documentation sur readthedocs.io :D"
+
+#: cogs/doc.py:35
+msgid "{} Results (click here for a complete search)"
+msgstr "{} Résultats (cliquer ici pour des résultats complets)"
+
+#: cogs/doc.py:47
+#, python-brace-format
+msgid "Results for query **{0}** and documentation **{1}**"
+msgstr "Résultats pour la recherche **{0}** et la documentation **{1}**"
 
 #: cogs/event.py:57
 msgid "There is no event right now, sorry !"
@@ -380,11 +428,11 @@ msgstr "L'outil google est très puissant, voici comment il fonctionne!\n"
 msgid "Show bot commands."
 msgstr "Afficher les commandes du bot."
 
-#: cogs/help.py:31
+#: cogs/help.py:32
 msgid "Here are my commands:"
 msgstr "Voice mes commandes :"
 
-#: cogs/help.py:52
+#: cogs/help.py:56
 #, python-brace-format
 msgid "The command {string} way not found."
 msgstr "La commande {string} n'a pas été trouvée."
@@ -485,6 +533,15 @@ msgstr "Le tag n'a pas été trouvé, {0}look `/tag list`"
 #: cogs/tag.py:127
 msgid "__Choose the target :__\n"
 msgstr "__Choisissez la cible :__\n"
+
+#~ msgid "Shows a documentation for discord.js or discord.py :D"
+#~ msgstr "Affiche une documentation pour discord.js ou discord.py :D"
+
+#~ msgid "{}/en/stable/search.html?q={query}"
+#~ msgstr "{}/en/stable/search.html?q={query}"
+
+#~ msgid "This is the api reference for {}!\n"
+#~ msgstr "Ceci est la référence de l'API pour {}!\n"
 
 #~ msgid "Your global position :"
 #~ msgstr "Votre position globale :"
