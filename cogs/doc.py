@@ -21,7 +21,6 @@ class Doc(commands.Cog):
     )
     @checkers.authorized_channels()
     async def doc(self, ctx, doc, *, query):
-        
         url = 'https://readthedocs.org/api/v2/search/'
         params = {
             'q': query,
