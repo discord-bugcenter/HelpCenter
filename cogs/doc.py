@@ -1,12 +1,13 @@
+import discord
 from discord.ext import commands
 
+from aiohttp import ClientSession
+
 from .utils import checkers
-from .utils.misc import delete_with_emote
+from.utils.misc import delete_with_emote
 from .utils.i18n import use_current_gettext as _
-import re
 
 # TODO : this command should be recreated with a real research into documentations.
-
 
 class Doc(commands.Cog):
     def __init__(self, bot):
@@ -15,21 +16,36 @@ class Doc(commands.Cog):
     @commands.command(
         name='doc',
         usage='/doc {query}',
-        aliases=['docu', 'documentation'],
-        description=_('Shows a documentation for discord.js or discord.py :D'),
+        aliases=['documentation'],
+        description=_('Shows 4 or fewer links referring to a documentation on readthedocs.io :D'),
         hidden=True
     )
-    @checkers.authorized_channels()  # Using query (with *, arg) instead of array (*arg) to prevent argument missing.
-    async def doc(self, ctx, doc_name, *, query):
-        if re.findall(r'p|Py|Y', doc_name):
-            response = await ctx.send(_("This is the api reference for {}!\n").format(query) +
-                                      f"<https://discordpy.readthedocs.io/en/stable/api.html#{query}>")
-        elif re.findall(r'j|Js|S', doc_name):
-            response = await ctx.send(_("This is the api reference for {}!\n").format(query) +
-                                      f"<https://discord.js.org/#/docs/main/stable/class/{query}>")
-        else: return
-        await delete_with_emote(ctx, response)
-
+    # Using query (with *, arg) instead of array (*arg) to prevent argument missing.
+    @checkers.authorized_channels()
+    async def doc(self, ctx, doc, *, query):
+        
+        url = 'https://readthedocs.org/api/v2/search/'
+        params = {
+            'q': query,
+            'project': doc,
+            'version': 'latest',
+        }
+        async with ClientSession() as session:
+            async with session.get(url, params=params) as r:
+                json = await r.json()
+        embed = discord.Embed(title=_("{} Results (click here for a complete search)".format(json['count'])), description="", url="{}/en/stable/search.html?q={}".format(json['results'][0]['domain'], query))
+        for result in json['results']:
+            try:
+                for block in result['blocks']:
+                    embed.description += f"\n[{block['title']}]({result['domain']}{result['path']}?highlight={query}#{block['id']})"
+            except KeyError:
+                embed.description += f"\n[{result['title']}]({result['domain']}{result['path']}?highlight={query}#{block['id']})"
+        desc = ""
+        for line in embed.description.split('\n')[0:4]:
+            desc += line + "\n"
+        embed.description = desc
+        embed.set_footer(text=_('Documentations provided by https://readthedocs.io'))
+        await delete_with_emote(await ctx.send(_("Results for query **{0}** and documentation **{1}**".format(query, doc)), embed=embed))
 
 def setup(bot):
     bot.add_cog(Doc(bot))
