@@ -4,7 +4,7 @@ from discord.ext import commands
 from aiohttp import ClientSession
 
 from .utils import checkers
-from.utils.misc import delete_with_emote
+from .utils.misc import delete_with_emote
 from .utils.i18n import use_current_gettext as _
 
 
@@ -30,7 +30,8 @@ class Doc(commands.Cog):
         async with ClientSession() as session:
             async with session.get(url, params=params) as r:
                 json = await r.json()
-        embed = discord.Embed(title=_("{} Results (click here for a complete search)".format(json['count'])), description="", url="{}/en/stable/search.html?q={}".format(json['results'][0]['domain'], query))
+        embed = discord.Embed(title=_("{} Results (click here for a complete search)".format(
+            json['count'])), description="", url="{}/en/stable/search.html?q={}".format(json['results'][0]['domain'], query))
         for result in json['results']:
             try:
                 for block in result['blocks']:
@@ -44,6 +45,7 @@ class Doc(commands.Cog):
         embed.set_footer(text=_('Documentations provided by https://readthedocs.io'))
         response = await ctx.send(_("Results for query **{0}** and documentation **{1}**".format(query, doc)), embed=embed)
         await delete_with_emote(ctx, response)
+
 
 def setup(bot):
     bot.add_cog(Doc(bot))

@@ -2,7 +2,6 @@ from typing import Optional
 
 import discord
 from discord.ext import commands
-from discord.ext.commands.errors import CommandInvokeError
 
 from main import HelpCenterBot
 from .utils import custom_errors
@@ -70,7 +69,7 @@ class CommandError(commands.Cog):
             return await self.send_error(ctx, _('This command must be executed in Private Messages'))
         if isinstance(error, commands.CheckFailure):
             return
-        if isinstance(error, CommandInvokeError):
+        if isinstance(error, commands.CommandInvokeError):
             if isinstance(error.__cause__, IndexError):
                 return await self.send_error(ctx, _("That query didn't provide enough results."))
         if isinstance(error, commands.CommandError):
