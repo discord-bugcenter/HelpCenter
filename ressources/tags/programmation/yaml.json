@@ -1,0 +1,29 @@
+{
+  "name": "yaml",
+  "description": "qu'est-ce que c'est, le yaml ?",
+  "response": {
+    "embed": {
+      "title": "Qu'est-ce que c'est, le yaml ?",
+      "description": [
+        "YAML (Yet Another Markup Language – Encore un Autre Langage de Balisage) est un format de représentation de données. Son avantage est qu'il est beaucoup plus lisible que le JSON. Il est analysable et utilisable par un grand nombre de langages de programmation grâce à ses [différentes implémentations disponibles](https://fr.wikipedia.org/wiki/YAML#Impl%C3%A9mentations).",
+        "On l'utilisera par exemple pour faire un fichier de configuration.",
+        "",
+        "**Extensions :** `.yaml`, `.yml`",
+        "**[Type de médias](https://en.wikipedia.org/wiki/Media_type) :** `application/x-yaml`, `text/yaml`, `text/x-yaml`",
+        "",
+        "Sa syntaxe est simple :",
+        "```yaml",
+        "nom: valeur,",
+        "liste:",
+        "  - voici",
+        "  - une",
+        "  - liste",
+        "ensembles de clé / valeur\":",
+        "  clé: valeur",
+        "```",
+        "",
+        "Le YAML étant basé sur XML et JSON principalement, on peut tout à fait utiliser les {} ou [] du JSON pour un fichier YAML."
+      ]
+    }
+  }
+}
