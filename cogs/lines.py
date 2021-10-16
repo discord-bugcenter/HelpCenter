@@ -1,15 +1,18 @@
 import re
+from typing import TYPE_CHECKING
 
 from discord.ext import commands
 
-from main import HelpCenterBot
 from .utils.misc import delete_with_emote
 from .utils import checkers
 from .utils.i18n import use_current_gettext as _
 
+if TYPE_CHECKING:
+    from main import HelpCenterBot
+
 
 class Lines(commands.Cog):
-    def __init__(self, bot: HelpCenterBot) -> None:
+    def __init__(self, bot: 'HelpCenterBot') -> None:
         self.bot = bot
 
     @commands.command(
@@ -37,6 +40,6 @@ class Lines(commands.Cog):
         await delete_with_emote(ctx, response_message)
 
 
-def setup(bot: HelpCenterBot) -> None:
+def setup(bot: 'HelpCenterBot') -> None:
     bot.add_cog(Lines(bot))
     bot.logger.info("Extension [lines] loaded successfully.")

@@ -1,12 +1,15 @@
 import asyncio
-from typing import Union, Iterable
+from typing import Union, Iterable, TYPE_CHECKING
 
 import aiohttp
 import json
 
-from discord.ext import commands
 from schema import Schema, Or, And, Use, Optional, Regex
 import discord
+
+if TYPE_CHECKING:
+    from main import HelpCenterBot
+    from .types import Person
 
 text_or_list = Schema(Or(str, And(list, Use('\n'.join))))
 
@@ -48,23 +51,22 @@ async def add_reactions(message: discord.Message, reactions: Iterable[Union[disc
         await message.add_reaction(react)
 
 
-async def delete_with_emote(ctx: commands.Context, bot_message: discord.Message) -> None:
+async def delete_with_emote(bot: 'HelpCenterBot', author: 'Person', bot_message: discord.Message) -> None:
     await bot_message.add_reaction("🗑️")
 
     try:
-        await ctx.bot.wait_for("reaction_add", timeout=120,
-                               check=lambda react, usr: str(react.emoji) == "🗑️" and react.message.id == bot_message.id and usr.id == ctx.author.id)
+        await bot.wait_for("reaction_add", timeout=120,
+                           check=lambda react, usr: str(react.emoji) == "🗑️" and react.message.id == bot_message.id and usr.id == author.id)
     except asyncio.TimeoutError:
         try:
-            await bot_message.remove_reaction("🗑️", ctx.me)
+            await bot_message.remove_reaction("🗑️", bot.user)
         except discord.HTTPException:
             pass
-    else:
-        try:
-            await bot_message.delete()
-            await ctx.message.delete()
-        except discord.HTTPException:
-            pass
+        return
+    try:
+        await bot_message.delete()
+    except discord.HTTPException:
+        pass
 
 
 async def create_new_gist(token: str, file_name: str, file_content: str) -> dict:
