@@ -10,9 +10,10 @@ from discord.ext import commands
 from main import HelpCenterBot
 from .utils.misc import create_new_gist, delete_gist, add_reactions
 from .utils.i18n import use_current_gettext as _
+from .utils.constants import BUG_CENTER_ID, AUTHORIZED_CHANNELS_IDS
 
 
-GIST_TOKEN = os.getenv('GIST_TOKEN')
+GIST_TOKEN = os.environ['GIST_TOKEN']
 
 
 class Miscellaneous(commands.Cog):
@@ -28,7 +29,7 @@ class Miscellaneous(commands.Cog):
         if await self.token_revoke(message):
             return
 
-        if message.channel.id not in self.bot.authorized_channels_id:
+        if message.channel.id not in AUTHORIZED_CHANNELS_IDS:
             return
 
         await self.attachement_to_gist(message)
@@ -59,9 +60,12 @@ class Miscellaneous(commands.Cog):
             return
 
         await message.add_reaction('🔄')
-        try: __, user = await self.bot.wait_for('reaction_add', check=lambda react, usr: not usr.bot and react.message.id == message.id and str(react.emoji) == '🔄', timeout=600)
-        except asyncio.TimeoutError: return
-        finally: await message.clear_reactions()
+        try:
+            __, user = await self.bot.wait_for('reaction_add', check=lambda react, usr: not usr.bot and react.message.id == message.id and str(react.emoji) == '🔄', timeout=600)
+        except asyncio.TimeoutError:
+            return
+        finally:
+            await message.clear_reactions()
 
         await self.bot.set_actual_language(message.author)
 
@@ -100,7 +104,8 @@ class Miscellaneous(commands.Cog):
                     file_name = f"code.{references.get(str(stuff[0].emoji))}"
                 else:
                     file_name = f"code{stuff.content}"
-            except asyncio.TimeoutError: return
+            except asyncio.TimeoutError:
+                return
             finally:
                 task.cancel()
                 await response_message.clear_reactions()
@@ -138,7 +143,8 @@ class Miscellaneous(commands.Cog):
                 tokens_places.append(str(field.value))
 
         for place in tokens_places:
-            if await self.search_for_token(message, place): return True
+            if await self.search_for_token(message, place):
+                return True
 
     async def search_for_token(self, message: discord.Message, text: str) -> bool:
         if not (match := self.re_token.search(text)):
@@ -163,6 +169,8 @@ class Miscellaneous(commands.Cog):
                     await asyncio.sleep(30)
                     await delete_gist(GIST_TOKEN, gist['id'])
                     return True
+                else:
+                    return False
 
         # Check if it is eventually a user token.
         url = "https://discord.com/api/v9/users/@me"
@@ -182,8 +190,10 @@ class Miscellaneous(commands.Cog):
 
     @commands.Cog.listener()  # This should be on Bot Center, but discord.js has some bugs.
     async def on_member_update(self, old_member: discord.Member, new_member: discord.Member):
-        if new_member.guild.id != self.bot.bug_center_id: return
-        if len(new_member.roles) == 1: return
+        if new_member.guild.id != BUG_CENTER_ID:
+            return
+        if len(new_member.roles) == 1:
+            return
 
         all_separator_roles: list[discord.Role] = [role for role in new_member.guild.roles[1:] if role.name == '━━━━━━━━━━━━━━━ㅤ']
 
@@ -193,7 +203,8 @@ class Miscellaneous(commands.Cog):
         member_roles: list[discord.Role] = [role for role in new_member.roles[1:] if role not in separator_roles]
 
         for member_role in member_roles:
-            if not separator_roles: break
+            if not separator_roles:
+                break
 
             if member_role.position > separator_roles[0].position:
                 needed_separators.append(separator_roles[0])
@@ -202,8 +213,10 @@ class Miscellaneous(commands.Cog):
         roles_to_add: set[discord.Role] = set(needed_separators) - set(new_member.roles)
         roles_to_remove: set[discord.Role] = set(all_separator_roles) & set(new_member.roles) - set(needed_separators)
 
-        if roles_to_add: await new_member.add_roles(*roles_to_add)
-        if roles_to_remove: await new_member.remove_roles(*roles_to_remove)
+        if roles_to_add:
+            await new_member.add_roles(*roles_to_add)
+        if roles_to_remove:
+            await new_member.remove_roles(*roles_to_remove)
 
 
 def setup(bot: HelpCenterBot) -> None:
