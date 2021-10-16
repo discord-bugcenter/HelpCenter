@@ -1,15 +1,19 @@
+from typing import TYPE_CHECKING
+
 import discord
 from discord.ext import commands
-
 from aiohttp import ClientSession
 
 from .utils import checkers
 from .utils.misc import delete_with_emote
 from .utils.i18n import use_current_gettext as _
 
+if TYPE_CHECKING:
+    from main import HelpCenterBot, Context
+
 
 class Doc(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: 'HelpCenterBot'):
         self.bot = bot
 
     @commands.command(
@@ -20,7 +24,7 @@ class Doc(commands.Cog):
         hidden=True
     )
     @checkers.authorized_channels()
-    async def doc(self, ctx, doc, *, query):
+    async def doc(self, ctx: 'Context', doc, *, query):
         url = 'https://readthedocs.org/api/v2/search/'
         params = {
             'q': query,
@@ -47,6 +51,6 @@ class Doc(commands.Cog):
         await delete_with_emote(ctx, response)
 
 
-def setup(bot):
+def setup(bot: 'HelpCenterBot'):
     bot.add_cog(Doc(bot))
     bot.logger.info("Extension [doc] loaded successfully.")
