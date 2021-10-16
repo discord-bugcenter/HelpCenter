@@ -21,6 +21,8 @@ logger = logging.getLogger(__name__)
 
 
 class HelpCenterBot(commands.Bot):
+    logger: logging.Logger = logger
+
     def __init__(self) -> None:
         super().__init__(
             command_prefix=["/", "\\", "<@789210466492481597> ", "<@!789210466492481597> "],
@@ -32,8 +34,7 @@ class HelpCenterBot(commands.Bot):
             sync_commands=True
         )
 
-        self.logger: logging.Logger = logger
-
+        extensions: list[str] = ['tag']  # 'clash_of_code', 'event', 'tag', 'help', 'command_error', 'miscellaneous', 'lines', 'google_it', 'doc', 'auto_help_system']
         extensions: list[str] = ['clash_of_code', 'event', 'tag', 'help', 'command_error', 'miscellaneous', 'lines', 'google_it', 'doc', 'auto_help_system']
         for extension in extensions:
             self.load_extension('cogs.' + extension)

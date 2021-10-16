@@ -1,162 +1,200 @@
+from typing import Union, TypedDict
 import os
 from os import path
 import json
-from difflib import SequenceMatcher
 
 import discord
-from discord.ext import commands
+from disnake.utils import get
+from disnake.ext import commands
 from schema import SchemaError
 
-from main import HelpCenterBot
+from cogs.utils.types import Person
+
 from .utils.misc import tag_schema
+from .utils.constants import BUG_CENTER_ID
 from .utils import checkers, misc
 from .utils.i18n import use_current_gettext as _
+from main import HelpCenterBot
 
 
-class Tag(commands.Cog):
-    def __init__(self, bot: HelpCenterBot) -> None:
+ResponseChoices = TypedDict('ResponseChoices', content=str, embed=dict, choice_name=str)
+Response = TypedDict('Response', content=str, embed=dict, choices=list[ResponseChoices])
+
+
+class Tag:
+    def __init__(self, data):
+        self.lang = data.get('lang') or 'fr_FR'
+        self.name: str = data["name"]
+        self.description: str = data['description']
+        self.response: Response = data['response']
+
+    @classmethod
+    def parse_tag(cls, data: Union[dict, list]) -> list['Tag']:
+        if isinstance(data, list):
+            return [cls(json_tag) for json_tag in cls.complete_values(data)]
+        else:  # isinstance(data, dict)
+            return [cls(cls.complete_values(data))]
+
+    @staticmethod
+    def complete_values(obj: Union[dict, list, str], ref: Union[dict, list, str] = None):
+        """This function will fill values where there is a * in the tag.json based on the corresponding field located above"""
+        if isinstance(obj, dict):
+            for key, value in obj.items():
+                if value == "*" and ref:
+                    obj[key] = ref[key]
+                else:
+                    obj[key] = Tag.complete_values(value, ref=ref[key] if ref else ref)
+        elif isinstance(obj, list) and all(isinstance(sub_obj, dict) for sub_obj in obj):
+            for i in range(len(obj)):
+                if i == 0 and not ref:
+                    continue
+                obj[i] = Tag.complete_values(obj[i], ref=ref[i] if ref else obj[0])
+
+        return obj
+
+
+tags_paths: dict[str, dict] = {}  # A dict which looks like {"category_name": {"tag_name": "/path/to/tag.json"}}  (path is "/category_name/tag_name.json")
+for category_name in os.listdir('ressources/tags/'):
+    if not path.isdir(category_path := path.join('ressources/tags/', category_name)):
+        continue
+
+    category: dict[str, str] = {path.splitext(tag_name)[0]: path.join(category_path, tag_name) for tag_name in os.listdir(category_path)}
+
+    tags_paths[category_name] = category
+
+tags: dict[str, dict[str, list[Tag]]] = {}  # A dict which looks like {"category_name": {"tag_name": [Tag]}}
+for category_name, tags_infos in tags_paths.items():
+    tags[category_name] = {}
+    for tag_name, tag_path in tags_infos.items():
+        try:
+            with open(tag_path, "r", encoding='utf-8') as f:
+                json_tag: Union[dict, list] = json.load(f)
+
+                try:
+                    assert isinstance(tmp := tag_schema.validate(json_tag), list) or isinstance(tmp, dict)
+                    json_tag = tmp
+                except SchemaError as e:
+                    HelpCenterBot.logger.warning(f'The tag {tag_name} from category {category_name} is improper.\n{e}')
+                    continue
+
+                parsed_tags = Tag.parse_tag(json_tag)
+
+                tags[category_name][parsed_tags[0].name] = parsed_tags
+
+        except Exception:
+            HelpCenterBot.logger.warning(f"The tag {tag_path} cannot be loaded")
+
+
+async def tag_autocompleter(inter: discord.ApplicationCommandInteraction, user_input: str):
+    if not inter.filled_options.get('category'):
+        return [_('You must first fill the category option.')]
+    return [tag_name for tag_name in tags[inter.filled_options['category']].keys() if user_input in tag_name] + ['list']
+
+
+class TagCog(commands.Cog):
+    def __init__(self, bot: 'HelpCenterBot') -> None:
         """Tag command allow you to search for help in pre-saved topics."""
         self.bot = bot
 
-        tags_folder = {
-            category: {
-                    path.splitext(tag_name)[0]: path.join(category_path, tag_name) for tag_name in os.listdir(category_path)
-                } for category in os.listdir('ressources/tags/') if path.isdir(category_path := path.join('ressources/tags/', category))
-        }
-
-        def complete_values(obj, ref=None):
-            if isinstance(obj, dict):
-                for key, value in obj.items():
-                    if value == "*" and ref:
-                        obj[key] = ref[key]
-                    else:
-                        obj[key] = complete_values(value, ref=ref[key] if ref else ref)
-            elif isinstance(obj, list) and all(isinstance(sub_obj, dict) for sub_obj in obj):
-                for i, sub_obj in enumerate(obj):
-                    if i == 0 and not ref: continue
-                    obj[i] = complete_values(obj[i], ref=ref[i] if ref else obj[0])
-
-            return obj
-
-        self.tags = {}
-        for category_name, tags_infos in tags_folder.items():
-            self.tags[category_name] = {}
-            for tag_name, tag_path in tags_infos.items():
-                try:
-                    with open(tag_path, "r", encoding='utf-8') as f:
-                        loaded_tag = json.load(f)
-
-                        try:
-                            loaded_tag = tag_schema.validate(loaded_tag)
-                        except SchemaError as e:
-                            self.bot.logger.warning(f'The tag {tag_name} from category {category_name} is improper.\n{e}')
-                            continue
-
-                        self.tags[category_name][(loaded_tag[0] if isinstance(loaded_tag, list) else loaded_tag)["name"]] = complete_values(loaded_tag)
-
-                except Exception as e:
-                    print(e)
-                    self.bot.logger.warning(f"The tag {tag_path} cannot be loaded")
-
-    @commands.command(
+    @commands.slash_command(
         name="tag",
         usage="/tag <category> (<tag_name>|'list')",
-        description=_("Send redundant help messages.")
+        description=_("Send redundant help messages."),
+        guild_ids=[BUG_CENTER_ID]
     )
     @checkers.authorized_channels()
-    async def _tag(self, ctx: commands.Context, category: str = None, *, query: str = None) -> None:  # TODO : Simplify this function.
+    async def _tag(self,
+                   inter: discord.ApplicationCommandInteraction,
+                   category_name: str = commands.Param(name='category', desc="La catégorie que vous souhaitez selectionner", choices=list(tags.keys())),
+                   tag_name: str = commands.Param(name='tag', desc="Le tag que vous souhaitez envoyer", autocomp=tag_autocompleter)) -> None:
         """The tag command, that will do a research into savec tags, using the category and the query gived."""
-        category_tags = self.tags.get(category)  # category_tags is a dict with categories of the tag
+        category = tags[category_name]
+        user_lang = self.bot.get_user_language(inter.author)
 
-        if category_tags is None and category is not None:
-            similors = ((name, SequenceMatcher(None, name, category).ratio()) for name in self.tags.keys())
-            similors = sorted(similors, key=lambda couple: couple[1], reverse=True)
+        if tag_name == "list":
+            def format_category(_category: dict[str, list[Tag]]) -> str:
+                translated_tags = []
+                for tag_langs in _category.values():
+                    translated_tags.append(get(tag_langs, lang=user_lang))
 
-            if similors[0][1] > 0.8:
-                category = similors[0][0]  # category name
-                category_tags = self.tags.get(category)
+                return "\n".join([f"- `{tag.name}` : {tag.description}" for tag in translated_tags])
 
-        if category_tags is None:  # if the given category isn't ~= or == to any category
-            def format_list(keys): return "\n".join([f"- `{key}`" for key in keys])
-
-            embed = discord.Embed(
-                title=_("Category not found. Try among :"),
-                description=format_list(self.tags.keys()),
-                color=misc.Color.grey_embed().discord
-            )
-            embed.set_footer(text=ctx.command.usage)
-            message = await ctx.send(embed=embed)
-            return await misc.delete_with_emote(ctx, message)
-
-        def get_tag_lang(tag):
-            if isinstance(tag, dict):  # there is just one lang
-                return tag
-            found_tag = discord.utils.find(lambda in_tag: in_tag.get('lang') == self.bot.get_user_language(ctx.author), tag)
-            return found_tag or tag[0]
-
-        if query is None or query == "list":  # if no tag name was given, or the tag name is "list"
-            def format_list(tags_values): return "\n".join([f"- `{get_tag_lang(tag).get('name')}` : {get_tag_lang(tag).get('description')}" for tag in tags_values])
-            message = await ctx.channel.send(embed=discord.Embed(title=_("Here are the tags from the `{0}` category :").format(category),
-                                                                 description=format_list(category_tags.values()),
-                                                                 color=misc.Color.grey_embed().discord)
-                                             )
-            await misc.delete_with_emote(ctx, message)
+            await inter.response.send_message(embed=discord.Embed(title=_("Here are the tags from the `{0}` category :").format(category_name),
+                                                                  description=format_category(category),
+                                                                  color=misc.Color.grey_embed().discord)
+                                              )
+            await misc.delete_with_emote(self.bot, inter.author, await inter.original_message())
             return
 
-        selected_tag = category_tags.get(query) or discord.utils.find(lambda tag: (aliases := get_tag_lang(tag).get('aliases')) and query in aliases, category_tags.values())
+        tag_langs = category.get(tag_name)
+        if not tag_langs:
+            return
 
-        if selected_tag is None:  # given tag name not in tags or aliases
-            similors = ((name, SequenceMatcher(None, name, query).ratio()) for name in category_tags.keys())
-            similors = sorted(similors, key=lambda couple: couple[1], reverse=True)
+        tag: Tag = get(tag_langs, lang=user_lang) or tag_langs[0]
 
-            if similors[0][1] > 0.8:
-                query = similors[0][0]  # tag name
-                selected_tag = category_tags.get(query)
-            else:
-                similar_text = _("do you mean `{0}` ? Otherwise ").format(similors[0][0])
-                await ctx.send(_("Tag not found, {0}look `/tag list`").format(similar_text if similors[0][1] > 0.5 else ''), delete_after=10)
-                return
-
-        selected_tag = get_tag_lang(selected_tag)
-
-        message = None
-        response = selected_tag.get('response')
-        choices = response.get('choices')
+        choices = tag.response.get('choices')
+        kwargs = {}
         if choices:
-            reactions = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣']
-            message = await ctx.send(_("__Choose the target :__\n")+'\n'.join([f"{reactions[i]} - `{choice['choice_name']}`" for i, choice in enumerate(choices)]))
-            self.bot.loop.create_task(misc.add_reactions(message, reactions[:len(choices)]))
+            kwargs['embed'] = embed = discord.Embed.from_dict(choices[0].get('embed'))
+            kwargs['view'] = MultipleChoicesView(self.bot, inter.author, choices, tag_name, category_name)
+        else:
+            kwargs['embed'] = embed = discord.Embed.from_dict(tag.response.get("embed"))
 
-            try:
-                reaction, __ = await self.bot.wait_for('reaction_add', timeout=120,
-                                                       check=lambda react, usr: str(react.emoji) in reactions[:len(choices)] and usr.id == ctx.author.id and react.message.id == message.id)
-            except TimeoutError:
-                return await message.delete()
+        embed.colour = misc.Color.grey_embed().discord
+        embed.set_author(name=inter.author.display_name, icon_url=inter.author.display_avatar.url)
+        embed.set_footer(
+            text=f'/tag {category_name} {tag_name}',
+            icon_url=self.bot.user.display_avatar.url
+        )
 
-            try: await message.clear_reactions()
-            except discord.HTTPException: pass
-            response = choices[reactions.index(str(reaction.emoji))]
+        await inter.response.send_message(**kwargs)
+        await misc.delete_with_emote(self.bot, inter.author, await inter.original_message())
+
+
+class MultipleChoicesView(discord.ui.View):
+    def __init__(self, bot: HelpCenterBot, author: 'Person', choices: list[ResponseChoices], tag_name: str, category_name: str):
+        self.bot = bot
+        self.author = author
+        self.choices = choices
+        self.tag_name = tag_name
+        self.category_name = category_name
+
+        super().__init__()
+
+        self.selector = discord.ui.Select(custom_id='multiple_choices_tag', options=[
+            discord.SelectOption(label=choice['choice_name'], default=i == 0) for i, choice in enumerate(self.choices)
+        ])
+        self.selector.callback = self.selector_callback
+        self.add_item(self.selector)
+
+    async def interaction_check(self, interaction: discord.MessageInteraction) -> bool:
+        if interaction.author.id == self.author.id:
+            return True
+        await interaction.response.defer(ephemeral=True)
+        return False
+
+    async def selector_callback(self, inter: discord.MessageInteraction):
+        assert inter.values is not None
+        response = discord.utils.find(lambda choice: choice['choice_name'] == inter.values[0], self.choices)
+        assert response is not None
 
         embed = discord.Embed.from_dict(response.get("embed"))
         embed.colour = misc.Color.grey_embed().discord
-        embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar.url)
-
-        text = f'/tag {category} {query}'
-        url = self.bot.user.avatar.url
+        embed.set_author(name=inter.author.display_name, icon_url=inter.author.display_avatar.url)
         embed.set_footer(
-            text=text,
-            icon_url=url
+            text=f'/tag {self.category_name} {self.tag_name}',
+            icon_url=self.bot.user.display_avatar.url
         )
 
-        if message: await message.edit(embed=embed, content="")
-        else: message = await ctx.channel.send(embed=embed)
+        for option in self.selector.options:
+            option.default = option.label == inter.values[0]
 
-        try: await ctx.message.delete()  # delete the trigger message (the command)
-        except discord.HTTPException: pass
-        try: await misc.delete_with_emote(ctx, message)
-        except discord.HTTPException: pass
+        try:
+            await inter.response.edit_message(embed=embed, view=self)
+        except discord.HTTPException:
+            self.stop()
 
 
-def setup(bot):
-    bot.add_cog(Tag(bot))
+def setup(bot: 'HelpCenterBot'):
+    bot.add_cog(TagCog(bot))
     bot.logger.info("Extension [tag] loaded successfully.")

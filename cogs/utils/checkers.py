@@ -5,7 +5,7 @@ from discord.ext import commands
 from discord.ext.commands import check
 
 from . import custom_errors
-from .constants import BUG_CENTER_ID, STAFF_ROLES
+from .constants import BUG_CENTER_ID, STAFF_ROLES, AUTHORIZED_CHANNELS_IDS
 from main import HelpCenterBot
 
 
@@ -14,10 +14,10 @@ def authorized_channels_check(ctx: commands.Context) -> bool:
     if isinstance(ctx.channel, discord.Thread):
         target = ctx.channel.parent_id
 
-    if target in ctx.bot.authorized_channels_id:
+    if target in AUTHORIZED_CHANNELS_IDS:
         return True
 
-    raise custom_errors.NotAuthorizedChannels(ctx.bot.authorized_channels_id)
+    raise custom_errors.NotAuthorizedChannels(AUTHORIZED_CHANNELS_IDS)
 
 
 def authorized_channels():
