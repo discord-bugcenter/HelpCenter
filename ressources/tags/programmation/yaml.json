@@ -18,8 +18,8 @@
         "  - voici",
         "  - une",
         "  - liste",
-        "ensembles de clé / valeur\":",
-        "  clé: valeur",
+        "ensembles de cle_/_valeur:",
+        "  cle: valeur",
         "```",
         "",
         "Le YAML étant basé sur XML et JSON principalement, on peut tout à fait utiliser les {} ou [] du JSON pour un fichier YAML."
