@@ -174,8 +174,9 @@ class MultipleChoicesView(discord.ui.View):
         return False
 
     async def selector_callback(self, inter: discord.MessageInteraction):
-        assert inter.values is not None
-        response = discord.utils.find(lambda choice: choice['choice_name'] == inter.values[0], self.choices)
+        values = inter.values
+        assert values is not None
+        response = discord.utils.find(lambda choice: choice['choice_name'] == values[0], self.choices)
         assert response is not None
 
         embed = discord.Embed.from_dict(response.get("embed"))
@@ -187,7 +188,7 @@ class MultipleChoicesView(discord.ui.View):
         )
 
         for option in self.selector.options:
-            option.default = option.label == inter.values[0]
+            option.default = option.label == values[0]
 
         try:
             await inter.response.edit_message(embed=embed, view=self)
