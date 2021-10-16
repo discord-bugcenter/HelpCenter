@@ -4,7 +4,8 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import check
 
-from ..utils import custom_errors
+from . import custom_errors
+from .constants import BUG_CENTER_ID, STAFF_ROLES
 from main import HelpCenterBot
 
 
@@ -23,16 +24,19 @@ def authorized_channels():
     return check(authorized_channels_check)
 
 
-def is_high_staff_check(bot: HelpCenterBot, user: Union[discord.Member, discord.User]) -> tuple[bool, list[id]]:
-    bug_center: discord.Guild = bot.get_guild(bot.bug_center_id)
+def is_high_staff_check(bot: HelpCenterBot, user: Union[discord.Member, discord.User]) -> tuple[bool, list[int]]:
+    assert (tmp := bot.get_guild(BUG_CENTER_ID))
+    bug_center: discord.Guild = tmp
 
-    member: discord.Member = user
     if isinstance(user, discord.User):
-        member = bug_center.get_member(user.id)
+        assert (tmp := bug_center.get_member(user.id))
+        member: discord.Member = tmp
+    else:
+        member = user
 
-    allowed_roles_ids: list[int] = [value for (key, value) in bot.staff_roles.items() if key in ('administrator', 'assistant', 'screening')]
+    allowed_roles_ids: list[int] = [value for (key, value) in STAFF_ROLES.items() if key in ('administrator', 'assistant', 'screening')]
 
-    return discord.utils.find(lambda r: r.id in allowed_roles_ids, member.roles) or member.guild_permissions.administrator, allowed_roles_ids
+    return bool(discord.utils.find(lambda r: r.id in allowed_roles_ids, member.roles)) or member.guild_permissions.administrator, allowed_roles_ids
 
 
 def is_high_staff():

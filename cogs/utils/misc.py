@@ -55,13 +55,16 @@ async def delete_with_emote(ctx: commands.Context, bot_message: discord.Message)
         await ctx.bot.wait_for("reaction_add", timeout=120,
                                check=lambda react, usr: str(react.emoji) == "🗑️" and react.message.id == bot_message.id and usr.id == ctx.author.id)
     except asyncio.TimeoutError:
-        try: await bot_message.remove_reaction("🗑️", ctx.me)
-        except discord.HTTPException: pass
+        try:
+            await bot_message.remove_reaction("🗑️", ctx.me)
+        except discord.HTTPException:
+            pass
     else:
         try:
             await bot_message.delete()
             await ctx.message.delete()
-        except discord.HTTPException: pass
+        except discord.HTTPException:
+            pass
 
 
 async def create_new_gist(token: str, file_name: str, file_content: str) -> dict:
@@ -109,7 +112,7 @@ async def execute_piston_code(language: str, version: str, files: list, *, stdin
 
 
 class Color:
-    def __init__(self, r: int, g: int, b: int, a: int = 1.0) -> None:
+    def __init__(self, r: int, g: int, b: int, a: int = 1) -> None:
         """Represent a Color object with pre-done colors that can be used as discord.Color etc..."""
         self.r = r
         self.g = g
