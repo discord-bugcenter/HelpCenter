@@ -1,22 +1,24 @@
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 import discord
 from discord.ext import commands
 
-from main import HelpCenterBot
 from .utils import custom_errors
 from .utils.codingame import NoPendingCOC
 from .utils.misc import Color
 from .utils.i18n import use_current_gettext as _
 
+if TYPE_CHECKING:
+    from main import HelpCenterBot, Context
+
 
 class CommandError(commands.Cog):
-    def __init__(self, bot: HelpCenterBot) -> None:
+    def __init__(self, bot: 'HelpCenterBot') -> None:
         """Handle error for the bot commands."""
         self.bot = bot
 
     @staticmethod
-    async def send_error(ctx: commands.Context, error_message: str) -> discord.Message:
+    async def send_error(ctx: 'Context', error_message: str) -> discord.Message:
         """A function to send an error message."""
         embed = discord.Embed(
             title="<:error:797539791545565184> Erreur",
@@ -37,7 +39,7 @@ class CommandError(commands.Cog):
         return await ctx.send(embed=embed, delete_after=10)
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx: commands.Context, error: Exception) -> Optional[discord.Message]:
+    async def on_command_error(self, ctx: 'Context', error: Exception) -> Optional[discord.Message]:
         """Function called when a command raise an error."""
         await self.bot.set_actual_language(ctx.author)
 
@@ -62,6 +64,7 @@ class CommandError(commands.Cog):
         # Discord.py errors
 
         if isinstance(error, commands.MissingRequiredArgument):
+            assert ctx.command
             formatted_text = (_("A required argument is missing in the command !\n") +
                               f"`{ctx.command.usage}`")
             return await self.send_error(ctx, formatted_text)
@@ -83,6 +86,6 @@ class CommandError(commands.Cog):
         self.bot.logger.error(error)  # if the error is not handled
 
 
-def setup(bot: HelpCenterBot) -> None:
+def setup(bot: 'HelpCenterBot') -> None:
     bot.add_cog(CommandError(bot))
     bot.logger.info("Extension [command_error] loaded successfully.")
