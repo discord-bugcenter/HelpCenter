@@ -34,7 +34,7 @@ class Miscellaneous(commands.Cog):
         await self.attachement_to_gist(message)
 
     @commands.Cog.listener()
-    async def on_message_edit(self, old_message: discord.Message, new_message) -> None:
+    async def on_message_edit(self, old_message: discord.Message, new_message: discord.Message) -> None:
         """Look for discord token on message editing."""
         await self.bot.set_actual_language(old_message.author)
 
