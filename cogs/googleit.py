@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING
 from urllib import parse
 
-from discord.ext import commands
-from discord import ApplicationCommandInteraction
+from disnake.ext import commands
+from disnake import ApplicationCommandInteraction
 
 from .utils import checkers
 from .utils.misc import delete_with_emote
