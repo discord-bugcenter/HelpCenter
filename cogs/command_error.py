@@ -1,7 +1,7 @@
 from typing import Optional, TYPE_CHECKING
 
-import discord
-from discord.ext import commands
+import disnake
+from disnake.ext import commands
 
 from .utils import custom_errors
 from .utils.codingame import NoPendingCOC
@@ -18,9 +18,9 @@ class CommandError(commands.Cog):
         self.bot = bot
 
     @staticmethod
-    async def send_error(ctx: 'Context', error_message: str) -> discord.Message:
+    async def send_error(ctx: 'Context', error_message: str) -> disnake.Message:
         """A function to send an error message."""
-        embed = discord.Embed(
+        embed = disnake.Embed(
             title="<:error:797539791545565184> Erreur",
             url="https://discord.gg/Drbgufc",
             description=error_message,
@@ -39,7 +39,7 @@ class CommandError(commands.Cog):
         return await ctx.send(embed=embed, delete_after=10)
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx: 'Context', error: Exception) -> Optional[discord.Message]:
+    async def on_command_error(self, ctx: 'Context', error: Exception) -> Optional[disnake.Message]:
         """Function called when a command raise an error."""
         await self.bot.set_actual_language(ctx.author)
 
@@ -61,7 +61,7 @@ class CommandError(commands.Cog):
         if isinstance(error, custom_errors.AlreadyProcessingCOC):
             return await self.send_error(ctx, _("This clash is already published !"))
 
-        # Discord.py errors
+        # disnake errors
 
         if isinstance(error, commands.MissingRequiredArgument):
             assert ctx.command
