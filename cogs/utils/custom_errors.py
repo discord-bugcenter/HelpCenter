@@ -1,4 +1,4 @@
-from discord.ext.commands import errors
+from disnake.ext.commands import errors
 
 
 class NotAuthorizedChannels(errors.CheckFailure):
