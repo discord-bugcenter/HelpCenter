@@ -8,9 +8,9 @@ from functools import partial
 from datetime import datetime, timedelta
 from collections import OrderedDict
 
-import discord
-from discord.ext import commands
-from discord.utils import find
+import disnake
+from disnake.ext import commands
+from disnake.utils import find
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from matplotlib.ticker import StrMethodFormatter
@@ -49,7 +49,7 @@ LANGUAGES_EQUIVALENT = (
 
 def event_not_closed() -> Callable:
     async def inner(ctx: commands.Context) -> bool:
-        code_channel: discord.TextChannel = ctx.bot.get_channel(CODE_CHANNEL_ID)
+        code_channel: disnake.TextChannel = ctx.bot.get_channel(CODE_CHANNEL_ID)
         state = RE_EVENT_STATE.search(code_channel.topic).group()
 
         if state == 'closed':
@@ -64,7 +64,7 @@ def event_not_closed() -> Callable:
 
 def event_not_ended() -> Callable:
     async def inner(ctx: commands.Context) -> bool:
-        code_channel: discord.TextChannel = ctx.bot.get_channel(CODE_CHANNEL_ID)
+        code_channel: disnake.TextChannel = ctx.bot.get_channel(CODE_CHANNEL_ID)
         state = RE_EVENT_STATE.search(code_channel.topic).group()
 
         if state == 'ended':
@@ -93,7 +93,7 @@ class Event(commands.Cog):
         if ctx.guild and ctx.channel.id not in self.bot.test_channels_id:  # Not in dm or in tests channels
             raise custom_errors.NotAuthorizedChannels(self.bot.test_channels_id)
 
-        embed = discord.Embed(
+        embed = disnake.Embed(
             title=_("Use of /event"),
             color=misc.Color.grey_embed().discord
         )
@@ -104,9 +104,9 @@ class Event(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    async def get_participations(self, user: discord.User = None) -> tuple[dict, list, dict]:
+    async def get_participations(self, user: disnake.User = None) -> tuple[dict, list, dict]:
         """Get all the participations using channel history."""
-        code_channel: Optional[discord.TextChannel] = self.bot.get_channel(self.code_channel_id)
+        code_channel: Optional[disnake.TextChannel] = self.bot.get_channel(self.code_channel_id)
         event_informations = self.get_informations()
 
         datas = dict()
@@ -119,7 +119,7 @@ class Event(commands.Cog):
             fields = message.embeds[0].fields
 
             try: code_author = self.bot.get_user(user_id := int(fields[0].value.split('|')[0])) or await self.bot.fetch_user(user_id)
-            except discord.HTTPException: continue
+            except disnake.HTTPException: continue
 
             language = fields[1].value.split(' ')[0]  # If the language is e.g. javascript (node), just take "javascript"
             length = int(fields[2].value)
@@ -142,7 +142,7 @@ class Event(commands.Cog):
         return datas, datas_global, user_infos
 
     def get_informations(self):
-        channel: Optional[discord.TextChannel] = self.bot.get_channel(CODE_CHANNEL_ID)
+        channel: Optional[disnake.TextChannel] = self.bot.get_channel(CODE_CHANNEL_ID)
 
         state = RE_EVENT_STATE.search(channel.topic).group()
 
@@ -157,7 +157,7 @@ class Event(commands.Cog):
         return {'state': state, 'date': date, 'name': name, 'autotests': autotests}
 
     async def edit_informations(self, state=None, date=None, name=None):
-        channel: Optional[discord.TextChannel] = self.bot.get_channel(CODE_CHANNEL_ID)
+        channel: Optional[disnake.TextChannel] = self.bot.get_channel(CODE_CHANNEL_ID)
         new_topic = channel.topic
 
         if state:
@@ -180,7 +180,7 @@ class Event(commands.Cog):
     @event_not_closed()
     async def participate(self, ctx: commands.Context, *, code):
         """The participate command allow you to participate to a code-contest event."""
-        code_channel: Optional[discord.TextChannel] = self.bot.get_channel(self.code_channel_id)
+        code_channel: Optional[disnake.TextChannel] = self.bot.get_channel(self.code_channel_id)
 
         re_match = RE_GET_CODE_PARTICIPATION.search(code)
         if not re_match:
@@ -190,7 +190,7 @@ class Event(commands.Cog):
         if len(code) > 1000:
             return await ctx.send(_("Looks like your code is too long! Try to remove the useless parts, the goal is to have a short and optimized code!"))
 
-        language = discord.utils.find(lambda i: language.lower() in i['aliases'] + [i['language']], AVAILABLE_LANGUAGES)  # Check if the used language is available.
+        language = find(lambda i: language.lower() in i['aliases'] + [i['language']], AVAILABLE_LANGUAGES)  # Check if the used language is available.
         if not language:
             return await ctx.send(_('Your language seems not be valid for the event.'))
 
@@ -217,11 +217,11 @@ class Event(commands.Cog):
             event_informations = self.get_informations()
 
             if autotests := event_informations['autotests']:
-                embed = discord.Embed(title=_('<a:typing:832608019920977921> Your code is passing some tests...'),
+                embed = disnake.Embed(title=_('<a:typing:832608019920977921> Your code is passing some tests...'),
                                       description='\n'.join(f'➖ Test {i+1}/{len(autotests)}' for i in range(len(autotests))),
                                       color=misc.Color.grey_embed().discord)
 
-                testing_message: discord.Message = await ctx.send(embed=embed)
+                testing_message: disnake.Message = await ctx.send(embed=embed)
 
                 for i, (args, result) in enumerate(autotests):
                     try: execution_result = await misc.execute_piston_code(language=language['language'],
@@ -261,7 +261,7 @@ class Event(commands.Cog):
 
                 await testing_message.edit(embed=embed)
 
-            embed = discord.Embed(
+            embed = disnake.Embed(
                 title="Participation :",
                 color=misc.Color.grey_embed().discord
             )
@@ -280,10 +280,10 @@ class Event(commands.Cog):
                 response = _("Your entry has been successfully sent !")
 
             try: await ctx.send(response)
-            except discord.HTTPException: pass
+            except disnake.HTTPException: pass
         else:
             try: await ctx.send(_('Cancelled'))
-            except discord.HTTPException: pass  # prevent error if the user close his MP
+            except disnake.HTTPException: pass  # prevent error if the user close his MP
 
     @event.command(
         name='cancel',
@@ -301,7 +301,7 @@ class Event(commands.Cog):
             return await ctx.send(_("You didn't participate !"))
 
         if len(user_infos) == 1:
-            old_participation: discord.Message = list(user_infos.values())[0][0]
+            old_participation: disnake.Message = list(user_infos.values())[0][0]
         else:
 
             reactions = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣']
@@ -315,13 +315,13 @@ class Event(commands.Cog):
                                                        check=lambda react, usr: str(react.emoji) in reactions[:len(selectable)] and usr.id == ctx.author.id and react.message.id == message.id)
             except asyncio.TimeoutError:
                 try: await message.delete()
-                except discord.HTTPException: pass
+                except disnake.HTTPException: pass
                 return
 
             try: await message.clear_reactions()
-            except discord.HTTPException: pass
+            except disnake.HTTPException: pass
 
-            old_participation: discord.Message = list(user_infos.values())[reactions.index(str(reaction.emoji))][0]
+            old_participation: disnake.Message = list(user_infos.values())[reactions.index(str(reaction.emoji))][0]
 
         await old_participation.delete()
         await ctx.send(_('Your participation has been successfully deleted'))
@@ -341,7 +341,7 @@ class Event(commands.Cog):
         if not datas:
             return await ctx.send(_("There is no participation at the moment."))
 
-        embed = discord.Embed(
+        embed = disnake.Embed(
             title=_('Some informations...'),
             color=misc.Color.grey_embed().discord,
             description=(_('**Number of participations :** {}\n').format(len(datas_global)) +
@@ -379,7 +379,7 @@ class Event(commands.Cog):
         fn = partial(self.create_graph_bars, datas, texts)
         final_buffer = await self.bot.loop.run_in_executor(None, fn)
 
-        file = discord.File(filename="graph.png", fp=final_buffer)
+        file = disnake.File(filename="graph.png", fp=final_buffer)
 
         await ctx.channel.send(embed=embed, file=file)
 
@@ -427,7 +427,7 @@ class Event(commands.Cog):
     )
     @checkers.is_high_staff()
     async def start(self, ctx, *, name):
-        code_channel: Optional[discord.TextChannel] = self.bot.get_channel(self.code_channel_id)
+        code_channel: Optional[disnake.TextChannel] = self.bot.get_channel(self.code_channel_id)
 
         await self.edit_informations(state='open', date=datetime.now(), name=name)
 
@@ -475,7 +475,7 @@ class Event(commands.Cog):
         buffer = io.StringIO(formatted_text)
         buffer.seek(0)
 
-        await ctx.send(f"Event `{event_informations['name']}` is now ended ! Participations are closed !", file=discord.File(buffer.read(), 'ranking.txt'))
+        await ctx.send(f"Event `{event_informations['name']}` is now ended ! Participations are closed !", file=disnake.File(buffer.read(), 'ranking.txt'))
 
     @event.command(
         name='close',
