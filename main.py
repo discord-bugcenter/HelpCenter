@@ -2,8 +2,8 @@ import logging
 import os
 import typing
 
-import discord
-from discord.ext import commands
+import disnake
+from disnake.ext import commands
 from dotenv import load_dotenv
 
 from cogs.utils import i18n, custom_errors
@@ -11,7 +11,7 @@ from cogs.utils.constants import BUG_CENTER_ID, LANGUAGE_ROLES
 
 if typing.TYPE_CHECKING:
     from cogs.utils import Person
-    from discord.ext.commands import Context
+    from disnake.ext.commands import Context
 
 
 load_dotenv()
@@ -27,10 +27,10 @@ class HelpCenterBot(commands.Bot):
         super().__init__(
             command_prefix=["/", "\\", "<@789210466492481597> ", "<@!789210466492481597> "],
             case_insensitive=True,
-            member_cache_flags=discord.MemberCacheFlags.all(),
+            member_cache_flags=disnake.MemberCacheFlags.all(),
             chunk_guilds_at_startup=True,
-            allowed_mentions=discord.AllowedMentions.none(),
-            intents=discord.Intents.all(),
+            allowed_mentions=disnake.AllowedMentions.none(),
+            intents=disnake.Intents.all(),
             sync_commands=True
         )
 
@@ -43,8 +43,8 @@ class HelpCenterBot(commands.Bot):
         self.add_check(self.is_on_bug_center)
 
     async def on_ready(self) -> None:
-        activity = discord.Game("/tag <category> <tag>")
-        await self.change_presence(status=discord.Status.idle, activity=activity)
+        activity = disnake.Game("/tag <category> <tag>")
+        await self.change_presence(status=disnake.Status.idle, activity=activity)
         print(f"Logged in as : {self.user.name}")
         print(f"ID : {self.user.id}")
 
@@ -60,7 +60,7 @@ class HelpCenterBot(commands.Bot):
         i18n.current_locale.set(self.get_user_language(person))
 
     def get_user_language(self, person: 'Person') -> str:
-        if isinstance(person, discord.User) or person.guild.id != BUG_CENTER_ID:  # if the function was executed in DM
+        if isinstance(person, disnake.User) or person.guild.id != BUG_CENTER_ID:  # if the function was executed in DM
             if guild := self.get_guild(BUG_CENTER_ID):
                 member = guild.get_member(person.id)
             else:
@@ -70,7 +70,7 @@ class HelpCenterBot(commands.Bot):
 
         if member:
             for role_id, lang in LANGUAGE_ROLES.items():
-                if discord.utils.get(member.roles, id=role_id):
+                if disnake.utils.get(member.roles, id=role_id):
                     return lang
 
         return 'en_EN'
