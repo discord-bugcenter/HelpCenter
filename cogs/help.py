@@ -1,3 +1,4 @@
+from typing import Optional, Coroutine, Any, cast
 import disnake
 from disnake.ext import commands
 
@@ -27,7 +28,7 @@ class HelpCommand(commands.HelpCommand):
 
     async def send_bot_help(self, mapping) -> None:
         """Show the bot commands."""
-        prefix = "\\" if str(self.context.bot.user.id) in self.context.prefix else self.context.prefix
+        prefix = "\\" if str(self.context.bot.user.id) in cast(str, self.context.prefix) else self.context.prefix
         embed = disnake.Embed(
             title=_("Here are my commands:"),
             description="\n".join([f"`{prefix}{cmd.name}` : {_(cmd.description)}" for cmd in self.context.bot.commands if not cmd.hidden]),
@@ -35,7 +36,7 @@ class HelpCommand(commands.HelpCommand):
         )
         await self.context.send(embed=embed)
 
-    async def send_command_help(self, command: commands.Command) -> None:
+    async def send_command_help(self, command: commands.Command) -> Optional[Coroutine[Any, Any, str]]:
         """Show help for a specific command."""
         if command.hidden:
             return self.command_not_found(command.name)
@@ -51,7 +52,7 @@ class HelpCommand(commands.HelpCommand):
         )
         await self.context.send(embed=embed)
 
-    async def command_not_found(self, string: str) -> None:
+    async def command_not_found(self, string: str) -> str:
         """Message if the command is not found."""
         return _("The command {string} way not found.").format(string)
 
