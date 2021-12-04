@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 from urllib import parse
 
-import discord
+import disnake
 from disnake.ext import commands
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from main import HelpCenterBot
 
 
-async def doc_autocompleter(inter: discord.ApplicationCommandInteraction, user_input: str):  # This is spamming and will maybe get removed.
+async def doc_autocompleter(inter: disnake.ApplicationCommandInteraction, user_input: str):  # This is spamming and will maybe get removed.
     if len(user_input) < 4:
         return ['discord.py', 'disnake']
     async with ClientSession() as session:
@@ -37,7 +37,7 @@ class Doc(commands.Cog):
     )
     @checkers.authorized_channels()
     async def doc(self,
-                  inter: discord.ApplicationCommandInteraction,
+                  inter: disnake.ApplicationCommandInteraction,
                   doc: str = commands.Param(autocomp=doc_autocompleter),
                   query: str = commands.Param()):
 
@@ -54,7 +54,7 @@ class Doc(commands.Cog):
         if not json.get('count'):
             return await inter.response.send_message('Not found.')
 
-        embed = discord.Embed(title=_("{} Results (click here for a complete search)".format(json['count'])),
+        embed = disnake.Embed(title=_("{} Results (click here for a complete search)".format(json['count'])),
                               description="",
                               url="{}/en/stable/search.html?q={}".format(json['results'][0]['domain'], query))
 
