@@ -14,7 +14,7 @@ from .utils.codingame import COC, COCMode, COCPlayer, COCPlayerGameStatus
 from .utils.i18n import use_current_gettext as _
 
 if TYPE_CHECKING:
-    from main import HelpCenterBot, Context
+    from main import HelpCenterBot
     from utils.types import Person
 
 
@@ -62,7 +62,7 @@ class COCView(ui.View):
         if not inter.guild or not inter.user:
             return
 
-        old_task = disnake.utils.find(lambda task: task.get_name() == str(inter.user.id), asyncio.all_tasks(loop=self.bot.loop))
+        old_task = disnake.utils.find(lambda task: task.get_name() == str(inter.author.id), asyncio.all_tasks(loop=self.bot.loop))
 
         if old_task:
             old_task.cancel()
@@ -88,7 +88,7 @@ class RoleSubscription(ui.View):
         if not inter.user or not inter.guild:
             return
         time = datetime.timedelta(seconds=int(select.values[0]))
-        old_task = disnake.utils.find(lambda task: task.get_name() == str(inter.user.id), asyncio.all_tasks(loop=self.bot.loop))
+        old_task = disnake.utils.find(lambda task: task.get_name() == str(inter.author.id), asyncio.all_tasks(loop=self.bot.loop))
 
         if old_task:
             old_task.cancel()
@@ -109,18 +109,18 @@ class COCCog(commands.Cog):
     async def on_ready(self):
         self.bot.add_view(COCView(self.bot))
 
-    @commands.command('coc',
-                      aliases=['clash'],
-                      usage='/coc {code/link}',
-                      description=_('Publish a clash of code !'))
-    async def _coc(self, ctx: 'Context', link: str) -> None:
+    @commands.slash_command(name='coc',
+                            description=_('Publish a clash of code !'))
+    async def _coc(self,
+                   ctx: 'disnake.ApplicationCommandInteraction',
+                   link: str = commands.Param(description=_('The link of the clash of code you want to publish ! ("public" if you want the bot the search for a public coc)'))) -> None:
         """A command to publish a clash of code."""
         if link == 'public':
             cocs = await codingame.fetch_pending_cocs()
             if cocs:
                 coc = sorted(cocs, key=lambda coc: len(coc.players))[0]
             else:
-                await ctx.send("Aucun COC publique trouvé, réessayez dans quelques instants !", delete_after=10)
+                await ctx.send(_('No coc found, try again in a few seconds.'), delete_after=10)
                 return
         else:
             if match := COC_URL.match(link):
@@ -245,7 +245,7 @@ class COCCog(commands.Cog):
         if not valid:
             raise COCLinkNotValid("https://www.codingame.com/clashofcode/clash/" + code)
 
-        return coc
+        return coc  # type: ignore
 
     async def process_coc(self, coc: COC, author: 'Person') -> disnake.Message:
         if coc.code in self.current_coc:
@@ -254,7 +254,7 @@ class COCCog(commands.Cog):
         coc_discord = COCDiscord.from_coc(coc, author=author)
         self.current_coc.append(coc.code)
 
-        assert isinstance(tmp := self.bot.get_channel(COC_CHANNEL_ID), discdisnakeord.TextChannel)
+        assert isinstance(tmp := self.bot.get_channel(COC_CHANNEL_ID), disnake.TextChannel)
         coc_channel: disnake.TextChannel = tmp
 
         coc_discord.message = await coc_channel.send(content=f"<@&{COC_NOTIFICATION_ROLE_ID}>",
