@@ -9,7 +9,7 @@ from .constants import BUG_CENTER_ID, STAFF_ROLES, AUTHORIZED_CHANNELS_IDS
 from main import HelpCenterBot
 
 
-def authorized_channels_check(ctx: commands.Context) -> bool:
+def authorized_channels_check(ctx: Union[disnake.ApplicationCommandInteraction, commands.Context]) -> bool:
     target = ctx.channel.id
     if isinstance(ctx.channel, disnake.Thread):
         target = ctx.channel.parent_id
@@ -40,8 +40,8 @@ def is_high_staff_check(bot: HelpCenterBot, user: Union[disnake.Member, disnake.
 
 
 def is_high_staff():
-    async def inner(ctx: commands.Context):
-        result, list_ids = is_high_staff_check(ctx.bot, ctx.author)
+    async def inner(ctx: Union[disnake.ApplicationCommandInteraction, commands.Context]):
+        result, list_ids = is_high_staff_check(ctx.bot, ctx.author)  # type: ignore
         if result:
             return True
         raise custom_errors.NotAuthorizedRoles(list_ids)
