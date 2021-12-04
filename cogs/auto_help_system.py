@@ -8,11 +8,10 @@ from disnake import ui
 from disnake.ext import commands
 
 from .utils.i18n import use_current_gettext as _
-from .utils import checkers
+from .utils import Context, checkers
 
 if TYPE_CHECKING:
     from main import HelpCenterBot
-    from .utils import Context
 
 ASK_CHANNEL_ID = 870023524985761822
 ASK_MESSAGE_ID = 870032630119276645
@@ -28,7 +27,7 @@ class AutoHelpSystem(commands.Cog):
 
     @commands.command(hidden=True)
     @checkers.is_high_staff()
-    async def init_help(self, ctx: 'Context') -> None:
+    async def init_help(self, ctx: Context) -> None:
         embed = disnake.Embed(color=disnake.Color.blurple())
         embed.add_field(
             name=":flag_fr: **Fils d\'aide personnalisée**",
