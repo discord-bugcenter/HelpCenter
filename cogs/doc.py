@@ -63,7 +63,8 @@ class Doc(commands.Cog):
                 for block in result['blocks'][:2]:
                     embed.description += f"\n[{block['title']}]({result['domain']}{result['path']}?highlight={query}#{block['id']})"
             except KeyError:
-                embed.description += f"\n[{result['title']}]({result['domain']}{result['path']}?highlight={query}#{block['id']})"
+                # embed.description += f"\n[{result['title']}]({result['domain']}{result['path']}?highlight={query}#{block['id']})"
+                pass
 
         embed.set_footer(text=_('Documentations provided by https://readthedocs.org'))
         await inter.response.send_message(_("Results for query **{0}** and documentation **{1}**".format(query, doc)), embed=embed)
