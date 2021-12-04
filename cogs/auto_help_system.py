@@ -157,7 +157,7 @@ class CreateHelpChannelButton(ui.View):
         view = ui.View()
         view.stop()
         view.add_item(ui.Button(label=_("Archive"), custom_id=f"archive_help_thread_{inter.user.id}"))
-        view.add_item(ui.Button(label=_("Delete"), custom_id=f"delete_help_thread_{inter.user.id}"))
+        #  view.add_item(ui.Button(label=_("Delete"), custom_id=f"delete_help_thread_{inter.user.id}"))
 
         await self.bot.set_actual_language(inter.user)  # redefine the language, if he was long to write his answer
 
