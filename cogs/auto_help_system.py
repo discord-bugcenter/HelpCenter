@@ -103,7 +103,7 @@ class CreateHelpChannelButton(ui.View):
         if not inter.guild or not inter.user or not isinstance(inter.channel, disnake.TextChannel):
             return
 
-        member = inter.guild.get_member(inter.user.id) or await inter.guild.fetch_member(inter.user.id)
+        member = inter.guild.get_member(inter.author.id) or await inter.guild.fetch_member(inter.user.id)
         await inter.channel.set_permissions(member, send_messages=True)
 
         await self.bot.set_actual_language(inter.user)  # define bot langage for the next text
@@ -114,7 +114,7 @@ class CreateHelpChannelButton(ui.View):
         await inter.response.send_message(content, ephemeral=True)
 
         try:
-            message = await self.bot.wait_for("message", check=lambda msg: msg.channel.id == inter.channel_id and msg.author.id == inter.user.id, timeout=300)
+            message = await self.bot.wait_for("message", check=lambda msg: msg.channel.id == inter.channel_id and msg.author.id == inter.author.id, timeout=300)
         except asyncio.TimeoutError:
             await inter.channel.set_permissions(member, overwrite=None)
             return
@@ -128,10 +128,12 @@ class CreateHelpChannelButton(ui.View):
             await message.delete()
 
             try:
-                message = await self.bot.wait_for("message", check=lambda msg: msg.channel.id == inter.channel_id and msg.author.id == inter.user.id, timeout=300)
+                message = await self.bot.wait_for("message", check=lambda msg: msg.channel.id == inter.channel_id and msg.author.id == inter.author.id, timeout=300)
             except asyncio.TimeoutError:
                 await inter.channel.set_permissions(member, overwrite=None)
                 return
+
+        await inter.delete_original_message()
 
         if message.type is disnake.MessageType.thread_created:  # The user can created a thread by him-self
             embed = disnake.Embed()
