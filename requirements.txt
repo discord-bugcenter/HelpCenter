@@ -1,6 +1,6 @@
 wheel
 matplotlib~=3.4.2
-disnake[discord]~=2.1.2
+disnake~=2.2.2
 schema~=0.7.4
 contextvars~=2.4
 python-dotenv~=0.18.0

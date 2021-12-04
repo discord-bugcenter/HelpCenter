@@ -1,7 +1,7 @@
 from typing import Union
 
-from discord import User, Member
-from discord.ext.commands import Context as Ctx
+from disnake import User, Member
+from disnake.ext.commands import Context as Ctx
 
 from main import HelpCenterBot
 

@@ -3,9 +3,9 @@ import os
 import re
 
 import aiohttp
-import discord
+import disnake
 import filetype
-from discord.ext import commands
+from disnake.ext import commands
 
 from main import HelpCenterBot
 from .utils.misc import create_new_gist, delete_gist, add_reactions
@@ -23,7 +23,7 @@ class Miscellaneous(commands.Cog):
         self.re_token = re.compile(r"[\w\-=]{24}\.[\w\-=]{6}\.[\w\-=]{27}", re.ASCII)
 
     @commands.Cog.listener()
-    async def on_message(self, message: discord.Message) -> None:
+    async def on_message(self, message: disnake.Message) -> None:
         await self.bot.set_actual_language(message.author)
 
         if await self.token_revoke(message):
@@ -35,13 +35,13 @@ class Miscellaneous(commands.Cog):
         await self.attachement_to_gist(message)
 
     @commands.Cog.listener()
-    async def on_message_edit(self, old_message: discord.Message, __) -> None:
+    async def on_message_edit(self, old_message: disnake.Message, new_message: disnake.Message) -> None:
         """Look for discord token on message editing."""
         await self.bot.set_actual_language(old_message.author)
 
-        await self.token_revoke(old_message)
+        await self.token_revoke(new_message)
 
-    async def attachement_to_gist(self, message: discord.Message) -> None:
+    async def attachement_to_gist(self, message: disnake.Message) -> None:
         if not message.attachments:
             return
         else:
@@ -146,7 +146,7 @@ class Miscellaneous(commands.Cog):
             if await self.search_for_token(message, place):
                 return True
 
-    async def search_for_token(self, message: discord.Message, text: str) -> bool:
+    async def search_for_token(self, message: disnake.Message, text: str) -> bool:
         if not (match := self.re_token.search(text)):
             return False
         headers = {
@@ -163,7 +163,7 @@ class Miscellaneous(commands.Cog):
                     message_content += _("This one will be revoked, but be careful and check that it has been successfully reset on the "
                                          "**dev portal** (https://discord.com/developers/applications/{}).\n").format(response_dict['id'])
 
-                    await message.channel.send(message_content, allowed_mentions=discord.AllowedMentions(users=True))
+                    await message.channel.send(message_content, allowed_mentions=disnake.AllowedMentions(users=True))
 
                     gist = await create_new_gist(GIST_TOKEN, 'token revoke', match.group(0))
                     await asyncio.sleep(30)
@@ -185,22 +185,22 @@ class Miscellaneous(commands.Cog):
                              "**What is it? ** This is a kind of password that allows access to a contentious account without a username, password or IP address verification.\n"
                              "**Change your password as a precaution**.\n"
                              "We also recommend that you enable**two-factor authentication, or 2FA.** (settings)\n")
-                    await message.channel.send(text, allowed_mentions=discord.AllowedMentions(users=True))
+                    await message.channel.send(text, allowed_mentions=disnake.AllowedMentions(users=True))
                     return True
 
     @commands.Cog.listener()  # This should be on Bot Center, but discord.js has some bugs.
-    async def on_member_update(self, old_member: discord.Member, new_member: discord.Member):
+    async def on_member_update(self, old_member: disnake.Member, new_member: disnake.Member):
         if new_member.guild.id != BUG_CENTER_ID:
             return
         if len(new_member.roles) == 1:
             return
 
-        all_separator_roles: list[discord.Role] = [role for role in new_member.guild.roles[1:] if role.name == '━━━━━━━━━━━━━━━ㅤ']
+        all_separator_roles: list[disnake.Role] = [role for role in new_member.guild.roles[1:] if role.name == '━━━━━━━━━━━━━━━ㅤ']
 
-        separator_roles: list[discord.Role] = [role for role in all_separator_roles if role.position > new_member.roles[1].position]
-        needed_separators: list[discord.Role] = []
+        separator_roles: list[disnake.Role] = [role for role in all_separator_roles if role.position > new_member.roles[1].position]
+        needed_separators: list[disnake.Role] = []
 
-        member_roles: list[discord.Role] = [role for role in new_member.roles[1:] if role not in separator_roles]
+        member_roles: list[disnake.Role] = [role for role in new_member.roles[1:] if role not in separator_roles]
 
         for member_role in member_roles:
             if not separator_roles:
@@ -210,8 +210,8 @@ class Miscellaneous(commands.Cog):
                 needed_separators.append(separator_roles[0])
                 separator_roles = [role for role in separator_roles if role.position > member_role.position]
 
-        roles_to_add: set[discord.Role] = set(needed_separators) - set(new_member.roles)
-        roles_to_remove: set[discord.Role] = set(all_separator_roles) & set(new_member.roles) - set(needed_separators)
+        roles_to_add: set[disnake.Role] = set(needed_separators) - set(new_member.roles)
+        roles_to_remove: set[disnake.Role] = set(all_separator_roles) & set(new_member.roles) - set(needed_separators)
 
         if roles_to_add:
             await new_member.add_roles(*roles_to_add)

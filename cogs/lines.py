@@ -1,7 +1,7 @@
 import re
 from typing import TYPE_CHECKING
 
-from discord.ext import commands
+from disnake.ext import commands
 
 from .utils.misc import delete_with_emote
 from .utils import checkers
