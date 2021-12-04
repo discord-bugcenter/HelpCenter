@@ -34,8 +34,7 @@ class HelpCenterBot(commands.Bot):
             sync_commands=True
         )
 
-        extensions: list[str] = ['tag']  # 'clash_of_code', 'event', 'tag', 'help', 'command_error', 'miscellaneous', 'lines', 'google_it', 'doc', 'auto_help_system']
-        extensions: list[str] = ['clash_of_code', 'event', 'tag', 'help', 'command_error', 'miscellaneous', 'lines', 'google_it', 'doc', 'auto_help_system']
+        extensions: list[str] = ['clash_of_code', 'tag', 'command_error', 'miscellaneous', 'lines', 'googleit', 'doc', 'auto_help_system']
         for extension in extensions:
             self.load_extension('cogs.' + extension)
 
