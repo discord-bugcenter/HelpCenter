@@ -188,5 +188,5 @@ class CreateHelpChannelButton(ui.View):
         await thread.send(embed=embed, view=view)
 
 
-def setup(bot: HelpCenterBot) -> None:
+def setup(bot: 'HelpCenterBot') -> None:
     bot.add_cog(AutoHelpSystem(bot))
