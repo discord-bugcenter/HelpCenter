@@ -132,8 +132,6 @@ class CreateHelpChannelButton(ui.View):
                 await inter.channel.set_permissions(member, overwrite=None)
                 return
 
-        await inter.delete_original_message()
-
         if message.type is disnake.MessageType.thread_created:  # The user can created a thread by him-self
             embed = disnake.Embed()
             if not isinstance((channel := inter.guild.get_channel(message.id)), disnake.Thread):
