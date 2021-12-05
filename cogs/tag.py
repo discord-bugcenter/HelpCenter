@@ -111,11 +111,9 @@ class TagCog(commands.Cog):
         category = tags[category_name]
         user_lang = self.bot.get_user_language(inter.author)
 
-        if tag_name == "list":
+        if tag_name == "list" or tag_name not in category:
             def format_category(_category: dict[str, list[Tag]]) -> str:
-                translated_tags = []
-                for tag_langs in _category.values():
-                    translated_tags.append(get(tag_langs, lang=user_lang))
+                translated_tags = [get(tag_langs, lang=user_lang) or tag_langs[0] for tag_langs in _category.values()]
 
                 return "\n".join([f"- `{tag.name}` : {tag.description}" for tag in translated_tags])
 
@@ -126,9 +124,7 @@ class TagCog(commands.Cog):
             await misc.delete_with_emote(self.bot, inter.author, await inter.original_message())
             return
 
-        tag_langs = category.get(tag_name)
-        if not tag_langs:
-            return
+        tag_langs = category[tag_name]
 
         tag: Tag = get(tag_langs, lang=user_lang) or tag_langs[0]
 
@@ -167,21 +163,21 @@ class MultipleChoicesView(disnake.ui.View):
         self.selector.callback = self.selector_callback
         self.add_item(self.selector)
 
-    async def interaction_check(self, interaction: disnake.MessageInteraction) -> bool:
-        if interaction.author.id == self.author.id:
+    async def interaction_check(self, inter: disnake.MessageInteraction) -> bool:
+        if inter.author.id == self.author.id:
             return True
-        await interaction.response.defer(ephemeral=True)
+        await inter.response.defer(ephemeral=True)
         return False
 
-    async def selector_callback(self, inter: disnake.MessageInteraction):
-        values = inter.values
+    async def selector_callback(self, interaction: disnake.MessageInteraction) -> None:
+        values = interaction.values
         assert values is not None
         response = disnake.utils.find(lambda choice: choice['choice_name'] == values[0], self.choices)
         assert response is not None
 
         embed = disnake.Embed.from_dict(response.get("embed"))
         embed.colour = misc.Color.grey_embed().discord
-        embed.set_author(name=inter.author.display_name, icon_url=inter.author.display_avatar.url)
+        embed.set_author(name=interaction.author.display_name, icon_url=interaction.author.display_avatar.url)
         embed.set_footer(
             text=f'/tag {self.category_name} {self.tag_name}',
             icon_url=self.bot.user.display_avatar.url
@@ -191,7 +187,7 @@ class MultipleChoicesView(disnake.ui.View):
             option.default = option.label == values[0]
 
         try:
-            await inter.response.edit_message(embed=embed, view=self)
+            await interaction.response.edit_message(embed=embed, view=self)
         except disnake.HTTPException:
             self.stop()
 
