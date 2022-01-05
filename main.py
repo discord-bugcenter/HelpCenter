@@ -31,7 +31,8 @@ class HelpCenterBot(commands.Bot):
             chunk_guilds_at_startup=True,
             allowed_mentions=disnake.AllowedMentions.none(),
             intents=disnake.Intents.all(),
-            sync_commands=True
+            sync_commands=True,
+            help_command=None
         )
 
         extensions: list[str] = ['clash_of_code', 'tag', 'command_error', 'miscellaneous', 'lines', 'googleit', 'doc', 'auto_help_system']
