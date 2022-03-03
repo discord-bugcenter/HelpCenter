@@ -54,20 +54,22 @@ class AutoHelpSystem(commands.Cog):
 
         if not inter.message or not inter.user or not inter.channel or not isinstance(inter.channel, disnake.Thread):
             return
-
-        custom_id = inter.data.get('custom_id')
-        if not custom_id:
-            return
+        if not inter.type == disnake.InteractionType.component:
+            custom_id = inter.data.get('custom_id')
+            if not custom_id:
+                return
+        else:
+            custom_id = inter.component.custom_id
 
         if custom_id.startswith('archive_help_thread_'):
-            strategy = partial(inter.channel.edit, archived=True)
+            strategy = inter.channel.edit
         elif custom_id.startswith('delete_help_thread_'):
             strategy = inter.channel.delete
         else:
             return
 
         if custom_id.endswith(str(inter.user.id)) or checkers.is_high_staff_check(self.bot, inter.user)[0]:
-            await strategy()
+            await strategy(archived=True)
             await inter.response.defer(ephemeral=True)
 
     @commands.Cog.listener()
