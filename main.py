@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 import typing
@@ -35,18 +36,23 @@ class HelpCenterBot(commands.Bot):
             help_command=None
         )
 
-        extensions: list[str] = ['auto_help_system']
-        for extension in extensions:
-            self.load_extension('cogs.' + extension)
+        self.initial_extensions: list[str] = ['auto_help_system']
 
         self.before_invoke(self.set_command_language)
         self.add_check(self.is_on_bug_center)
 
+    async def setup_hook(self):
+        for ext in self.initial_extensions:
+            await self.load_extension(ext)
+
     async def on_ready(self) -> None:
+        bot_user = typing.cast(discord.ClientUser, self.user)
+
         activity = discord.Game("/tag <category> <tag>")
-        await self.change_presence(status=discord.Status.idle, activity=activity)
-        print(f"Logged in as : {self.user.name}")
-        print(f"ID : {self.user.id}")
+        await self.change_presence(status=discord.Status.online, activity=activity)
+
+        print(f"Logged in as : {bot_user.name}")
+        print(f"ID : {bot_user.id}")
 
     def is_on_bug_center(self, ctx: 'Context[HelpCenterBot]') -> bool:
         if ctx.guild and ctx.guild.id != BUG_CENTER_ID:
@@ -76,7 +82,10 @@ class HelpCenterBot(commands.Bot):
         return 'en_EN'
 
     def run(self) -> None:
-        super().run(os.getenv("BOT_TOKEN"), reconnect=True)
+        async def main():
+            async with self:
+                await super().start(os.environ["BOT_TOKEN"], reconnect=True)
+        asyncio.run(main())
 
 
 if __name__ == "__main__":
