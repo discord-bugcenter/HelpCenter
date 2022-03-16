@@ -1,11 +1,14 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 import discord
 from discord.ext import commands
+from discord import ui
+from discord import app_commands
 
-from .utils.misc import delete_with_emote
-from .utils import checkers
-from .utils.i18n import use_current_gettext as _
+from cogs.utils.constants import BUG_CENTER_ID
+
+# from .utils.misc import delete_with_emote
+from .utils.i18n import _
 
 if TYPE_CHECKING:
     from main import HelpCenterBot
@@ -14,35 +17,37 @@ if TYPE_CHECKING:
 LANGUAGES = ["python", "javascript", "typescript", "java", "rust", "lisp", "elixir"]
 
 
-async def lines_autocomplete(inter: discord.ApplicationCommandInteraction, user_input: str) -> list[str]:
-    return [lang for lang in LANGUAGES + [user_input] if user_input.lower() in lang]
+# async def lines_autocomplete(inter: discord.ApplicationCommandInteraction, user_input: str) -> list[str]:
+#     return [lang for lang in LANGUAGES + [user_input] if user_input.lower() in lang]
+
+class LinesModal(ui.Modal, title='Add lines to your code'):
+    language = ui.TextInput(label='Language')
+    code = ui.TextInput(label='Code', style=discord.TextStyle.paragraph, min_length=5, max_length=1950)
+
+    async def on_submit(self, inter: discord.Interaction):
+
+        numbered_code = '\n'.join(f'{i+1:>3} | {line}' for i, line in enumerate(str(self.code).splitlines()))
+
+        await inter.response.send_message(_('Numbered code of {0} :\n').format(inter.user) +
+                                          '```' + (str(self.language) or '') + '\n' +
+                                          numbered_code +
+                                          '\n```')
+        # await delete_with_emote(inter.client, ctx.author, await ctx.original_message())
 
 
 class Lines(commands.Cog):
     def __init__(self, bot: 'HelpCenterBot') -> None:
         self.bot = bot
+        self.bot.tree.add_command(self.lines, guild=discord.Object(id=BUG_CENTER_ID))
 
-    @commands.slash_command(
+    @app_commands.command(
         name='lines',
-        desc=_('Add the lines number to your code.')
+        description='Ajouter le numéro des lignes à votre code.'
     )
-    @checkers.authorized_channels()
-    async def lines(self,
-                    ctx: discord.ApplicationCommandInteraction,
-                    code: str = commands.Param(description=_('The code to add the lines number to.')),
-                    language: Optional[str] = commands.Param(None, autocomplete=lines_autocomplete, description=_('The language your code is in.'))) -> None:
-        """A command that add number before each lines."""
-        numbered_code = '\n'.join(f'{i+1:>3} | {line}' for i, line in enumerate(code.splitlines()))
-        if len(numbered_code) > 1950:
-            numbered_code = numbered_code[:1950] + '\netc...'
-
-        await ctx.send(_('Numbered code of {ctx.author} :\n').format(**locals()) +
-                       '```' + (language or '') + '\n' +
-                       numbered_code +
-                       '\n```')
-        await delete_with_emote(self.bot, ctx.author, await ctx.original_message())
+    async def lines(self, inter: discord.Interaction) -> None:
+        await inter.response.send_modal(LinesModal())
 
 
-def setup(bot: 'HelpCenterBot') -> None:
-    bot.add_cog(Lines(bot))
+async def setup(bot: 'HelpCenterBot') -> None:
+    await bot.add_cog(Lines(bot))
     bot.logger.info("Extension [lines] loaded successfully.")

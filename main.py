@@ -5,13 +5,14 @@ import typing
 
 import discord
 from discord.ext import commands
+# from discord import app_commands
 from dotenv import load_dotenv
 
-from cogs.utils import i18n, custom_errors
-from cogs.utils.constants import BUG_CENTER_ID, LANGUAGE_ROLES
+from cogs.utils import custom_errors  # , i18n
+from cogs.utils.constants import BUG_CENTER_ID  # , LANGUAGE_ROLES
 
 if typing.TYPE_CHECKING:
-    from cogs.utils import Person
+    # from cogs.utils import Person
     from discord.ext.commands import Context
 
 
@@ -36,9 +37,9 @@ class HelpCenterBot(commands.Bot):
             help_command=None
         )
 
-        self.initial_extensions: list[str] = ['auto_help_system']
+        self.initial_extensions: list[str] = ['cogs.lines']
 
-        self.before_invoke(self.set_command_language)
+        # self.before_invoke(self.set_command_language)
         self.add_check(self.is_on_bug_center)
 
     async def setup_hook(self):
@@ -47,6 +48,8 @@ class HelpCenterBot(commands.Bot):
 
     async def on_ready(self) -> None:
         bot_user = typing.cast(discord.ClientUser, self.user)
+
+        await self.tree.sync(guild=discord.Object(id=BUG_CENTER_ID))
 
         activity = discord.Game("/tag <category> <tag>")
         await self.change_presence(status=discord.Status.online, activity=activity)
@@ -59,32 +62,32 @@ class HelpCenterBot(commands.Bot):
             raise custom_errors.NotInBugCenter()
         return True
 
-    async def set_command_language(self, ctx: 'Context[HelpCenterBot]') -> None:  # function called when a command is executed
-        await self.set_actual_language(ctx.author)
+    # async def set_command_language(self, ctx: 'Context[HelpCenterBot]') -> None:  # function called when a command is executed
+    #     await self.set_actual_language(ctx.author)
 
-    async def set_actual_language(self, person: 'Person') -> None:
-        i18n.current_locale.set(self.get_user_language(person))
+    # async def set_actual_language(self, person: 'Person') -> None:
+    #     i18n.current_locale.set(self.get_user_language(person))
 
-    def get_user_language(self, person: 'Person') -> str:
-        if isinstance(person, discord.User) or person.guild.id != BUG_CENTER_ID:  # if the function was executed in DM
-            if guild := self.get_guild(BUG_CENTER_ID):
-                member = guild.get_member(person.id)
-            else:
-                member = None
-        else:
-            member = person
+    # def get_user_language(self, person: 'Person') -> str:
+    #     if isinstance(person, discord.User) or person.guild.id != BUG_CENTER_ID:  # if the function was executed in DM
+    #         if guild := self.get_guild(BUG_CENTER_ID):
+    #             member = guild.get_member(person.id)
+    #         else:
+    #             member = None
+    #     else:
+    #         member = person
 
-        if member:
-            for role_id, lang in LANGUAGE_ROLES.items():
-                if discord.utils.get(member.roles, id=role_id):
-                    return lang
+    #     if member:
+    #         for role_id, lang in LANGUAGE_ROLES.items():
+    #             if discord.utils.get(member.roles, id=role_id):
+    #                 return lang
 
-        return 'en_EN'
+    #     return 'en_EN'
 
     def run(self) -> None:
         async def main():
             async with self:
-                await super().start(os.environ["BOT_TOKEN"], reconnect=True)
+                await self.start(os.environ["BOT_TOKEN"], reconnect=True)
         asyncio.run(main())
 
 
