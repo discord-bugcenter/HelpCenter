@@ -3,9 +3,9 @@ import datetime
 import re
 from typing import Optional, TYPE_CHECKING
 
-import disnake
-from disnake import ui
-from disnake.ext import commands
+import discord
+from discord import ui
+from discord.ext import commands
 
 from .utils.custom_errors import COCLinkNotValid, AlreadyProcessingCOC
 from .utils.misc import Color
@@ -26,14 +26,14 @@ COC_NOTIFICATION_ROLE_ID = 865173675711135745
 
 
 class COCDiscord(COC):
-    def __init__(self, data: dict, message: disnake.Message = None, author: 'Person' = None) -> None:
+    def __init__(self, data: dict, message: discord.Message = None, author: 'Person' = None) -> None:
         super().__init__(data=data)
 
-        self.message: Optional[disnake.Message] = message
+        self.message: Optional[discord.Message] = message
         self.author: Optional['Person'] = author
 
     @classmethod
-    def from_coc(cls, coc: COC, message: disnake.Message = None, author: 'Person' = None) -> 'COCDiscord':
+    def from_coc(cls, coc: COC, message: discord.Message = None, author: 'Person' = None) -> 'COCDiscord':
         return cls(coc.data, message, author)
 
 
@@ -46,29 +46,29 @@ class COCView(ui.View):
         self.children.insert(0, ui.Button(label="Join", url=coc_url, row=4))
 
     @ui.button(label="Subscribe", custom_id="add_coc_notification_role", emoji="🔔")
-    async def subscribe(self, _, inter: disnake.MessageInteraction) -> None:
+    async def subscribe(self, _, inter: discord.MessageInteraction) -> None:
         if not inter.guild or not inter.user:
             return
 
         member = inter.guild.get_member(inter.user.id) or await inter.guild.fetch_member(inter.user.id)
-        role = disnake.utils.get(inter.guild.roles, id=COC_NOTIFICATION_ROLE_ID)
+        role = discord.utils.get(inter.guild.roles, id=COC_NOTIFICATION_ROLE_ID)
         if role:
             await member.add_roles(role, reason="Subscribe to COC notifications.")
 
         await inter.response.send_message("Si vous le souhaitez, le bot peut vous retirer le rôle après une certaine durée.", view=RoleSubscription(self.bot), ephemeral=True)
 
     @ui.button(label="Unsubscribe", custom_id="remove_coc_notification_role", emoji="🔕")
-    async def unsubscribe(self, __, inter: disnake.MessageInteraction) -> None:
+    async def unsubscribe(self, __, inter: discord.MessageInteraction) -> None:
         if not inter.guild or not inter.user:
             return
 
-        old_task = disnake.utils.find(lambda task: task.get_name() == str(inter.author.id), asyncio.all_tasks(loop=self.bot.loop))
+        old_task = discord.utils.find(lambda task: task.get_name() == str(inter.author.id), asyncio.all_tasks(loop=self.bot.loop))
 
         if old_task:
             old_task.cancel()
 
         member = inter.guild.get_member(inter.user.id) or await inter.guild.fetch_member(inter.user.id)
-        role = disnake.utils.get(inter.guild.roles, id=COC_NOTIFICATION_ROLE_ID)
+        role = discord.utils.get(inter.guild.roles, id=COC_NOTIFICATION_ROLE_ID)
 
         if role:
             await member.remove_roles(role, reason="Manually unsubscribe to COC notifications.")
@@ -79,22 +79,22 @@ class RoleSubscription(ui.View):
         super().__init__(timeout=None)
         self.bot = bot
 
-    @ui.select(options=[disnake.SelectOption(label=_('30 minutes'), value='1_800'),
-                        disnake.SelectOption(label=_('1 heure'), value='3_600'),
-                        disnake.SelectOption(label=_('3 heures'), value='10_800'),
-                        disnake.SelectOption(label=_('12 heures'), value='43_200'),
-                        disnake.SelectOption(label=_('1 journée'), value='86_400')])
-    async def give_role(self, select: ui.Select, inter: disnake.MessageInteraction):
+    @ui.select(options=[discord.SelectOption(label=_('30 minutes'), value='1_800'),
+                        discord.SelectOption(label=_('1 heure'), value='3_600'),
+                        discord.SelectOption(label=_('3 heures'), value='10_800'),
+                        discord.SelectOption(label=_('12 heures'), value='43_200'),
+                        discord.SelectOption(label=_('1 journée'), value='86_400')])
+    async def give_role(self, select: ui.Select, inter: discord.MessageInteraction):
         if not inter.user or not inter.guild:
             return
         time = datetime.timedelta(seconds=int(select.values[0]))
-        old_task = disnake.utils.find(lambda task: task.get_name() == str(inter.author.id), asyncio.all_tasks(loop=self.bot.loop))
+        old_task = discord.utils.find(lambda task: task.get_name() == str(inter.author.id), asyncio.all_tasks(loop=self.bot.loop))
 
         if old_task:
             old_task.cancel()
 
         member = inter.guild.get_member(inter.user.id) or await inter.guild.fetch_member(inter.user.id)
-        role = disnake.utils.get(inter.guild.roles, id=COC_NOTIFICATION_ROLE_ID)
+        role = discord.utils.get(inter.guild.roles, id=COC_NOTIFICATION_ROLE_ID)
         if role:
             self.bot.loop.create_task(COCCog.remove_role_after(member, role, time), name=str(inter.user.id))
 
@@ -112,7 +112,7 @@ class COCCog(commands.Cog):
     @commands.slash_command(name='coc',
                             description=_('Publish a clash of code !'))
     async def _coc(self,
-                   ctx: 'disnake.ApplicationCommandInteraction',
+                   ctx: 'discord.ApplicationCommandInteraction',
                    link: str = commands.Param(description=_('The link of the clash of code you want to publish ! ("public" if you want the bot the search for a public coc)'))) -> None:
         """A command to publish a clash of code."""
         if link == 'public':
@@ -135,12 +135,12 @@ class COCCog(commands.Cog):
         message = await self.process_coc(coc, ctx.author)
 
         if ctx.channel.id != COC_CHANNEL_ID:
-            await ctx.send(embed=disnake.Embed(title=_("Published !"), url=f"https://discord.com/channels/595218682670481418/{COC_CHANNEL_ID}/{message.id}", colour=Color.green().discord))
+            await ctx.send(embed=discord.Embed(title=_("Published !"), url=f"https://discord.com/channels/595218682670481418/{COC_CHANNEL_ID}/{message.id}", colour=Color.green().discord))
 
     @commands.Cog.listener()
-    async def on_message(self, message: disnake.Message) -> None:
+    async def on_message(self, message: discord.Message) -> None:
         """If a message is equal to a coc url, add a reaction to send it in the coc challenge."""
-        if isinstance(message.author, disnake.User):
+        if isinstance(message.author, discord.User):
             return
         if message.channel.id == COC_CHANNEL_ID and not message.author == self.bot.user and (message.author.bot or not message.author.guild_permissions.administrator):
             await message.delete()
@@ -158,12 +158,12 @@ class COCCog(commands.Cog):
                 pass
             else:
                 if message.channel.id != COC_CHANNEL_ID:
-                    await message.channel.send(embed=disnake.Embed(title=_("Published !"), url=f"https://discord.com/channels/595218682670481418/{COC_CHANNEL_ID}/{coc_message.id}", colour=Color.green().discord))
+                    await message.channel.send(embed=discord.Embed(title=_("Published !"), url=f"https://discord.com/channels/595218682670481418/{COC_CHANNEL_ID}/{coc_message.id}", colour=Color.green().discord))
 
     @staticmethod
-    def create_embed(coc_discord: COCDiscord) -> disnake.Embed:
+    def create_embed(coc_discord: COCDiscord) -> discord.Embed:
         y_n = (_('no'), _('yes'))
-        embed = disnake.Embed(
+        embed = discord.Embed(
             title=_("New clash of code !"),
             url="https://www.codingame.com/clashofcode/clash/" + coc_discord.code,
             description=_("> `public` : {0}\n"
@@ -230,7 +230,7 @@ class COCCog(commands.Cog):
         return embed
 
     @staticmethod
-    async def remove_role_after(member: disnake.Member, role: disnake.Role, time: datetime.timedelta) -> None:
+    async def remove_role_after(member: discord.Member, role: discord.Role, time: datetime.timedelta) -> None:
         await asyncio.sleep(time.total_seconds())
         await member.remove_roles(role, reason=f"Automatic unsubscribe to COC notifications after {time} seconds.")
 
@@ -247,20 +247,20 @@ class COCCog(commands.Cog):
 
         return coc  # type: ignore
 
-    async def process_coc(self, coc: COC, author: 'Person') -> disnake.Message:
+    async def process_coc(self, coc: COC, author: 'Person') -> discord.Message:
         if coc.code in self.current_coc:
             raise AlreadyProcessingCOC(coc.code)
 
         coc_discord = COCDiscord.from_coc(coc, author=author)
         self.current_coc.append(coc.code)
 
-        assert isinstance(tmp := self.bot.get_channel(COC_CHANNEL_ID), disnake.TextChannel)
-        coc_channel: disnake.TextChannel = tmp
+        assert isinstance(tmp := self.bot.get_channel(COC_CHANNEL_ID), discord.TextChannel)
+        coc_channel: discord.TextChannel = tmp
 
         coc_discord.message = await coc_channel.send(content=f"<@&{COC_NOTIFICATION_ROLE_ID}>",
                                                      embed=self.create_embed(coc_discord),
                                                      view=COCView(self.bot, "https://www.codingame.com/clashofcode/clash/" + coc.code),
-                                                     allowed_mentions=disnake.AllowedMentions(roles=True))
+                                                     allowed_mentions=discord.AllowedMentions(roles=True))
 
         self.bot.loop.create_task(self.start_processing(coc_discord))
 

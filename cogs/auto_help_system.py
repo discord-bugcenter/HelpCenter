@@ -3,9 +3,9 @@ from typing import TYPE_CHECKING
 from urllib import parse
 from functools import partial
 
-import disnake
-from disnake import ui
-from disnake.ext import commands
+import discord
+from discord import ui
+from discord.ext import commands
 
 from .utils.i18n import use_current_gettext as _
 from .utils import Context, checkers
@@ -28,7 +28,7 @@ class AutoHelpSystem(commands.Cog):
     @commands.command(hidden=True)
     @checkers.is_high_staff()
     async def init_help(self, ctx: Context) -> None:
-        embed = disnake.Embed(color=disnake.Color.blurple())
+        embed = discord.Embed(color=discord.Color.blurple())
         embed.add_field(
             name=":flag_fr: **Fils d\'aide personnalisée**",
             value=("Créez un fil pour recevoir de l\'aide sur n\'importe quel sujet informatique.\n"
@@ -48,11 +48,11 @@ class AutoHelpSystem(commands.Cog):
                        view=CreateHelpChannelButton(self.bot))
 
     @commands.Cog.listener()
-    async def on_interaction(self, inter: disnake.Interaction) -> None:  # on_interaction should not be used, but..
-        if not isinstance(inter, disnake.MessageInteraction):
+    async def on_interaction(self, inter: discord.Interaction) -> None:  # on_interaction should not be used, but..
+        if not isinstance(inter, discord.MessageInteraction):
             return
 
-        if not inter.message or not inter.user or not inter.channel or not isinstance(inter.channel, disnake.Thread):
+        if not inter.message or not inter.user or not inter.channel or not isinstance(inter.channel, discord.Thread):
             return
 
         custom_id = inter.data.get('custom_id')
@@ -71,7 +71,7 @@ class AutoHelpSystem(commands.Cog):
             await inter.response.defer(ephemeral=True)
 
     @commands.Cog.listener()
-    async def on_thread_update(self, thread_before: disnake.Thread, thread_after: disnake.Thread) -> None:
+    async def on_thread_update(self, thread_before: discord.Thread, thread_after: discord.Thread) -> None:
         if not thread_before.parent_id == ASK_CHANNEL_ID or not thread_before.parent or (thread_before.archived and not thread_after.archived):
             return
 
@@ -81,7 +81,7 @@ class AutoHelpSystem(commands.Cog):
                 break
 
     @commands.Cog.listener()
-    async def on_thread_delete(self, thread: disnake.Thread) -> None:
+    async def on_thread_delete(self, thread: discord.Thread) -> None:
         if not thread.parent_id == ASK_CHANNEL_ID or not thread.parent:
             return
 
@@ -97,9 +97,9 @@ class CreateHelpChannelButton(ui.View):
         super().__init__(timeout=None)
         self.bot = bot
 
-    @ui.button(label="Nouveau / New", custom_id='create_help_channel', emoji="➕", style=disnake.ButtonStyle.blurple)
-    async def create_help_channel(self, __: ui.Button, inter: disnake.MessageInteraction) -> None:
-        if not inter.guild or not inter.user or not isinstance(inter.channel, disnake.TextChannel):
+    @ui.button(label="Nouveau / New", custom_id='create_help_channel', emoji="➕", style=discord.ButtonStyle.blurple)
+    async def create_help_channel(self, __: ui.Button, inter: discord.MessageInteraction) -> None:
+        if not inter.guild or not inter.user or not isinstance(inter.channel, discord.TextChannel):
             return
 
         member = inter.guild.get_member(inter.author.id) or await inter.guild.fetch_member(inter.user.id)
@@ -132,19 +132,19 @@ class CreateHelpChannelButton(ui.View):
                 await inter.channel.set_permissions(member, overwrite=None)
                 return
 
-        if message.type is disnake.MessageType.thread_created:  # The user can created a thread by him-self
-            embed = disnake.Embed()
-            if not isinstance((channel := inter.guild.get_channel(message.id)), disnake.Thread):
+        if message.type is discord.MessageType.thread_created:  # The user can created a thread by him-self
+            embed = discord.Embed()
+            if not isinstance((channel := inter.guild.get_channel(message.id)), discord.Thread):
                 return
             else:
-                thread: disnake.Thread = channel
+                thread: discord.Thread = channel
         else:
             await message.delete()
 
             thread = await inter.channel.create_thread(
                 name=f"{message.content[:100]}",
                 auto_archive_duration=1440,
-                type=disnake.ChannelType.public_thread,
+                type=discord.ChannelType.public_thread,
                 reason="HelpCenter help-thread system."
             )
 
@@ -158,8 +158,8 @@ class CreateHelpChannelButton(ui.View):
 
         await self.bot.set_actual_language(inter.user)  # redefine the language, if he was long to write his answer
 
-        embed = disnake.Embed(
-            color=disnake.Color.yellow(),
+        embed = discord.Embed(
+            color=discord.Color.yellow(),
             title=message.content
         )
         embed.add_field(

@@ -1,6 +1,6 @@
 from typing import Optional, Coroutine, Any, cast
-import disnake
-from disnake.ext import commands
+import discord
+from discord.ext import commands
 
 from main import HelpCenterBot
 from .utils import checkers, misc
@@ -19,7 +19,7 @@ class HelpCommand(commands.HelpCommand):
         print(error)
 
     async def send_error_message(self, error: Exception) -> None:
-        embed = disnake.Embed(
+        embed = discord.Embed(
             title=_("An error occurred."),
             description=error,
             color=misc.Color.black().discord
@@ -29,7 +29,7 @@ class HelpCommand(commands.HelpCommand):
     async def send_bot_help(self, mapping) -> None:
         """Show the bot commands."""
         prefix = "\\" if str(self.context.bot.user.id) in cast(str, self.context.prefix) else self.context.prefix
-        embed = disnake.Embed(
+        embed = discord.Embed(
             title=_("Here are my commands:"),
             description="\n".join([f"`{prefix}{cmd.name}` : {_(cmd.description)}" for cmd in self.context.bot.commands if not cmd.hidden]),
             color=misc.Color.grey_embed().discord
@@ -41,7 +41,7 @@ class HelpCommand(commands.HelpCommand):
         if command.hidden:
             return self.command_not_found(command.name)
 
-        embed = disnake.Embed(
+        embed = discord.Embed(
             title=f"{command.name}",
             description=command.description,
             color=misc.Color.grey_embed().discord

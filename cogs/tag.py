@@ -3,9 +3,9 @@ import os
 from os import path
 import json
 
-import disnake
-from disnake.utils import get
-from disnake.ext import commands
+import discord
+from discord.utils import get
+from discord.ext import commands
 from schema import SchemaError
 
 from cogs.utils.types import Person
@@ -85,7 +85,7 @@ for category_name, tags_infos in tags_paths.items():
             HelpCenterBot.logger.warning(f"The tag {tag_path} cannot be loaded")
 
 
-async def tag_autocompleter(inter: disnake.ApplicationCommandInteraction, user_input: str):
+async def tag_autocompleter(inter: discord.ApplicationCommandInteraction, user_input: str):
     if not inter.filled_options.get('category'):
         return [_('You must first fill the category option.')]
     return [tag_name for tag_name in tags[inter.filled_options['category']].keys() if user_input in tag_name] + ['list']
@@ -104,7 +104,7 @@ class TagCog(commands.Cog):
     )
     @checkers.authorized_channels()
     async def _tag(self,
-                   inter: disnake.ApplicationCommandInteraction,
+                   inter: discord.ApplicationCommandInteraction,
                    category_name: str = commands.Param(name='category', desc="La catégorie que vous souhaitez selectionner", choices=list(tags.keys())),
                    tag_name: str = commands.Param(name='tag', desc="Le tag que vous souhaitez envoyer", autocomp=tag_autocompleter)) -> None:
         """The tag command, that will do a research into savec tags, using the category and the query gived."""
@@ -117,7 +117,7 @@ class TagCog(commands.Cog):
 
                 return "\n".join([f"- `{tag.name}` : {tag.description}" for tag in translated_tags])
 
-            await inter.response.send_message(embed=disnake.Embed(title=_("Here are the tags from the `{0}` category :").format(category_name),
+            await inter.response.send_message(embed=discord.Embed(title=_("Here are the tags from the `{0}` category :").format(category_name),
                                                                   description=format_category(category),
                                                                   color=misc.Color.grey_embed().discord)
                                               )
@@ -131,10 +131,10 @@ class TagCog(commands.Cog):
         choices = tag.response.get('choices')
         kwargs = {}
         if choices:
-            kwargs['embed'] = embed = disnake.Embed.from_dict(choices[0].get('embed'))
+            kwargs['embed'] = embed = discord.Embed.from_dict(choices[0].get('embed'))
             kwargs['view'] = MultipleChoicesView(self.bot, inter.author, choices, tag_name, category_name)
         else:
-            kwargs['embed'] = embed = disnake.Embed.from_dict(tag.response.get("embed"))
+            kwargs['embed'] = embed = discord.Embed.from_dict(tag.response.get("embed"))
 
         embed.colour = misc.Color.grey_embed().discord
         embed.set_author(name=inter.author.display_name, icon_url=inter.author.display_avatar.url)
@@ -147,7 +147,7 @@ class TagCog(commands.Cog):
         await misc.delete_with_emote(self.bot, inter.author, await inter.original_message())
 
 
-class MultipleChoicesView(disnake.ui.View):
+class MultipleChoicesView(discord.ui.View):
     def __init__(self, bot: HelpCenterBot, author: 'Person', choices: list[ResponseChoices], tag_name: str, category_name: str):
         self.bot = bot
         self.author = author
@@ -157,25 +157,25 @@ class MultipleChoicesView(disnake.ui.View):
 
         super().__init__()
 
-        self.selector = disnake.ui.Select(custom_id='multiple_choices_tag', options=[
-            disnake.SelectOption(label=choice['choice_name'], default=i == 0) for i, choice in enumerate(self.choices)
+        self.selector = discord.ui.Select(custom_id='multiple_choices_tag', options=[
+            discord.SelectOption(label=choice['choice_name'], default=i == 0) for i, choice in enumerate(self.choices)
         ])
         self.selector.callback = self.selector_callback
         self.add_item(self.selector)
 
-    async def interaction_check(self, inter: disnake.MessageInteraction) -> bool:
+    async def interaction_check(self, inter: discord.MessageInteraction) -> bool:
         if inter.author.id == self.author.id:
             return True
         await inter.response.defer(ephemeral=True)
         return False
 
-    async def selector_callback(self, interaction: disnake.MessageInteraction) -> None:
+    async def selector_callback(self, interaction: discord.MessageInteraction) -> None:
         values = interaction.values
         assert values is not None
-        response = disnake.utils.find(lambda choice: choice['choice_name'] == values[0], self.choices)
+        response = discord.utils.find(lambda choice: choice['choice_name'] == values[0], self.choices)
         assert response is not None
 
-        embed = disnake.Embed.from_dict(response.get("embed"))
+        embed = discord.Embed.from_dict(response.get("embed"))
         embed.colour = misc.Color.grey_embed().discord
         embed.set_author(name=interaction.author.display_name, icon_url=interaction.author.display_avatar.url)
         embed.set_footer(
@@ -188,7 +188,7 @@ class MultipleChoicesView(disnake.ui.View):
 
         try:
             await interaction.response.edit_message(embed=embed, view=self)
-        except disnake.HTTPException:
+        except discord.HTTPException:
             self.stop()
 
 
