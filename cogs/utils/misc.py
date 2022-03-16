@@ -5,7 +5,7 @@ import aiohttp
 import json
 
 from schema import Schema, Or, And, Use, Optional, Regex
-import disnake
+import discord
 
 if TYPE_CHECKING:
     from main import HelpCenterBot
@@ -46,12 +46,12 @@ inner_tag_schema = Schema({
 tag_schema = Schema(Or([inner_tag_schema], inner_tag_schema))
 
 
-async def add_reactions(message: disnake.Message, reactions: Iterable[Union[disnake.Emoji, disnake.PartialEmoji, str]]) -> None:
+async def add_reactions(message: discord.Message, reactions: Iterable[Union[discord.Emoji, discord.PartialEmoji, str]]) -> None:
     for react in reactions:
         await message.add_reaction(react)
 
 
-async def delete_with_emote(bot: 'HelpCenterBot', author: 'Person', bot_message: disnake.Message) -> None:
+async def delete_with_emote(bot: 'HelpCenterBot', author: 'Person', bot_message: discord.Message) -> None:
     await bot_message.add_reaction("🗑️")
 
     try:
@@ -60,12 +60,12 @@ async def delete_with_emote(bot: 'HelpCenterBot', author: 'Person', bot_message:
     except asyncio.TimeoutError:
         try:
             await bot_message.remove_reaction("🗑️", bot.user)
-        except disnake.HTTPException:
+        except discord.HTTPException:
             pass
         return
     try:
         await bot_message.delete()
-    except disnake.HTTPException:
+    except discord.HTTPException:
         pass
 
 
@@ -115,7 +115,7 @@ async def execute_piston_code(language: str, version: str, files: list, *, stdin
 
 class Color:
     def __init__(self, r: int, g: int, b: int, a: int = 1) -> None:
-        """Represent a Color object with pre-done colors that can be used as disnake.Color etc..."""
+        """Represent a Color object with pre-done colors that can be used as discord.Color etc..."""
         self.r = r
         self.g = g
         self.b = b
@@ -147,7 +147,7 @@ class Color:
 
     @property
     def discord(self):
-        return disnake.Color.from_rgb(self.r, self.g, self.b)
+        return discord.Color.from_rgb(self.r, self.g, self.b)
 
     @property
     def rgb(self):
