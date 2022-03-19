@@ -4,7 +4,7 @@
 import gettext
 import os.path
 from glob import glob
-from typing import Optional
+from typing import Optional, overload
 
 import discord
 
@@ -24,12 +24,20 @@ gettext_translations = {
 gettext_translations['en-US'] = gettext.NullTranslations()
 locales |= {'en-US'}
 
+cached_users_locals = {}
 
-def get_translation(message, inter: Optional[discord.Interaction] = None):
-    if not inter:
+
+def get_translation(message: str, target: Optional[discord.User | discord.Member | discord.Interaction] = None):
+    if not target:
         locale = LOCALE_DEFAULT
+    elif isinstance(target, discord.User) or isinstance(target, discord.Member):
+        if cached_users_locals.get(target.id):
+            locale = cached_users_locals[target.id]
+        else:
+            locale = LOCALE_DEFAULT
     else:
-        locale = inter.locale.value
+        locale = target.locale.value
+        cached_users_locals[target.author.id] = locale
 
     if not gettext_translations:
         return gettext.gettext(message)

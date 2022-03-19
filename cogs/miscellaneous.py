@@ -9,7 +9,7 @@ from discord.ext import commands
 
 from main import HelpCenterBot
 from .utils.misc import create_new_gist, delete_gist, add_reactions
-from .utils.i18n import use_current_gettext as _
+from .utils.i18n import _
 from .utils.constants import BUG_CENTER_ID, AUTHORIZED_CHANNELS_IDS
 
 
@@ -24,8 +24,6 @@ class Miscellaneous(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
-        await self.bot.set_actual_language(message.author)
-
         if await self.token_revoke(message):
             return
 
@@ -37,7 +35,6 @@ class Miscellaneous(commands.Cog):
     @commands.Cog.listener()
     async def on_message_edit(self, old_message: discord.Message, new_message: discord.Message) -> None:
         """Look for discord token on message editing."""
-        await self.bot.set_actual_language(old_message.author)
 
         await self.token_revoke(new_message)
 
@@ -67,8 +64,6 @@ class Miscellaneous(commands.Cog):
         finally:
             await message.clear_reactions()
 
-        await self.bot.set_actual_language(message.author)
-
         references = {
             '<:javascript:664540815086845952>': 'js',
             '<:python:664539154838978600>': 'py',
@@ -87,8 +82,8 @@ class Miscellaneous(commands.Cog):
         if os.path.splitext(attachment.filename)[1] in tuple(f'.{ext}' for ext in references.values()):
             file_name = attachment.filename
         else:
-            response_message = await message.reply((_("What's the programmation language ?\n") +
-                                                    _("Click on the correspondant reaction, or send a message with the extension (`.js`, `.py`...)\n\n") +
+            response_message = await message.reply((_("What's the programmation language ?\n", message.author) +
+                                                    _("Click on the correspondant reaction, or send a message with the extension (`.js`, `.py`...)\n\n", message.author) +
                                                     f"{' '.join(references.keys())}"), mention_author=False)
 
             task = self.bot.loop.create_task(add_reactions(response_message, references.keys()))
@@ -118,13 +113,13 @@ class Miscellaneous(commands.Cog):
                 json_response = await create_new_gist(GIST_TOKEN, file_name, file_content)
                 assert json_response.get('html_url')
             except Exception:
-                await message.channel.send(_('An error occurred.'), delete_after=5)
+                await message.channel.send(_('An error occurred.', message.author), delete_after=5)
                 return
 
         if not response_message:
-            await message.reply(content=_("A gist has been created :\n") + f"<{json_response['html_url']}>", mention_author=False)
+            await message.reply(content=_("A gist has been created :\n", message.author) + f"<{json_response['html_url']}>", mention_author=False)
         else:
-            await response_message.edit(content=_("A gist has been created :\n") + f"<{json_response['html_url']}>")
+            await response_message.edit(content=_("A gist has been created :\n", message.author) + f"<{json_response['html_url']}>")
 
     async def token_revoke(self, message):
         tokens_places = [
@@ -159,9 +154,9 @@ class Miscellaneous(commands.Cog):
                     await message.delete()
                     response_dict = await response.json()
 
-                    message_content = _("**{message.author.mention} you just sent a valid bot token.**\n").format(message=message)
+                    message_content = _("**{message.author.mention} you just sent a valid bot token.**\n", message.author).format(message=message)
                     message_content += _("This one will be revoked, but be careful and check that it has been successfully reset on the "
-                                         "**dev portal** (https://discord.com/developers/applications/{}).\n").format(response_dict['id'])
+                                         "**dev portal** (https://discord.com/developers/applications/{}).\n", message.author).format(response_dict['id'])
 
                     await message.channel.send(message_content, allowed_mentions=discord.AllowedMentions(users=True))
 
@@ -169,8 +164,6 @@ class Miscellaneous(commands.Cog):
                     await asyncio.sleep(30)
                     await delete_gist(GIST_TOKEN, gist['id'])
                     return True
-                else:
-                    return False
 
         # Check if it is eventually a user token.
         url = "https://discord.com/api/v9/users/@me"
@@ -184,11 +177,13 @@ class Miscellaneous(commands.Cog):
                     text = _(f"{message.author.mention} you just sent a valid **user token**.\n"
                              "**What is it? ** This is a kind of password that allows access to a contentious account without a username, password or IP address verification.\n"
                              "**Change your password as a precaution**.\n"
-                             "We also recommend that you enable**two-factor authentication, or 2FA.** (settings)\n")
+                             "We also recommend that you enable**two-factor authentication, or 2FA.** (settings)\n", message.author)
                     await message.channel.send(text, allowed_mentions=discord.AllowedMentions(users=True))
                     return True
 
-    @commands.Cog.listener()  # This should be on Bot Center, but discord.js has some bugs.
+        return False
+
+    @commands.Cog.listener()
     async def on_member_update(self, old_member: discord.Member, new_member: discord.Member):
         if new_member.guild.id != BUG_CENTER_ID:
             return
@@ -219,6 +214,6 @@ class Miscellaneous(commands.Cog):
             await new_member.remove_roles(*roles_to_remove)
 
 
-def setup(bot: HelpCenterBot) -> None:
-    bot.add_cog(Miscellaneous(bot))
+async def setup(bot: HelpCenterBot) -> None:
+    await bot.add_cog(Miscellaneous(bot))
     bot.logger.info("Extension [miscellaneous] loaded successfully.")

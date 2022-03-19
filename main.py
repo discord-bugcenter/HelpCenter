@@ -33,11 +33,9 @@ class HelpCenterBot(commands.Bot):
             chunk_guilds_at_startup=True,
             allowed_mentions=discord.AllowedMentions.none(),
             intents=discord.Intents.all(),
-            sync_commands=True,
-            help_command=None
         )
 
-        self.initial_extensions: list[str] = ['cogs.lines']
+        self.initial_extensions: list[str] = ['cogs.lines', 'cogs.googleit', 'cogs.miscellaneous']
 
         # self.before_invoke(self.set_command_language)
         self.add_check(self.is_on_bug_center)

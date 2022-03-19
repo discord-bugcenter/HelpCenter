@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from main import HelpCenterBot
 
 
-LANGUAGES = ["python", "javascript", "typescript", "java", "rust", "lisp", "elixir"]
+# LANGUAGES = ["python", "javascript", "typescript", "java", "rust", "lisp", "elixir"]
 
 
 # async def lines_autocomplete(inter: discord.ApplicationCommandInteraction, user_input: str) -> list[str]:
