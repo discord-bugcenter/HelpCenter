@@ -4,7 +4,7 @@
 import gettext
 import os.path
 from glob import glob
-from typing import Optional, overload
+from typing import Optional
 
 import discord
 
@@ -37,7 +37,7 @@ def get_translation(message: str, target: Optional[discord.User | discord.Member
             locale = LOCALE_DEFAULT
     else:
         locale = target.locale.value
-        cached_users_locals[target.author.id] = locale
+        cached_users_locals[target.user.id] = locale
 
     if not gettext_translations:
         return gettext.gettext(message)
