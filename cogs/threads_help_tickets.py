@@ -46,12 +46,27 @@ class ThreadsHelpTickets(commands.Cog):
 
     def update_overview_embed(self):
         embed = self.threads_overview_embed
-        opened_threads_field = embed.fields[0]
+        field_name = embed.fields[0].name
 
-        field_content = ' - ' + '\n - '.join(
-            f"[{thread.name}](https://discord.com/channels/{BUG_CENTER_ID}/{thread.id})" for thread in self.threads_channel.threads
-        )
-        embed.set_field_at(0, name=opened_threads_field.name, value=field_content)
+        if not self.threads_channel.threads:
+            embed.set_field_at(0, name=field_name, value="*Aucune demande, houra!*")
+            return
+
+        for i in range(len(embed.fields)):
+            embed.remove_field(0)  # the second field become the first etc...
+
+        field_contents = [""]
+        i = 0
+
+        for thread in self.threads_channel.threads:
+            if len(field_contents[i]) + len(thread.name) + 100 > 1024:  # 100 is the length of the link etc...
+                i += 1
+                field_contents.append("")
+
+            field_contents[i] += f" - [{thread.name}](https://discord.com/channels/{BUG_CENTER_ID}/{thread.id})\n"
+
+        for i, content in enumerate(field_contents):
+            embed.add_field(name=field_name if not i else "\u200b", value=content, inline=False)
 
     async def update_overview_message(self):
         await self.threads_overview_message.edit(embed=self.threads_overview_embed)
@@ -127,8 +142,8 @@ class CreateThreadView(ui.View):
 
 
 class CreateThreadModal(ui.Modal, title=''):
-    thread_title = ui.TextInput(label="tmp", placeholder="tmp", min_length=20, max_length=50)
-    thread_content = ui.TextInput(label="tmp", placeholder="tmp", style=discord.TextStyle.paragraph, min_length=100, max_length=2000)
+    thread_title = ui.TextInput(label="tmp", placeholder="tmp", min_length=20, max_length=100)
+    thread_content = ui.TextInput(label="tmp", placeholder="tmp", style=discord.TextStyle.paragraph, min_length=50, max_length=2000)
 
     def __init__(self, inter: discord.Interaction):
         self.title = _("Ask your question", inter)
