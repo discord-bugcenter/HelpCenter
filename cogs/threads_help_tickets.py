@@ -49,12 +49,10 @@ class ThreadsHelpTickets(commands.Cog):
         field_name = embed.fields[0].name
 
         if not self.threads_channel.threads:
-            embed.set_field_at(0, name=field_name, value="*Aucune demande, houra!*")
+            embed.fields[0].value = "*Aucune demande, houra!*"
             return
 
-        for i in range(len(embed.fields)):
-            embed.remove_field(0)  # the second field become the first etc...
-
+        embed.clear_fields()
         field_contents = [""]
         i = 0
 
