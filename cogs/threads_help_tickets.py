@@ -7,6 +7,7 @@ from discord.ext import commands
 
 from .utils.i18n import _
 from .utils import Context  # , checkers
+from .utils.constants import BUG_CENTER_ID
 
 if TYPE_CHECKING:
     from main import HelpCenterBot
@@ -23,24 +24,46 @@ class ThreadsHelpTickets(commands.Cog):
     async def on_ready(self) -> None:
         self.bot.add_view(CreateThreadView(self.bot), message_id=ASK_MESSAGE_ID)
 
-    # @commands.command(hidden=True)
-    # @checkers.is_high_staff()
-    async def init_help(self, ctx: Context) -> None:
-        embed = discord.Embed(color=discord.Color.blurple())
-        embed.add_field(
-            name=":flag_fr: **Fils d\'aide personnalisée**",
-            value=("Créez un fil pour recevoir de l\'aide sur n\'importe quel sujet informatique.\n"
-                   "Que ce soit de la programmation, un problème avec votre PC, etc...\n"),
-            inline=False
+        self.threads_channel = cast(discord.TextChannel, self.bot.get_channel(ASK_CHANNEL_ID))
+        self.threads_overview_message = await self.threads_channel.fetch_message(ASK_MESSAGE_ID)
+
+        embed = discord.Embed(
+            color=discord.Color.blurple(),
+            title="**Fils d\'aide personnalisée **",
+            description=("Créez un fil pour recevoir de l\'aide sur n\'importe quel sujet informatique.\n"
+                         "Que ce soit de la programmation, un problème avec votre PC, etc...\n")
         )
+
         embed.add_field(
-            name=":flag_us: **Personalized help threads**",
-            value=("Create a thread to receive help on any digital subject.\n"
-                   "It can be about programming, hardware...\n"),
+            name="Liste des demandes en cours",
+            value="*Aucune demande, houra!*",
             inline=False
         )
 
-        await ctx.send(embed=embed,
+        self.threads_overview_embed = embed
+
+        await self.update_overview()
+
+    def update_overview_embed(self):
+        embed = self.threads_overview_embed
+        opened_threads_field = embed.fields[0]
+
+        field_content = ' - ' + '\n - '.join(
+            f"[{thread.name}](https://discord.com/channels/{BUG_CENTER_ID}/{thread.id})" for thread in self.threads_channel.threads
+        )
+        embed.set_field_at(0, name=opened_threads_field.name, value=field_content)
+
+    async def update_overview_message(self):
+        await self.threads_overview_message.edit(embed=self.threads_overview_embed)
+
+    async def update_overview(self):
+        self.update_overview_embed()
+        await self.update_overview_message()
+
+    # @commands.command(hidden=True)
+    # @checkers.is_high_staff()
+    async def init_help(self, ctx: Context) -> None:
+        await ctx.send(embed=self.threads_overview_embed,
                        view=CreateThreadView(self.bot))
 
     @commands.Cog.listener()
@@ -58,8 +81,6 @@ class ThreadsHelpTickets(commands.Cog):
 
         if custom_id.startswith('archive_help_thread_'):
             strategy = partial(inter.channel.edit, archived=True)
-        # elif custom_id.startswith('delete_help_thread_'):
-        #     strategy = inter.channel.delete
         else:
             return
 
@@ -68,17 +89,7 @@ class ThreadsHelpTickets(commands.Cog):
             await inter.response.defer(ephemeral=True)
 
     @commands.Cog.listener()
-    async def on_thread_update(self, thread_before: discord.Thread, thread_after: discord.Thread) -> None:
-        if not thread_before.parent_id == ASK_CHANNEL_ID or not thread_before.parent or (thread_before.archived and not thread_after.archived):
-            return
-
-        async for message in thread_before.parent.history():
-            if message.id == thread_after.id:
-                await message.delete()
-                break
-
-    @commands.Cog.listener()
-    async def on_thread_delete(self, thread: discord.Thread) -> None:
+    async def on_thread_join(self, thread):
         if not thread.parent_id == ASK_CHANNEL_ID or not thread.parent:
             return
 
@@ -86,6 +97,22 @@ class ThreadsHelpTickets(commands.Cog):
             if message.id == thread.id:
                 await message.delete()
                 break
+
+        await self.update_overview()
+
+    @commands.Cog.listener()
+    async def on_thread_update(self, thread_before: discord.Thread, thread_after: discord.Thread) -> None:
+        if not thread_before.parent_id == ASK_CHANNEL_ID or not thread_before.parent:  # or (thread_before.archived and not thread_after.archived):
+            return
+
+        await self.update_overview()
+
+    @commands.Cog.listener()
+    async def on_thread_delete(self, thread: discord.Thread) -> None:
+        if not thread.parent_id == ASK_CHANNEL_ID or not thread.parent:
+            return
+
+        await self.update_overview()
 
 
 class CreateThreadView(ui.View):
@@ -100,7 +127,7 @@ class CreateThreadView(ui.View):
 
 
 class CreateThreadModal(ui.Modal, title=''):
-    thread_title = ui.TextInput(label="tmp", placeholder="tmp", min_length=20, max_length=100)
+    thread_title = ui.TextInput(label="tmp", placeholder="tmp", min_length=20, max_length=50)
     thread_content = ui.TextInput(label="tmp", placeholder="tmp", style=discord.TextStyle.paragraph, min_length=100, max_length=2000)
 
     def __init__(self, inter: discord.Interaction):
@@ -130,7 +157,6 @@ class CreateThreadModal(ui.Modal, title=''):
         view = ui.View()
         view.stop()
         view.add_item(ui.Button(label=_("Archive"), custom_id=f"archive_help_thread_{inter.user.id}"))
-        #  view.add_item(ui.Button(label=_("Delete"), custom_id=f"delete_help_thread_{inter.user.id}"))
 
         await thread.send(embed=embed, view=view)
         await thread.add_user(inter.user)
