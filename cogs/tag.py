@@ -1,4 +1,3 @@
-from functools import partial
 from typing import Union, TypedDict, Optional, cast
 import json
 import asyncio
@@ -190,11 +189,15 @@ class MultipleChoicesView(discord.ui.View):
 
         super().__init__()
 
-        self.selector = discord.ui.Select(custom_id='multiple_choices_tag', options=[
+        cast(ui.Select, self.children[0]).options = [
             discord.SelectOption(label=choice['choice_name'], default=i == 0) for i, choice in enumerate(self.choices)
-        ])
-        self.selector.callback = partial(self.selector_callback, self.selector)  # type: ignore
-        self.add_item(self.selector)
+        ]
+
+        # self.selector = discord.ui.Select(custom_id='multiple_choices_tag', options=[
+        #     discord.SelectOption(label=choice['choice_name'], default=i == 0) for i, choice in enumerate(self.choices)
+        # ])
+        # self.selector.callback = _ViewCallback(MultipleChoicesView.selector_callback, self, self.selector)
+        # self.add_item(self.selector)
 
     async def interaction_check(self, inter: discord.Interaction) -> bool:
         if inter.user.id == self.author.id:
@@ -202,7 +205,8 @@ class MultipleChoicesView(discord.ui.View):
         await inter.response.defer(ephemeral=True)
         return False
 
-    async def selector_callback(self, select: ui.Select, inter: discord.Interaction) -> None:
+    @ui.select(custom_id='multiple_choices_tag')
+    async def selector_callback(self, inter: discord.Interaction, select: ui.Select) -> None:
         values = cast(list[str], select.values)
         response = cast(ResponseChoices, discord.utils.find(lambda choice: choice['choice_name'] == values[0], self.choices))
 
@@ -214,7 +218,7 @@ class MultipleChoicesView(discord.ui.View):
             icon_url=self.bot.user.display_avatar.url  # type: ignore
         )
 
-        for option in self.selector.options:
+        for option in select.options:
             option.default = option.label == values[0]
 
         try:
