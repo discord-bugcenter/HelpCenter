@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, OrderedDict
 
 if TYPE_CHECKING:
-    from . import Snowflake
+    from .types import Snowflake
 
 
 BUG_CENTER_ID: 'Snowflake' = 595218682670481418

@@ -69,7 +69,7 @@ class Doc(commands.Cog):
         # await delete_with_emote(self.bot, inter.author, await inter.original_message())
 
     @doc.autocomplete('doc')
-    async def doc_autocomplete(self, interaction: discord.Interaction, current: str, __: app_commands.Namespace) -> list[app_commands.Choice[str]]:
+    async def doc_autocomplete(self, interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
         if len(current) < 4:
             return [app_commands.Choice(name='discord.py', value='discord.py')]
 
