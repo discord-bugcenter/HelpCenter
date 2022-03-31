@@ -1,9 +1,6 @@
 import asyncio
 from typing import Union, Iterable, TYPE_CHECKING
 
-import aiohttp
-import json
-
 from schema import Schema, Or, And, Use, Optional, Regex
 import discord
 
@@ -51,66 +48,24 @@ async def add_reactions(message: discord.Message, reactions: Iterable[Union[disc
         await message.add_reaction(react)
 
 
-async def delete_with_emote(bot: 'HelpCenterBot', author: 'Person', bot_message: discord.Message) -> None:
-    await bot_message.add_reaction("🗑️")
+async def delete_with_emote(bot: 'HelpCenterBot', author: 'Person', message: discord.Message) -> None:
+    assert bot.user is not None, "Bot must be logged out to use this function."
+
+    await message.add_reaction("🗑️")
 
     try:
         await bot.wait_for("reaction_add", timeout=120,
-                           check=lambda react, usr: str(react.emoji) == "🗑️" and react.message.id == bot_message.id and usr.id == author.id)
+                           check=lambda react, usr: str(react.emoji) == "🗑️" and react.message.id == message.id and usr.id == author.id)
     except asyncio.TimeoutError:
         try:
-            await bot_message.remove_reaction("🗑️", bot.user)
+            await message.remove_reaction("🗑️", bot.user)
         except discord.HTTPException:
             pass
         return
     try:
-        await bot_message.delete()
+        await message.delete()
     except discord.HTTPException:
         pass
-
-
-async def create_new_gist(token: str, file_name: str, file_content: str) -> dict:
-    url = 'https://api.github.com/gists'
-    header = {
-        'Authorization': f'token {token}'
-    }
-    payload = {
-        'files': {file_name: {'content': file_content}},
-        'public': True
-    }
-    async with aiohttp.ClientSession(headers=header) as session:
-        async with session.post(url=url, json=payload) as response:
-            return json.loads(await response.text())
-
-
-async def delete_gist(token: str, gist_id: str) -> bool:
-    url = 'https://api.github.com/gists/' + gist_id
-    header = {
-        'Authorization': f'token {token}'
-    }
-    async with aiohttp.ClientSession(headers=header) as session:
-        async with session.delete(url=url):
-            return True
-
-
-async def execute_piston_code(language: str, version: str, files: list, *, stdin: list = None, args: list = None) -> dict:
-    url = "https://emkc.org/api/v2/piston/execute"
-    payload = {
-        'language': language,
-        'version': version,
-        'files': files
-    }
-    if stdin:
-        payload['stdin'] = stdin
-    if args:
-        payload['args'] = args
-
-    async with aiohttp.ClientSession() as session:
-        async with session.post(url=url, json=payload) as response:
-            json_response: dict = await response.json()
-            if response.status == 200:
-                return json_response['run']
-            raise Exception(json_response.get('message', 'unknown error'))
 
 
 class Color:

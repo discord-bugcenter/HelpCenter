@@ -177,7 +177,7 @@ class TagCog(commands.Cog):
     async def tag_autocompleter(self, inter: discord.Interaction, current: str):
         if inter.namespace['category'] not in self.tags.keys():
             return [app_commands.Choice(name=_('You must first fill the category option.', inter), value='')]
-        return [app_commands.Choice(name=tag_name, value=tag_name) for tag_name in self.tags[inter.namespace['category_name']].keys() if current in tag_name] + [app_commands.Choice(name='list', value='list')]
+        return [app_commands.Choice(name=tag_name, value=tag_name) for tag_name in self.tags[inter.namespace['category']].keys() if current in tag_name] + [app_commands.Choice(name='list', value='list')]
 
 
 class MultipleChoicesView(discord.ui.View):
