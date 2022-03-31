@@ -6,7 +6,7 @@ from discord import ui
 from discord.ext import commands
 
 from .utils.i18n import _
-from .utils import Context  # , checkers
+from .utils.types import Context  # , checkers
 from .utils.constants import BUG_CENTER_ID
 
 if TYPE_CHECKING:
@@ -135,7 +135,7 @@ class CreateThreadView(ui.View):
         self.bot = bot
 
     @ui.button(label="Nouveau / New", custom_id='create_help_channel', emoji="➕", style=discord.ButtonStyle.blurple)
-    async def create_help_channel(self, __: ui.Button, inter: discord.Interaction) -> None:
+    async def create_help_channel(self, inter: discord.Interaction, __: ui.Button) -> None:
         await inter.response.send_modal(CreateThreadModal(inter))
 
 
