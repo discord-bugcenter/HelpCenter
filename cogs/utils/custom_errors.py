@@ -1,4 +1,4 @@
-from discord.ext.commands import errors
+from discord.app_commands import errors
 
 
 class NotAuthorizedChannels(errors.CheckFailure):
@@ -15,19 +15,19 @@ class NotAuthorizedRoles(errors.CheckFailure):
         super().__init__()
 
 
-class NotInBugCenter(errors.CommandError):
+class NotInBugCenter(errors.AppCommandError):
     pass
 
 
-class COCLinkNotValid(errors.BadArgument):
-    def __init__(self, link: str, message: str = None, *args) -> None:
-        """Raised if a COC link is not valide."""
-        self.link = link
-        super().__init__(message, *args)
+# class COCLinkNotValid(errors.BadArgument):
+#     def __init__(self, link: str, message: str = None, *args) -> None:
+#         """Raised if a COC link is not valide."""
+#         self.link = link
+#         super().__init__(message, *args)
 
 
-class AlreadyProcessingCOC(errors.BadArgument):
-    def __init__(self, code: str, message: str = None, *args) -> None:
-        """Raised if a COC is already processing."""
-        self.code = code
-        super().__init__(message, *args)
+# class AlreadyProcessingCOC(errors.BadArgument):
+#     def __init__(self, code: str, message: str = None, *args) -> None:
+#         """Raised if a COC is already processing."""
+#         self.code = code
+#         super().__init__(message, *args)

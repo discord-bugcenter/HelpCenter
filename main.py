@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 
 from cogs.utils import custom_errors  # , i18n
 from cogs.utils.constants import BUG_CENTER_ID  # , LANGUAGE_ROLES
+from cogs.custom_command_tree import CustomCommandTree
 
 if typing.TYPE_CHECKING:
     # from cogs.utils import Person
@@ -29,6 +30,7 @@ class HelpCenterBot(commands.Bot):
         super().__init__(
             command_prefix=["/", "\\", "<@789210466492481597> ", "<@!789210466492481597> "],
             case_insensitive=True,
+            tree_cls=CustomCommandTree,
             member_cache_flags=discord.MemberCacheFlags.all(),
             chunk_guilds_at_startup=True,
             allowed_mentions=discord.AllowedMentions.none(),
