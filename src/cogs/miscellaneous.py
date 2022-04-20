@@ -8,10 +8,10 @@ import filetype
 from discord.ext import commands
 
 from main import HelpCenterBot
-from .utils.misc import add_reactions
-from .utils.gist import create_new_gist, delete_gist
-from .utils.i18n import _
-from .utils.constants import BUG_CENTER_ID, AUTHORIZED_CHANNELS_IDS
+from utils.misc import add_reactions
+from utils.gist import create_new_gist, delete_gist
+from utils.i18n import _
+from utils.constants import BUG_CENTER_ID, AUTHORIZED_CHANNELS_IDS
 
 
 GIST_TOKEN = os.environ['GIST_TOKEN']

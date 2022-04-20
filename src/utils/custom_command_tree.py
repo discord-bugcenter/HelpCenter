@@ -12,10 +12,10 @@ from discord.app_commands import (
     CommandNotFound
 )
 
-from .utils import custom_errors as custom
+from utils import custom_errors as custom
 # from .utils.codingame import NoPendingCOC
 # from .utils.misc import Color
-from .utils.i18n import _
+from utils.i18n import _
 
 if TYPE_CHECKING:
     from main import HelpCenterBot  # , Context

@@ -5,10 +5,10 @@ from discord.ext import commands
 from discord import ui
 from discord import app_commands
 
-from cogs.utils.constants import BUG_CENTER_ID
+from utils.constants import BUG_CENTER_ID
 
 # from .utils.misc import delete_with_emote
-from .utils.i18n import _
+from utils.i18n import _
 
 if TYPE_CHECKING:
     from main import HelpCenterBot

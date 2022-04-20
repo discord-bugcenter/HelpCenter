@@ -15,9 +15,9 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from matplotlib.ticker import StrMethodFormatter
 
-from main import HelpCenterBot
-from .utils import custom_errors, checkers, misc
-from .utils.i18n import use_current_gettext as _
+from src.main import HelpCenterBot
+from utils import custom_errors, checkers, misc
+from utils.i18n import use_current_gettext as _
 
 # TODO : create specific object to parse data from the API
 # TODO : finish to add typing
