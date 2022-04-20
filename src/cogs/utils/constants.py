@@ -4,7 +4,8 @@ if TYPE_CHECKING:
     from .types import Snowflake
 
 
-BUG_CENTER_ID: 'Snowflake' = 595218682670481418
+# BUG_CENTER_ID: 'Snowflake' = 595218682670481418
+BUG_CENTER_ID: 'Snowflake' = 436144690694455306
 
 STAFF_ROLES: dict[str, 'Snowflake'] = {
     'administrator': 713434163587579986,

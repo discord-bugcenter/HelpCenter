@@ -37,7 +37,7 @@ class HelpCenterBot(commands.Bot):
             intents=discord.Intents.all(),
         )
 
-        self.initial_extensions: list[str] = ['cogs.lines', 'cogs.googleit', 'cogs.miscellaneous']
+        self.initial_extensions: list[str] = ['cogs.lines', 'cogs.googleit', 'cogs.miscellaneous', 'cogs.tags', 'cogs.threads_help_tickets', 'cogs.doc']
 
         # self.before_invoke(self.set_command_language)
         self.add_check(self.is_on_bug_center)
