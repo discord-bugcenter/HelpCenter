@@ -3,7 +3,7 @@ from typing import Union
 from discord import User, Member
 from discord.ext.commands import Context as Ctx
 
-from main import HelpCenterBot
+from src.main import HelpCenterBot
 
 Person = Union[User, Member]
 Snowflake = int

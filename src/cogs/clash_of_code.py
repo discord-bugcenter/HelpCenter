@@ -7,11 +7,11 @@ import discord
 from discord import ui
 from discord.ext import commands
 
-from .utils.custom_errors import COCLinkNotValid, AlreadyProcessingCOC
-from .utils.misc import Color
-from .utils import codingame
-from .utils.codingame import COC, COCMode, COCPlayer, COCPlayerGameStatus
-from .utils.i18n import use_current_gettext as _
+from utils.custom_errors import COCLinkNotValid, AlreadyProcessingCOC
+from utils.misc import Color
+from utils import codingame
+from utils.codingame import COC, COCMode, COCPlayer, COCPlayerGameStatus
+from utils.i18n import use_current_gettext as _
 
 if TYPE_CHECKING:
     from main import HelpCenterBot

@@ -9,12 +9,11 @@ from discord.utils import get
 from discord.ext import commands, tasks
 from discord import app_commands, ui
 
-from cogs.utils.types import Person
-
-from .utils.misc import tag_schema
-from .utils.constants import BUG_CENTER_ID
-from .utils import misc  # , checkers
-from .utils.i18n import _
+from utils.types import Person
+from utils.misc import tag_schema
+from utils.constants import BUG_CENTER_ID
+from utils import misc  # , checkers
+from utils.i18n import _
 from main import HelpCenterBot
 
 REPOSITORY_TOKEN = os.environ["GITHUB_REPOSITORY_TOKEN"]

@@ -5,7 +5,7 @@ from schema import Schema, Or, And, Use, Optional, Regex
 import discord
 
 if TYPE_CHECKING:
-    from main import HelpCenterBot
+    from src.main import HelpCenterBot
     from .types import Person
 
 text_or_list = Schema(Or(str, And(list, Use('\n'.join))))

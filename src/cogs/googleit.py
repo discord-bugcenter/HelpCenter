@@ -7,8 +7,8 @@ from discord.ext import commands
 
 # from .utils import checkers
 # from .utils.misc import delete_with_emote
-from .utils.i18n import _
-from .utils.constants import BUG_CENTER_ID
+from utils.i18n import _
+from utils.constants import BUG_CENTER_ID
 
 if TYPE_CHECKING:
     from main import HelpCenterBot

@@ -5,9 +5,9 @@ import discord
 from discord import ui
 from discord.ext import commands
 
-from .utils.i18n import _
-from .utils.types import Context  # , checkers
-from .utils.constants import BUG_CENTER_ID
+from utils.i18n import _
+from utils.types import Context  # , checkers
+from utils.constants import BUG_CENTER_ID
 
 if TYPE_CHECKING:
     from main import HelpCenterBot

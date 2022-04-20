@@ -7,8 +7,8 @@ from discord.ext import commands
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
-from cogs.utils.constants import BUG_CENTER_ID
-from .utils.i18n import _
+from utils.constants import BUG_CENTER_ID
+from utils.i18n import _
 # from .utils import checkers
 # from .utils.misc import delete_with_emote
 
