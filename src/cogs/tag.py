@@ -1,4 +1,4 @@
-from typing import Union, TypedDict, Optional, cast
+from typing import Union, TypedDict, Optional, cast, TypeVar, Any
 import json
 import asyncio
 import os
@@ -14,6 +14,7 @@ from utils.misc import tag_schema
 from utils.constants import BUG_CENTER_ID
 from utils import misc  # , checkers
 from utils.i18n import _
+from utils.custom_errors import CustomError
 from main import HelpCenterBot
 
 REPOSITORY_TOKEN = os.environ["GITHUB_REPOSITORY_TOKEN"]
@@ -22,22 +23,26 @@ ResponseChoices = TypedDict('ResponseChoices', content=str, embed=dict, choice_n
 Response = TypedDict('Response', content=str, embed=dict, choices=list[ResponseChoices])
 
 
+T = TypeVar('T', dict, list, str)
+
+
 class Tag:
-    def __init__(self, data):
+    def __init__(self, data: dict[str, Any], category: str):
         self.lang = data.get('lang') or 'fr_FR'
         self.name: str = data["name"]
         self.description: str = data['description']
         self.response: Response = data['response']
+        self.category: str = category
 
     @classmethod
-    def parse_tag(cls, data: Union[dict, list]) -> list['Tag']:
+    def parse_tag(cls, data: Union[dict, list[dict]], category) -> list['Tag']:
         if isinstance(data, list):
-            return [cls(json_tag) for json_tag in cls.complete_values(data)]
+            return [cls(json_tag, category) for json_tag in cls.complete_values(data)]
         else:  # isinstance(data, dict)
-            return [cls(cls.complete_values(data))]
+            return [cls(cls.complete_values(data), category)]
 
     @staticmethod
-    def complete_values(obj: Union[dict, list, str], ref: Optional[Union[dict, list, str]] = None):
+    def complete_values(obj: T, ref: Optional[T] = None) -> T:
         """This function will fill values where there is a * in the tag.json based on the corresponding field located above"""
         if isinstance(obj, dict):
             for key, value in obj.items():
@@ -57,12 +62,30 @@ class Tag:
         return f"<Tag name={self.name} lang={self.lang} description={self.description}>"
 
 
+class Categories:
+    def __init__(self, tags: dict[str, list[Tag]]):
+        self.tags = tags
+        self.categories: list[str] = []
+
+    def add(self, name: str) -> None:
+        self.categories.append(name)
+
+    def __iter__(self):
+        return iter(self.categories)
+
+    def __getitem__(self, name):
+        if name not in self.categories:
+            raise KeyError(f"Category {name} does not exist")
+        return [tag for tag in self.tags.values() if tag[0].category == name]
+
+
 class TagCog(commands.Cog):
     def __init__(self, bot: 'HelpCenterBot') -> None:
         """Tag command allow you to search for help in pre-saved topics."""
         self.bot = bot
         self.last_sha_commit: Optional[str] = None
-        self.tags: dict[str, dict[str, list[Tag]]] = {}  # A dict which looks like {"category_name": {"tag_name": [Tag]}}
+        self.tags: dict[str, list[Tag]] = {}  # A dict which looks like {"category_name": {"tag_name": [Tag]}}
+        self.tags_categories: Categories = Categories(self.tags)
         self.bot.tree.add_command(self._tag, guild=discord.Object(id=BUG_CENTER_ID))
         self.bot.tree.add_command(self._force_resync, guild=discord.Object(id=BUG_CENTER_ID))
 
@@ -98,8 +121,6 @@ class TagCog(commands.Cog):
             raw_categories = await r.json()
 
         for raw_category in raw_categories:
-            self.tags[raw_category['name']] = {}
-
             async with self.session.get(raw_category['url']) as r:
                 raw_tags = await r.json()
 
@@ -107,11 +128,17 @@ class TagCog(commands.Cog):
                 try:
                     async with self.session.get(raw_tag['download_url']) as r:
                         json_tag: Union[dict, list] = json.loads(await r.text())
+ 
+                    json_tag = tag_schema.validate(json_tag)
+                    if not isinstance(json_tag, list) or isinstance(json_tag, dict):
+                        raise ValueError(f"{raw_tag['name']} is not a valid tag")
 
-                    assert isinstance(json_tag := tag_schema.validate(json_tag), list) or isinstance(json_tag, dict)
+                    parsed_tags = Tag.parse_tag(json_tag, raw_category['name'])
 
-                    parsed_tags = Tag.parse_tag(json_tag)
-                    self.tags[raw_category['name']][parsed_tags[0].name] = parsed_tags
+                    if parsed_tags[0].name in self.tags:
+                        raise ValueError(f"{parsed_tags[0].name} is already a tag")
+
+                    self.tags[parsed_tags[0].name] = parsed_tags
                 except Exception as e:
                     HelpCenterBot.logger.warning(f'The tag {raw_tag["path"]} from category cannot be loaded. Error : {e}')
                     continue
@@ -128,9 +155,10 @@ class TagCog(commands.Cog):
     # @checkers.authorized_channels()
     async def _tag(self, inter: discord.Interaction, category_name: str, tag_name: str) -> None:
         """The tag command, that will do a research into savec tags, using the category and the query gived."""
-        if category_name not in self.tags:
-            return await inter.response.send_message(_("This category doesn't exist.", inter), ephemeral=True)
-        category = self.tags[category_name]
+        if category_name not in self.tags_categories or category_name != "all":
+            raise CustomError(_("This category doesn't exist.", inter))
+        if tag_name not in self.tags or tag_name != "list":
+            raise CustomError(_("This tag doesn't exist.", inter))
 
         if tag_name == "list" or tag_name not in category:
             def format_category(_category: dict[str, list[Tag]]) -> str:
@@ -169,13 +197,18 @@ class TagCog(commands.Cog):
 
     @_tag.autocomplete('category_name')
     async def category_autocompleter(self, inter: discord.Interaction, current: str):
-        return [app_commands.Choice(name=category, value=category) for category in self.tags.keys() if current in category]
+        return [app_commands.Choice(name=category, value=category) for category in self.tags.keys() if current in category] + [app_commands.Choice(name="all", value="all")]
 
     @_tag.autocomplete('tag_name')
     async def tag_autocompleter(self, inter: discord.Interaction, current: str):
-        if inter.namespace['category'] not in self.tags.keys():
+        if 'category' not in inter.namespace:  # not in self.tags.keys():
             return [app_commands.Choice(name=_('You must first fill the category option.', inter), value='')]
-        return [app_commands.Choice(name=tag_name, value=tag_name) for tag_name in self.tags[inter.namespace['category']].keys() if current in tag_name] + [app_commands.Choice(name='list', value='list')]
+        elif inter.namespace['category'] not in list(self.tags.keys()) + ['all']:
+            return [app_commands.Choice(name=_('This category doesn\'t exist.', inter), value='')]
+        elif inter.namespace['category'] in self.tags:
+            return [app_commands.Choice(name=tag_name, value=tag_name) for tag_name in self.tags[inter.namespace['category']].keys() if current in tag_name] + [app_commands.Choice(name='list', value='list')]
+        else:
+            return [app_commands.Choice(name=f'{tag_name} [{category_name}]', value=tag_name) for category_name in self.tags for tag_name in self.tags[category_name].keys() if current in tag_name][:25]
 
 
 class MultipleChoicesView(discord.ui.View):

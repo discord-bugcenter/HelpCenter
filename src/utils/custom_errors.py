@@ -1,6 +1,12 @@
 from discord.app_commands import errors
 
 
+class CustomError(errors.AppCommandError):
+    """
+    The base error used for non-specific errors.
+    """
+    pass
+
 class NotAuthorizedChannels(errors.CheckFailure):
     def __init__(self, list_channels_id: list[int]) -> None:
         """Raised if a command is executed in a unauthorized channel."""
