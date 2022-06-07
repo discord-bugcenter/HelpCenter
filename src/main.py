@@ -5,7 +5,6 @@ import typing
 
 import discord
 from discord.ext import commands
-# from discord import app_commands
 from dotenv import load_dotenv
 
 from utils import custom_errors  # , i18n
@@ -35,7 +34,8 @@ class HelpCenterBot(commands.Bot):
             intents=discord.Intents.all(),
         )
 
-        self.initial_extensions: list[str] = ['cogs.lines', 'cogs.googleit', 'cogs.miscellaneous', 'cogs.tag', 'cogs.threads_help_tickets', 'cogs.doc']
+        self.initial_extensions: list[str] = ['cogs.lines', 'cogs.googleit',
+                                              'cogs.miscellaneous', 'cogs.tag', 'cogs.threads_help_tickets', 'cogs.doc']
 
         # self.before_invoke(self.set_command_language)
         self.add_check(self.is_on_bug_center)
@@ -48,11 +48,11 @@ class HelpCenterBot(commands.Bot):
                 logger.error(f"Failed to load extension {ext}.", exc_info=e)
 
     async def on_ready(self) -> None:
-        bot_user = typing.cast(discord.ClientUser, self.user)
+        bot_user = typing.cast(discord.ClientUser, self.user)  # Bot is logged in, so it's a ClientUser
 
         await self.tree.sync(guild=discord.Object(id=BUG_CENTER_ID))
 
-        activity = discord.Game("/tag <category> <tag>")
+        activity = discord.Game("Have a nice day!")
         await self.change_presence(status=discord.Status.online, activity=activity)
 
         print(f"Logged in as : {bot_user.name}")
