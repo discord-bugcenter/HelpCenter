@@ -5,7 +5,6 @@ import typing
 
 import discord
 from discord.ext import commands
-from dotenv import load_dotenv
 
 from utils import custom_errors  # , i18n
 from utils.constants import BUG_CENTER_ID  # , LANGUAGE_ROLES
@@ -15,7 +14,6 @@ if typing.TYPE_CHECKING:
     from discord.ext.commands import Context
 
 
-load_dotenv()
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
