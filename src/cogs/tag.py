@@ -1,26 +1,34 @@
-from typing import Union, TypedDict, Optional, cast, TypeVar, Any
-import json
 import asyncio
+import json
 import os
+from typing import Any, Optional, TypedDict, TypeVar, Union, cast
 
 import aiohttp
 import discord
-from discord.utils import get
-from discord.ext import commands, tasks
 from discord import app_commands, ui
-
-from utils.types import Person
-from utils.misc import tag_schema
-from utils.constants import BUG_CENTER_ID
-from utils import misc  # , checkers
-from utils.i18n import _
-from utils.custom_errors import CustomError
+from discord.ext import commands, tasks
+from discord.utils import get
 from main import HelpCenterBot
+from utils import misc  # , checkers
+from utils.constants import BUG_CENTER_ID
+from utils.custom_errors import CustomError
+from utils.i18n import _
+from utils.misc import tag_schema
+from utils.types import Person
 
 REPOSITORY_TOKEN = os.environ["GITHUB_REPOSITORY_TOKEN"]
 
-ResponseChoices = TypedDict('ResponseChoices', content=str, embed=dict, choice_name=str)
-Response = TypedDict('Response', content=str, embed=dict, choices=list[ResponseChoices])
+
+class ResponseChoices(TypedDict):
+    content: str
+    embed: dict
+    choice_name: str
+
+
+class Response(TypedDict):
+    content: str
+    embed: dict
+    choices: list[ResponseChoices]
 
 
 T = TypeVar('T', dict, list, str)
@@ -128,7 +136,7 @@ class TagCog(commands.Cog):
                 try:
                     async with self.session.get(raw_tag['download_url']) as r:
                         json_tag: Union[dict, list] = json.loads(await r.text())
- 
+
                     json_tag = tag_schema.validate(json_tag)
                     if not isinstance(json_tag, list) or isinstance(json_tag, dict):
                         raise ValueError(f"{raw_tag['name']} is not a valid tag")
@@ -140,7 +148,8 @@ class TagCog(commands.Cog):
 
                     self.tags[parsed_tags[0].name] = parsed_tags
                 except Exception as e:
-                    HelpCenterBot.logger.warning(f'The tag {raw_tag["path"]} from category cannot be loaded. Error : {e}')
+                    HelpCenterBot.logger.warning(
+                        f'The tag {raw_tag["path"]} from category cannot be loaded. Error : {e}')
                     continue
 
     @app_commands.command(name="force_resync")
@@ -162,7 +171,8 @@ class TagCog(commands.Cog):
 
         if tag_name == "list" or tag_name not in category:
             def format_category(_category: dict[str, list[Tag]]) -> str:
-                translated_tags = [get(tag_langs, lang=inter.locale.value) or tag_langs[0] for tag_langs in _category.values()]
+                translated_tags = [get(tag_langs, lang=inter.locale.value) or tag_langs[0]
+                                   for tag_langs in _category.values()]
 
                 return "\n".join([f"- `{tag.name}` : {tag.description}" for tag in translated_tags])
 
@@ -212,7 +222,9 @@ class TagCog(commands.Cog):
 
 
 class MultipleChoicesView(discord.ui.View):
-    def __init__(self, bot: HelpCenterBot, author: 'Person', choices: list[ResponseChoices], tag_name: str, category_name: str):
+    def __init__(
+            self, bot: HelpCenterBot, author: 'Person', choices: list[ResponseChoices],
+            tag_name: str, category_name: str):
         self.bot = bot
         self.author = author
         self.choices = choices
@@ -240,7 +252,8 @@ class MultipleChoicesView(discord.ui.View):
     @ui.select(custom_id='multiple_choices_tag')
     async def selector_callback(self, inter: discord.Interaction, select: ui.Select) -> None:
         values = cast(list[str], select.values)
-        response = cast(ResponseChoices, discord.utils.find(lambda choice: choice['choice_name'] == values[0], self.choices))
+        response = cast(ResponseChoices, discord.utils.find(
+            lambda choice: choice['choice_name'] == values[0], self.choices))
 
         embed = discord.Embed.from_dict(response["embed"])
         embed.colour = misc.Color.grey_embed().discord
