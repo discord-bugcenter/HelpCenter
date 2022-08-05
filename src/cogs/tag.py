@@ -130,9 +130,7 @@ class TagCog(commands.Cog):
 
     @tasks.loop(minutes=1)
     async def check_for_changes(self) -> None:
-        async with self.session.get(
-            "https://api.github.com/repos/discord-bugcenter/tags/commits?sha=toml-refactor"
-        ) as r:
+        async with self.session.get("https://api.github.com/repos/discord-bugcenter/tags/commits") as r:
             raw_data = await r.json()
             last_sha = raw_data[0]["sha"]
 
@@ -145,9 +143,7 @@ class TagCog(commands.Cog):
 
     async def fetch_tags(self) -> None:
         self.tags = {}
-        async with self.session.get(
-            "https://api.github.com/repositories/472858036/contents/src?ref=toml-refactor"
-        ) as r:
+        async with self.session.get("https://api.github.com/repositories/472858036/contents/src") as r:
             raw_categories = await r.json()
 
         for raw_category in raw_categories:
