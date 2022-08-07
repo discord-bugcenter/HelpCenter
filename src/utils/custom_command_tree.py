@@ -7,7 +7,6 @@ import discord
 # from discord.ext import commands
 from discord.app_commands import AppCommandError, CommandNotFound, CommandTree
 
-from utils import ExtendedColor
 from utils.custom_errors import CustomError
 
 if TYPE_CHECKING:
