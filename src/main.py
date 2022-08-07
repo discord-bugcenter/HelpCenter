@@ -47,7 +47,7 @@ class HelpCenterBot(commands.Bot):
         # self.before_invoke(self.set_command_language)
         self.add_check(self.is_on_bug_center)
 
-    async def setup_hook(self):
+    async def setup_hook(self) -> None:
         for ext in self.initial_extensions:
             try:
                 await self.load_extension(ext)
@@ -65,7 +65,7 @@ class HelpCenterBot(commands.Bot):
         logger.info(f"Logged in as : {bot_user.name}")
         logger.info(f"ID : {bot_user.id}")
 
-    def is_on_bug_center(self, ctx: "Context[HelpCenterBot]") -> bool:
+    def is_on_bug_center(self, ctx: commands.Context[HelpCenterBot]) -> bool:
         if ctx.guild and ctx.guild.id != BUG_CENTER_ID:
             raise custom_errors.NotInBugCenter()
         return True

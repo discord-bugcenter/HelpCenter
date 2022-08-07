@@ -1,10 +1,6 @@
 from typing import Union
 
-from discord import User, Member
-from discord.ext.commands import Context as Ctx
-
-from main import HelpCenterBot
+from discord import Member, User
 
 Person = Union[User, Member]
 Snowflake = int
-Context = Ctx[HelpCenterBot]
