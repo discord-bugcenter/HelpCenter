@@ -12,9 +12,9 @@ from discord import SelectOption, app_commands, ui
 from discord.ext import commands
 from typing_extensions import Self  # TODO: remove on 3.11 release
 
+from utils.api.gist import create_new_gist, delete_gist
 from utils.constants import BUG_CENTER_ID
 from utils.custom_errors import CustomError
-from utils.gist import create_new_gist, delete_gist
 
 if TYPE_CHECKING:
     from re import Pattern

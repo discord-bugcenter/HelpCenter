@@ -1,30 +1,28 @@
-from typing import Optional, TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
 import discord
+
 # from discord.ext import commands
 from discord.app_commands import (
-    ContextMenu,
-    Command,
     AppCommandError,
-    CommandTree,
-    CommandInvokeError,
     CheckFailure,
-    CommandNotFound
+    Command,
+    CommandInvokeError,
+    CommandNotFound,
+    CommandTree,
+    ContextMenu,
 )
 
 from utils import custom_errors as custom
-# from .utils.codingame import NoPendingCOC
-# from .utils.misc import Color
-from utils.i18n import _
 
 if TYPE_CHECKING:
     from main import HelpCenterBot  # , Context
 
 
-class CustomCommandTree(CommandTree):
-    def __init__(self, bot: 'HelpCenterBot') -> None:
+class CustomCommandTree(CommandTree[HelpCenterBot]):
+    def __init__(self, bot: HelpCenterBot) -> None:
         """Handle error for the bot commands."""
-        self.bot = bot
+        self.bot: HelpCenterBot = bot
         super().__init__(bot)
 
     @staticmethod
@@ -49,7 +47,9 @@ class CustomCommandTree(CommandTree):
 
         # return await ctx.send(embed=embed, delete_after=10)
 
-    async def on_error(self, inter: discord.Interaction, command: ContextMenu | Command[Any, (...), Any], error: AppCommandError) -> Optional[discord.Message]:
+    async def on_error(
+        self, interaction: discord.Interaction, command: ContextMenu | Command[Any, (...), Any], error: AppCommandError
+    ) -> Optional[discord.Message]:
         """Function called when a command raise an error."""
 
         if isinstance(error, CommandNotFound):
@@ -58,12 +58,18 @@ class CustomCommandTree(CommandTree):
         # Custom errors :
 
         if isinstance(error, custom.NotAuthorizedChannels):
-            formatted_text = (_("You can't execute this command in <#{inter.channel.id}>. Try in one of these channels :\n\n", inter).format(**locals()) +
-                              f"<#{'>, <#'.join(str(channel_id) for channel_id in error.list_channels_id)}>")
+            formatted_text = (
+                _(
+                    "You can't execute this command in <#{inter.channel.id}>. Try in one of these channels :\n\n", inter
+                ).format(**locals())
+                + f"<#{'>, <#'.join(str(channel_id) for channel_id in error.list_channels_id)}>"
+            )
             return await self.send_error(inter, formatted_text)
         if isinstance(error, custom.NotAuthorizedRoles):
-            formatted_text = (_("You can't execute this command, you need one of these roles :\n\n", inter).format(**locals()) +
-                              f"<@&{'>, <@&'.join(str(role_id) for role_id in error.list_roles_id)}>")
+            formatted_text = (
+                _("You can't execute this command, you need one of these roles :\n\n", inter).format(**locals())
+                + f"<@&{'>, <@&'.join(str(role_id) for role_id in error.list_roles_id)}>"
+            )
             return await self.send_error(inter, formatted_text)
         # if isinstance(error, custom.COCLinkNotValid):
         #     return await self.send_error(inter, _("You send an invalid link/code, or the game cannot be joined anymore, or the game doesn't exist !"))
