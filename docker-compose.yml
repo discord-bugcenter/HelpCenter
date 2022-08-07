@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  help-center:
+    build: .
+    env_file:
+      - .env
+    tty: true
+    command: [ "python", "main.py" ]
+    restart: always
