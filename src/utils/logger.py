@@ -12,8 +12,6 @@ from typing import Any
 
 
 def stream_supports_color(stream: Any) -> bool:
-    # if os.getenv("IN_DOCKER") == "true":  # it seems that in docker, stream is not a tty
-    #     return True
     is_a_tty = hasattr(stream, "isatty") and stream.isatty()
 
     if sys.platform != "win32":
