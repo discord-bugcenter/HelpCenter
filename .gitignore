@@ -9,4 +9,5 @@
 .devcontainer/
 .env
 
-/cogs/tests.py
+.pytest_cache/
+.tox/

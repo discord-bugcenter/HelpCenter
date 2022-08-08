@@ -209,7 +209,7 @@ class CreateThreadModal(ui.Modal, title=""):
         await thread.send(content=self.thread_content.value, view=view)
 
         await self.cog.update_overview()
-        await interaction.edit_original_message(content=f"Un salon a été créé : <#{thread.id}>")
+        await interaction.edit_original_response(content=f"Un salon a été créé : <#{thread.id}>")
 
 
 async def setup(bot: HelpCenterBot) -> None:
