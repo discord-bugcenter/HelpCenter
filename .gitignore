@@ -8,11 +8,11 @@
 .devcontainer/
 
 # Python specific
+*.py[cod]
 venv/
 **/__pycache__/
-*.py[cod]
-/cogs/tests.py
-.pytest_cache
+.pytest_cache/
+.tox/
 
 # CI
 junit
@@ -20,5 +20,3 @@ junit
 # OS
 *.DS_Store
 .env
-
-.tox/
