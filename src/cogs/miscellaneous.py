@@ -34,7 +34,10 @@ class Miscellaneous(commands.Cog):
         self.attachement_to_gist_ctx_menu = app_commands.ContextMenu(
             name="Make a gist", callback=self.attachement_to_gist
         )
-        self.bot.tree.add_command(self.attachement_to_gist_ctx_menu, guild=discord.Object(id=BUG_CENTER_ID))
+        self.bot.tree.add_command(
+            self.attachement_to_gist_ctx_menu,
+            guild=discord.Object(id=BUG_CENTER_ID),
+        )
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
@@ -63,14 +66,20 @@ class Miscellaneous(commands.Cog):
                         for i, attachment in enumerate(message.attachments)
                     ]
                 )
-                async def select_file(self, inter: discord.Interaction, select: ui.Select[SelectFileView]) -> None:
+                async def select_file(
+                    self,
+                    inter: discord.Interaction,
+                    select: ui.Select[SelectFileView],
+                ) -> None:
                     self.inter = inter
                     self.select = select
                     self.stop()
 
             view = SelectFileView()
             await inter.response.send_message(
-                "Sélectionnez le fichier que vous souhaitez envoyer sur gist.", view=view, ephemeral=True
+                "Sélectionnez le fichier que vous souhaitez envoyer sur gist.",
+                view=view,
+                ephemeral=True,
             )
             await view.wait()
             inter = view.inter
@@ -94,7 +103,10 @@ class Miscellaneous(commands.Cog):
                 inter: discord.Interaction
 
                 extension: ui.TextInput[Self] = ui.TextInput(
-                    label="Extension", placeholder=".txt", min_length=1, max_length=10
+                    label="Extension",
+                    placeholder=".txt",
+                    min_length=1,
+                    max_length=10,
                 )
 
                 async def on_submit(self, interaction: discord.Interaction) -> None:
@@ -117,7 +129,7 @@ class Miscellaneous(commands.Cog):
             raise CustomError("Impossible de créer le gist.")
 
         strategy = (
-            inter.edit_original_message
+            inter.edit_original_response
             if inter.response.is_done()
             else partial(inter.response.send_message, ephemeral=True)
         )
@@ -158,7 +170,10 @@ class Miscellaneous(commands.Cog):
                         f"**portail dev** (https://discord.com/developers/applications/{response_dict['id']}).\n"
                     )
 
-                    await message.channel.send(message_content, allowed_mentions=discord.AllowedMentions(users=True))
+                    await message.channel.send(
+                        message_content,
+                        allowed_mentions=discord.AllowedMentions(users=True),
+                    )
 
                     gist = await create_new_gist(GIST_TOKEN, "token revoke", match.group(0))
                     await asyncio.sleep(30)
@@ -178,7 +193,10 @@ class Miscellaneous(commands.Cog):
                         "**Changez immédiatement votre mot de passe par précaution**.\n"
                         "Nous vous conseillons aussi d'activer **l'authentification à double facteur (2FA)** si c'est n'est pas encore fait.\n"
                     )
-                    await message.channel.send(text, allowed_mentions=discord.AllowedMentions(users=True))
+                    await message.channel.send(
+                        text,
+                        allowed_mentions=discord.AllowedMentions(users=True),
+                    )
                     return True
 
         return False
