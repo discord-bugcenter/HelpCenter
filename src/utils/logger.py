@@ -3,11 +3,7 @@
 import logging
 import os
 import sys
-from logging import CRITICAL as CRITICAL
-from logging import DEBUG as DEBUG
-from logging import ERROR as ERROR
-from logging import INFO as INFO
-from logging import WARNING as WARNING
+from logging import CRITICAL as CRITICAL, DEBUG as DEBUG, ERROR as ERROR, INFO as INFO, WARNING as WARNING
 from typing import Any
 
 
