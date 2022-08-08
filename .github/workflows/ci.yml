@@ -10,10 +10,9 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v3
-        timeout-minutes: 10
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.10
+          python-version: 3.10.6
           cache: pip
       - name: Install dependencies
         run: |
@@ -30,15 +29,14 @@ jobs:
           path: junit/test-results.xml
 
   style:
-    name: Style check (fmt & linting)
+    name: Style check
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkouts@v3
-        timeout-minutes: 10
+      - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.10
+          python-version: 3.10.6
           cache: pip
       - name: Install dependencies
         run: |
