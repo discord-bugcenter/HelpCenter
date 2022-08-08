@@ -1,7 +1,7 @@
-pytest>=7.1.2
-pyright>=1.1.266
-black>=22.6.0
-bandit>=1.7.4
-isort>=5.10.1
-toml>=0.10.2
-tox>=3.24.1
+pytest~=7.1.2
+pyright~=1.1.266
+black~=22.6.0
+bandit~=1.7.4
+isort~=5.10.1
+toml~=0.10.2  # bandit depends on
+tox~=3.24.1
