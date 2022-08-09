@@ -236,7 +236,8 @@ class CreateThreadModal(ui.Modal, title=""):
             view.add_item(ui.Button(label="Archive", custom_id=f"archive_help_thread_{interaction.user.id}"))
 
             await thread.add_user(interaction.user)
-            await thread.send(content=self.thread_content.value, view=view)
+            message: discord.Message = await thread.send(content=self.thread_content.value, view=view)
+            await message.pin()
 
             await self.cog.update_overview()
 
