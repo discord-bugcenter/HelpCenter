@@ -23,14 +23,14 @@ class ThreadsHelpTickets(commands.Cog):
 
     async def create_scheduled_event(self) -> discord.ScheduledEvent:
         bug_center: discord.Guild = self.threads_channel.guild
-        self.event = await bug_center.create_scheduled_event(
+        event = await bug_center.create_scheduled_event(
             name=f"Demandes d'aide : {len(self.threads_channel.threads)}",
             start_time=datetime.now(timezone.utc) + timedelta(minutes=10),
             entity_type=discord.EntityType.external,
             location=f"<#{ASK_CHANNEL_ID}>",
             end_time=datetime.now(timezone.utc) + timedelta(days=365 * 3),
         )
-        await self.event.start()
+        self.event = await event.start()
         return self.event
 
     def create_overview_embed(self) -> discord.Embed:
@@ -63,22 +63,22 @@ class ThreadsHelpTickets(commands.Cog):
 
     async def update_overview(self) -> None:
         embed = self.create_overview_embed()
-        print(embed.to_dict())
         await self.threads_overview_message.edit(embed=embed, view=self.create_thread_view, content=None)
 
-        if self.event is not None and self.event.status == discord.EventStatus.active:
+        if not self.event_disabled:
             if len(self.threads_channel.threads) == 0:
-                await self.event.end()
+                if self.event is not None and self.event.status == discord.EventStatus.active:  # Duplicate condition...
+                    await self.event.end()
                 self.event = None
-            else:
-                await self.event.edit(
+            elif self.event is not None and self.event.status == discord.EventStatus.active:
+                self.event = await self.event.edit(
                     name=f"Demandes d'aide : {len(self.threads_channel.threads)}",
                     entity_type=discord.EntityType.external,
                     location=f"<#{ASK_CHANNEL_ID}>",
                     end_time=datetime.now(timezone.utc) + timedelta(days=365 * 3),
                 )
-        elif self.event_disabled is False:
-            await self.create_scheduled_event()
+            else:
+                await self.create_scheduled_event()
 
     @commands.Cog.listener()
     async def on_ready(self) -> None:
@@ -166,7 +166,7 @@ class CreateThreadView(ui.View):
         super().__init__(timeout=None)
         self.cog: ThreadsHelpTickets = cog
 
-    @ui.button(label="Nouveau / New", custom_id="create_help_channel", emoji="➕", style=discord.ButtonStyle.blurple)
+    @ui.button(label="Nouveau", custom_id="create_help_channel", emoji="➕", style=discord.ButtonStyle.blurple)
     async def create_help_channel(self, inter: discord.Interaction, button: ui.Button[Self]) -> None:
         await inter.response.send_modal(CreateThreadModal(self.cog))
 
