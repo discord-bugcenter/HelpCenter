@@ -1,13 +1,22 @@
-**/__pycache__/
-*.py[cod]
-
-/venv/
-.idea/
+# editors
 .vscode/
-*.DS_Store
+.vscode-insiders/
+.idea/
+.ijwb/
+.clwb/
 *.code-workspace
 .devcontainer/
-.env
 
+# Python specific
+*.py[cod]
+venv/
+**/__pycache__/
 .pytest_cache/
 .tox/
+
+# CI
+junit
+
+# OS
+*.DS_Store
+.env
