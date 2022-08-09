@@ -83,11 +83,14 @@ class ThreadsHelpTickets(commands.Cog):
                 " :ballot_box_with_check: avez-vous lu la documentation ?\n"
                 "\n"
                 "__**Lorsque vous posez une question :**__\n"
-                " :ballot_box_with_check: ne demandez pas de l'aide, posez juste votre question. https://dontasktoask.com/\n"
-                " :ballot_box_with_check: expliquez directement votre problème/objectif, ne passez pas par une situation similaire. https://xyproblem.info/\n"
+                " :ballot_box_with_check: ne demandez pas de l'aide, posez juste votre question. "
+                "https://dontasktoask.com/\n"
+                " :ballot_box_with_check: expliquez directement votre problème/objectif, ne passez pas par une "
+                "situation similaire. https://xyproblem.info/\n"
                 "\n"
                 "__**Lorsque vous aidez quelqu'un :**__\n"
-                "Le spoonfeed est interdit. Autrement dit, il est préférable d'indiquer à quelqu'un comment il peut résoudre son problème plutôt que de lui donner une réponse toute faite.\n"
+                "Le spoonfeed est interdit. Autrement dit, il est préférable d'indiquer à quelqu'un comment il peut "
+                "résoudre son problème plutôt que de lui donner une réponse toute faite.\n"
                 "\u200b"
             ),
         )
