@@ -21,3 +21,8 @@ jobs:
       - name: Test application with tox
         run: |
           tox
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: pytest_results
+          path: junit/test-results.xml  
