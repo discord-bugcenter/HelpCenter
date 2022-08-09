@@ -8,7 +8,7 @@ deps =
     -r requirements.txt 
     -r requirements_dev.txt
 commands =
-    pytest
+    pytest --doctest-modules --junitxml=junit/test-results.xml .
     pyright src/
     black --check src/
     bandit -r src/ tests/ -c pyproject.toml
