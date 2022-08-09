@@ -62,12 +62,16 @@ class ThreadsHelpTickets(commands.Cog):
         )
 
         if self.event is not None and self.event.status == discord.EventStatus.active:
-            await self.event.edit(
-                name=f"Demandes d'aide : {len(self.threads_channel.threads)}",
-                entity_type=discord.EntityType.external,
-                location=f"<#{ASK_CHANNEL_ID}>",
-                end_time=datetime.now(timezone.utc) + timedelta(days=365 * 3),
-            )
+            if len(self.threads_channel.threads) == 0:
+                await self.event.end()
+                self.event = None
+            else:
+                await self.event.edit(
+                    name=f"Demandes d'aide : {len(self.threads_channel.threads)}",
+                    entity_type=discord.EntityType.external,
+                    location=f"<#{ASK_CHANNEL_ID}>",
+                    end_time=datetime.now(timezone.utc) + timedelta(days=365 * 3),
+                )
         elif self.event_disabled is False:
             await self.create_scheduled_event()
 
