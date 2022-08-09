@@ -33,33 +33,38 @@ class ThreadsHelpTickets(commands.Cog):
         await self.event.start()
         return self.event
 
-    def update_overview_embed(self) -> None:
-        embed = self.threads_overview_embed
-        field_name = embed.fields[0].name
+    def create_overview_embed(self) -> discord.Embed:
+        embed = discord.Embed(
+            color=discord.Color.blurple(),
+            title="**Fils d'aide personnalisée **",
+            description=(
+                "Créez un fil pour recevoir de l'aide sur n'importe quel sujet informatique.\n"
+                "Que ce soit de la programmation, un problème avec votre PC, etc...\n"
+            ),
+        )
+        main_field_name = "Liste des demandes en cours"
 
-        if not self.threads_channel.threads:
-            embed.fields[0].value = "*Aucune demande, hourra!*"
-            return
+        if not [t for t in self.threads_channel.threads if not t.archived]:
+            return embed.add_field(name=main_field_name, value="*Aucune demande, hourra!*", inline=False)
 
-        embed.clear_fields()
         field_contents = [""]
         i = 0
 
         for thread in self.threads_channel.threads:
-            if len(field_contents[i]) + len(thread.name) + 100 > 1024:  # 100 is the length of the link etc...
+            if len(field_contents[i]) + len(thread.name) + 75 > 1024:  # 75 is the length of the link etc...
                 i += 1
                 field_contents.append("")
 
-            field_contents[i] += f" - [{thread.name}](https://discord.com/channels/{BUG_CENTER_ID}/{thread.id})\n"
+            field_contents[i] += f" - [{thread.name}](http://discord.com/channels/{BUG_CENTER_ID}/{thread.id})\n"
 
         for i, content in enumerate(field_contents):
-            embed.add_field(name=field_name if not i else "\u200b", value=content, inline=False)
+            embed.add_field(name=main_field_name if not i else "\u200b", value=content, inline=False)
+        return embed
 
     async def update_overview(self) -> None:
-        self.update_overview_embed()
-        await self.threads_overview_message.edit(
-            embed=self.threads_overview_embed, view=self.create_thread_view, content=None
-        )
+        embed = self.create_overview_embed()
+        print(embed.to_dict())
+        await self.threads_overview_message.edit(embed=embed, view=self.create_thread_view, content=None)
 
         if self.event is not None and self.event.status == discord.EventStatus.active:
             if len(self.threads_channel.threads) == 0:
@@ -87,17 +92,6 @@ class ThreadsHelpTickets(commands.Cog):
             lambda event: event.name.startswith("Demandes d'aide : "), bug_center.scheduled_events
         )
         self.event_disabled = False
-
-        embed = discord.Embed(
-            color=discord.Color.blurple(),
-            title="**Fils d'aide personnalisée **",
-            description=(
-                "Créez un fil pour recevoir de l'aide sur n'importe quel sujet informatique.\n"
-                "Que ce soit de la programmation, un problème avec votre PC, etc...\n"
-            ),
-        )
-        embed.add_field(name="Liste des demandes en cours", value="*Aucune demande, hourra!*", inline=False)
-        self.threads_overview_embed = embed
 
         await self.update_overview()
 
