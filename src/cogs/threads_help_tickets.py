@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from datetime import datetime, timedelta, timezone
 from functools import partial
 from typing import TYPE_CHECKING, cast
@@ -21,6 +22,8 @@ class ThreadsHelpTickets(commands.Cog):
         self.bot: HelpCenterBot = bot
         self.bot.tree.add_command(self.toggle_event, guild=discord.Object(BUG_CENTER_ID))
 
+        self.queue: asyncio.Queue[int] = asyncio.Queue(maxsize=1)
+
     async def create_scheduled_event(self) -> discord.ScheduledEvent:
         bug_center: discord.Guild = self.threads_channel.guild
         event = await bug_center.create_scheduled_event(
@@ -40,6 +43,8 @@ class ThreadsHelpTickets(commands.Cog):
             description=(
                 "Créez un fil pour recevoir de l'aide sur n'importe quel sujet informatique.\n"
                 "Que ce soit de la programmation, un problème avec votre PC, etc...\n"
+                "\n"
+                "Voir <#926861260291711076> pour plus d'informations."
             ),
         )
         main_field_name = "Liste des demandes en cours"
@@ -62,8 +67,30 @@ class ThreadsHelpTickets(commands.Cog):
         return embed
 
     async def update_overview(self) -> None:
+        # edits are done using the state of discord when executed, so excessive edits are not necessary
+        if self.queue.qsize() > 1:
+            return
+
+        await self.queue.put(0)
         embed = self.create_overview_embed()
-        await self.threads_overview_message.edit(embed=embed, view=self.create_thread_view, content=None)
+
+        await self.threads_overview_message.edit(
+            embed=embed,
+            view=self.create_thread_view,
+            content=(
+                "__**Avant de poser une question :**__\n"
+                " :ballot_box_with_check: avez-vous cherché sur Google ? https://google.com/search\n"
+                " :ballot_box_with_check: avez-vous lu la documentation ?\n"
+                "\n"
+                "__**Lorsque vous posez une question :**__\n"
+                " :ballot_box_with_check: ne demandez pas de l'aide, posez juste votre question. https://dontasktoask.com/\n"
+                " :ballot_box_with_check: expliquez directement votre problème/objectif, ne passez pas par une situation similaire. https://xyproblem.info/\n"
+                "\n"
+                "__**Lorsque vous aidez quelqu'un :**__\n"
+                "Le spoonfeed est interdit. Autrement dit, il est préférable d'indiquer à quelqu'un comment il peut résoudre son problème plutôt que de lui donner une réponse toute faite.\n"
+                "\u200b"
+            ),
+        )
 
         if not self.event_disabled:
             if len(self.threads_channel.threads) == 0:
@@ -79,6 +106,12 @@ class ThreadsHelpTickets(commands.Cog):
                 )
             else:
                 await self.create_scheduled_event()
+
+        async def release_queue_delayed():
+            await asyncio.sleep(10)
+            await self.queue.get()
+
+        asyncio.create_task(release_queue_delayed())
 
     @commands.Cog.listener()
     async def on_ready(self) -> None:
@@ -120,18 +153,6 @@ class ThreadsHelpTickets(commands.Cog):
         ):  # or checkers.is_high_staff_check(self.bot, inter.user)[0]:  # TODO : work on checkers
             await strategy()
             await inter.response.defer(ephemeral=True)
-
-    @commands.Cog.listener()
-    async def on_thread_join(self, thread: discord.Thread) -> None:
-        if not thread.parent_id == ASK_CHANNEL_ID or not thread.parent:
-            return
-
-        async for message in cast(discord.TextChannel, thread.parent).history():
-            if message.id == thread.id:
-                await message.delete()
-                break
-
-        await self.update_overview()
 
     @commands.Cog.listener()
     async def on_thread_update(self, thread_before: discord.Thread, thread_after: discord.Thread) -> None:
@@ -190,8 +211,16 @@ class CreateThreadModal(ui.Modal, title=""):
         self.cog: ThreadsHelpTickets = cog
 
     async def on_submit(self, interaction: discord.Interaction) -> None:
-        await interaction.response.defer(ephemeral=True, thinking=True)
+        # await interaction.response.defer(ephemeral=True, thinking=True)
         channel = cast(discord.TextChannel, interaction.channel)
+
+        task = asyncio.create_task(
+            self.cog.bot.wait_for(
+                "message",
+                check=lambda message: message.channel.id == ASK_CHANNEL_ID
+                and message.type == discord.MessageType.thread_created,
+            )
+        )
 
         thread = await channel.create_thread(
             name=f"{self.thread_title.value}",
@@ -199,15 +228,20 @@ class CreateThreadModal(ui.Modal, title=""):
             reason="HelpCenter help-thread system.",
         )
 
-        view = ui.View()
-        view.stop()
-        view.add_item(ui.Button(label="Archive", custom_id=f"archive_help_thread_{interaction.user.id}"))
+        async def additionnel_requests():
+            await (await task).delete()
 
-        await thread.add_user(interaction.user)
-        await thread.send(content=self.thread_content.value, view=view)
+            view = ui.View()
+            view.stop()
+            view.add_item(ui.Button(label="Archive", custom_id=f"archive_help_thread_{interaction.user.id}"))
 
-        await self.cog.update_overview()
-        await interaction.edit_original_response(content=f"Un salon a été créé : <#{thread.id}>")
+            await thread.add_user(interaction.user)
+            await thread.send(content=self.thread_content.value, view=view)
+
+            await self.cog.update_overview()
+
+        asyncio.create_task(additionnel_requests())
+        await interaction.response.send_message(ephemeral=True, content=f"Un salon a été créé : <#{thread.id}>")
 
 
 async def setup(bot: HelpCenterBot) -> None:
