@@ -20,8 +20,6 @@ if TYPE_CHECKING:
 
     from main import HelpCenterBot
 
-THREAD_ID_FROM_CONTENT = re.compile(r"\[.+\]\(https:\/\/discord\.com\/channels\/\d{18,20}\/(\d{18,20})\)")
-
 
 class Request(NamedTuple):
     request_message_id: Snowflake
@@ -116,7 +114,8 @@ class ThreadsHelpTickets(commands.Cog):
 
     @staticmethod
     def get_thread_id_from_content(content: str) -> Snowflake | None:
-        if result := THREAD_ID_FROM_CONTENT.match(content):
+        pattern: str = r"\[.+\]\(https:\/\/discord\.com\/channels\/\d{18,20}\/(\d{18,20})\)"
+        if result := re.match(pattern, content):
             return int(result.group(1))
         return None
 
